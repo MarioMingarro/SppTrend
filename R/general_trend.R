@@ -28,7 +28,7 @@
 #'Data$year_month  = Data$month * 0.075
 #'Data$year_month  = Data$year + Data$year_month
 #'
-#'predictor <- "year_month"
+#'predictor <- "year_month" # predictor <- "year" in case month is not available
 #'responses <- c("Lat", "Lon", "Tmx", "Tmn")
 #'
 #'general_trend_result = general_trend(Data, predictor, responses)
@@ -37,16 +37,16 @@
 #'
 general_trend <- function(Data, predictor, responses) {
   general_trend_result <- data.frame(
-    "Response" = character(),
-    "Trend" = numeric(),
+    "response" = character(),
+    "trend" = numeric(),
     "t" = numeric(),
     "pvalue" = numeric(),
     "ci_95_max" = numeric(),
     "ci_95_min" = numeric())
   for (var in responses) {
     table <- data.frame(
-      "Response" = var,
-      "Trend" = NA,
+      "response" = var,
+      "trend" = NA,
       "t" = NA,
       "pvalue" = NA,
       "ci_95_max" = NA,

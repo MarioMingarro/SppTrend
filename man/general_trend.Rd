@@ -41,7 +41,7 @@ Data <- data.frame(
 Data$year_month  = Data$month * 0.075
 Data$year_month  = Data$year + Data$year_month
 
-predictor <- "year_month"
+predictor <- "year_month" # predictor <- "year" in case month is not available
 responses <- c("Lat", "Lon", "Tmx", "Tmn")
 
 general_trend_result = general_trend(Data, predictor, responses)

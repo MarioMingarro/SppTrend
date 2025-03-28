@@ -25,7 +25,7 @@
 #'Data$year_month  = Data$month * 0.075
 #'Data$year_month  = Data$year + Data$year_month
 #'
-#'predictor <- "year_month"
+#'predictor <- "year_month" # predictor <- "year" in case month is not available
 #'responses <- c("Lat", "Lon", "TMmx", "TMmn")
 #'spp <- unique(Data$species)
 #'
@@ -35,15 +35,15 @@
 #'
 spp_trend <- function(Data, spp, predictor, responses, n_min = 50) {
   spp_trend_result <- data.frame(
-    "Spp" = NA,
-    "Response" = NA,
-    "Trend" = NA,
+    "species" = NA,
+    "response" = NA,
+    "trend" = NA,
     "t" = NA,
     "pvalue" = NA,
     "ci_95_max" = NA,
     "ci_95_min" = NA,
-    "Dif_t" = NA,
-    "Dif_pvalue" = NA)
+    "dif_t" = NA,
+    "dif_pvalue" = NA)
 
   spp_trend_result <- spp_trend_result[-1,]
 
@@ -65,29 +65,29 @@ spp_trend <- function(Data, spp, predictor, responses, n_min = 50) {
         tryCatch({
           table <-
             data.frame(
-              "Spp" = NA,
-              "Response" = NA,
-              "Trend" = NA,
+              "species" = NA,
+              "response" = NA,
+              "trend" = NA,
               "t" = NA,
               "pvalue" = NA,
               "ci_95_max" = NA,
               "ci_95_min" = NA,
-              "Dif_t" = NA,
-              "Dif_pvalue" = NA,
+              "dif_t" = NA,
+              "dif_pvalue" = NA,
               "n" = NA
             )
 
           model_g <- stats::lm(stats::formula(paste(responses[i], paste(predictor, collapse = "+"), sep = " ~ ")), data = gen)
-          table$Spp <- unique(ind$species)
-          table$Response <- responses[i]
+          table$species <- unique(ind$species)
+          table$response <- responses[i]
 
           model_i <- stats::lm(stats::formula(paste(responses[i], paste(predictor, collapse = "+"), sep = " ~ ")), data = ind)
 
-          table$Trend <- model_i$coefficients[[2]]
+          table$trend <- model_i$coefficients[[2]]
           table$t <- summary(model_i)$coefficients[2, 3]
           table$pvalue <- summary(model_i)$coefficients[2, 4]
-          table$ci_95_max <- stats::confint(model_i, "year_month", level = 0.95)[, 2]
-          table$ci_95_min <- stats::confint(model_i, "year_month", level = 0.95)[, 1]
+          table$ci_95_max <- stats::confint(model_i, predictor, level = 0.95)[, 2]
+          table$ci_95_min <- stats::confint(model_i, predictor, level = 0.95)[, 1]
           table$n <- nrow(ind)
 
           model_int <- lm(formula(paste(responses[i], paste(

@@ -22,20 +22,33 @@
 #' @importFrom tidyr pivot_wider
 #'
 #' @examples
-#'# spp_trend_result <- spp_trend(Data, spp, predictor, responses, n_min = 50)
-#'# bonferroni = 0.05 # Recommended (0.05/length(spp))
-#'# strategies <- spp_strategy(spp_trend_result, bonferroni)
+#'
+#'spp_trends_results <- data.frame(
+#'   species = paste0("spp_", 1:10),
+#'   response = rep("Lat", 10),
+#'   trend = runif(10, -0.5, 0.5),
+#'   t = runif(10, -2, 2),
+#'   pvalue = runif(10, 0, 1),
+#'   ci_95_max = runif(10, 0.05, 0.2),
+#'   ci_95_min = runif(10, -0.1, 0.05),
+#'   dif_t = runif(10, -1, 1.5),
+#'   dif_pvalue = runif(10, 0.001, 0.9),
+#'   n = runif(10, 40, 60))
+#'spp <- unique(spp_trends_results$species)
+#'bonferroni = 0.05/length(spp)
+#'spp_strategy_results <- spp_strategy(spp_trends_results, bonferroni = 0.05)
+#'
 #' @export
 #'
 
 spp_strategy <- function(spp_trends, bonferroni = 0.05) {
   required_cols <- c("species",
-                     "Trend",
+                     "trend",
                      "t",
                      "pvalue",
-                     "Response",
-                     "Dif_t",
-                     "Dif_pvalue",
+                     "response",
+                     "dif_t",
+                     "dif_pvalue",
                      "n")
 
   # Verificar si todas las columnas requeridas están presentes
@@ -54,8 +67,8 @@ spp_strategy <- function(spp_trends, bonferroni = 0.05) {
   strategies <- spp_trends %>%
     dplyr::select(all_of(required_cols)) %>%
     tidyr::pivot_wider(
-      names_from = Response,
-      values_from = c(Trend, t, pvalue, Dif_t, Dif_pvalue),
+      names_from = response,
+      values_from = c(trend, t, pvalue, dif_t, dif_pvalue),
       names_sep = "_"
     )
 
@@ -80,33 +93,33 @@ spp_strategy <- function(spp_trends, bonferroni = 0.05) {
 
   if ("pvalue_Lat" %in% names(strategies)) {
     strategies <- strategies %>%
-      dplyr::mutate(Spatial_Lat = classify(pvalue_Lat, Dif_pvalue_Lat, Trend_Lat))
+      dplyr::mutate(Spatial_Lat = classify(pvalue_Lat, dif_pvalue_Lat, trend_Lat))
   }
 
-  if ("pvalue_Long" %in% names(strategies)) {
+  if ("pvalue_Lon" %in% names(strategies)) {
     strategies <- strategies %>%
-      dplyr::mutate(Spatial_Lon = classify(pvalue_Long, Dif_pvalue_Long, Trend_Long))
+      dplyr::mutate(Spatial_Lon = classify(pvalue_Lon, dif_pvalue_Lon, trend_Lon))
   }
 
-  if ("pvalue_Elevation" %in% names(strategies)) {
+  if ("pvalue_Ele" %in% names(strategies)) {
     strategies <- strategies %>%
-      dplyr::mutate(Spatial_ele = classify(pvalue_Elevation, Dif_pvalue_Elevation, Trend_Elevation))
+      dplyr::mutate(Spatial_ele = classify(pvalue_Ele, dif_pvalue_Ele, trend_Ele))
   }
 
   # Clasificación térmica dinámica
   if ("pvalue_Tmx" %in% names(strategies)) {
     strategies <- strategies %>%
-      dplyr::mutate(Thermal_Tmx = classify_thermal(pvalue_TMAX, Dif_pvalue_TMAX, Trend_TMAX))
+      dplyr::mutate(Thermal_Tmx = classify_thermal(pvalue_Tmx, dif_pvalue_Tmx, trend_Tmx))
   }
 
   if ("pvalue_Tmn" %in% names(strategies)) {
     strategies <- strategies %>%
-      dplyr::mutate(Thermal_Tmn = classify_thermal(pvalue_TMIN, Dif_pvalue_TMIN, Trend_TMIN))
+      dplyr::mutate(Thermal_Tmn = classify_thermal(pvalue_Tmn, dif_pvalue_Tmn, trend_Tmn))
   }
 
   if ("pvalue_Tme" %in% names(strategies)) {
     strategies <- strategies %>%
-      dplyr::mutate(Thermal_Tme = classify_thermal(pvalue_TMED, Dif_pvalue_TMED, Trend_TMED))
+      dplyr::mutate(Thermal_Tme = classify_thermal(pvalue_Tme, dif_pvalue_Tme, trend_Tme))
   }
 
   return(strategies)
