@@ -1,0 +1,19 @@
+Package: SppTrend
+Title: SppTrend: Linear species trending
+Version: 0.9
+Authors@R: 
+    person(given = "Mario", 
+    family = "Mingarro Lopez", 
+    comment = c(ORCID = "0000-0003-3977-7944"),
+    email = "mario_mingarro@mncn.csci.es", 
+    role = c("aut", "cre"))
+Description: TEST of test.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
+Suggests: 
+    testthat (>= 3.0.0)
+Imports:
+    dplyr, tidyr
+Config/testthat/edition: 3
