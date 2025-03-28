@@ -95,8 +95,8 @@ spp_trend <- function(Data, spp, predictor, responses, n_min = 50) {
           ), sep = " ~ ")), data = dat)
 
 
-          table$Dif_t <- summary(model_int)$coefficients[4, 3]
-          table$Dif_pvalue <- summary(model_int)$coefficients[4, 4]
+          table$dif_t <- summary(model_int)$coefficients[4, 3]
+          table$dif_pvalue <- summary(model_int)$coefficients[4, 4]
 
           spp_trend_result <- rbind(spp_trend_result, table)
 

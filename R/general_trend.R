@@ -53,7 +53,7 @@ general_trend <- function(Data, predictor, responses) {
       "ci_95_min" = NA)
     formula_str <- paste(var, "~", paste(predictor, collapse = "+"))
     model_g <- lm(as.formula(formula_str), data = Data)
-    table$Trend <- model_g$coefficients[[2]]
+    table$trend <- model_g$coefficients[[2]]
     table$t <- summary(model_g)$coefficients[2, 3]
     table$pvalue <- summary(model_g)$coefficients[2, 4]
     table$ci_95_max <- confint(model_g, level = 0.95)[2, 2]
