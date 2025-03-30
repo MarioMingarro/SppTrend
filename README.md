@@ -11,32 +11,8 @@ You can install the released version of SppTrend from CRAN:
 ```{r}
 install.packages("SppTrend")
 ```
-Basic Usage
-Here's a quick example demonstrating the use of the general_trend() function:
-```{r}
-library(SppTrend)
 
-# Example data
-data <- data.frame(
-  year = 2000:2020,
-  month = sample(1:12, 21, replace = TRUE),
-  var1 = rnorm(21, mean = 10, sd = 2),
-  var2 = rnorm(21, mean = 25, sd = 5)
-)
-
-# Combine year and month for a time predictor (example)
-data$year_month <- data$year + data$month * (1/12)
-
-# Analyze the trend of 'var1' over time
-trend_result <- general_trend(
-  Data = data,
-  variables = c("var1", "var2"),
-  predictors = c("year_month")
-)
-
-print(trend_result)
-```
-Overview of Key Features
+## Overview of Key Features
 The SppTrend package provides the following key functionalities:
 
 This package provides a methodology to derive explanatory hypotheses about the effects of distribution changes in species assemblages. It is based on the use of historical species presence datasets that include, at a minimum:
@@ -51,7 +27,7 @@ Predictors: (Date)
 Responses: (Latitude, longitude, elevation, maximum temperature, minimum temperature, and mean temperature).
 Methodological Proposal
 
-## Phase 1: Temperature Data Generation
+### Phase 1: Temperature Data Generation
 
 Before analyzing species assemblages, the package provides tools to complete the temperature data of the database. The SppTrend package provides the get_era5_tme() function to obtain the average temperature of the presences.
 
@@ -62,7 +38,7 @@ Notes: ERA5 data starts in 1940.
 # Data_with_Tme <- get_era5_tme(Data, nc_file, month_col = "month")
 ```
 
-## Phase 2: Estimation of the Overall Trend of Responses
+### Phase 2: Estimation of the Overall Trend of Responses
 
 The package calculates the Overall Trend (OT), which represents the average trend of the different responses for all species occurrences in the dataset. This serves as a neutral reference point to compare with the individual responses of different species.
 
@@ -73,8 +49,7 @@ The general_trend() function:
 general_trend_result <- general_trend(Data, responses, predictor)
 ```
 
-```{r}
-Phase 3: Estimation of Individual Trends of Responses
+### Phase 3: Estimation of Individual Trends of Responses
 
 The package calculates the individual trend per species (SppT, SpeciesTrend), which represents the individual trend of the different responses for each species in the dataset. This serves as a way to compare individual species responses with the overall trends.
 
@@ -82,7 +57,7 @@ The spp_trend() function:
 ```{r}
 general_trend_result <- spp_trend(Data, spp, predictor, responses, n_min = 50)
 ```
-Phase 4: Analysis of Specific Species Responses
+### Phase 4: Analysis of Specific Species Responses
 
 The package provides methods to compare the presence patterns of individual species with the overall trend.
 
@@ -90,6 +65,7 @@ The spp_strategy() function:
 ```{r}
 spp_strategy_results <- spp_strategy(spp_trends_results, bonferroni = 0.05)
 ```
+### Different strategies
 
 Three possible spatial responses and three thermal responses can be identified:
 
@@ -103,7 +79,8 @@ Thermal Responses
 Thermal Tolerance (TT): The species shows a positive response to temperature over time, significantly different from the OT.
 Thermal Adjustment (TA): The species shows a negative response to temperature over time, significantly different from the OT.
 Thermal Conformity (TC): The species follows a thermal trend similar to the OT.
-Applications and Limitations
+
+### Applications and Limitations
 This package is useful for researchers studying the effects of climate change on biodiversity. However, caution should be exercised when interpreting the results due to potential biases in species presence data. The OT serves as a reference but not as an absolute indicator of species responses to warming.
 
 For more detailed information and examples, please refer to the package documentation within R:
@@ -113,11 +90,11 @@ help(package = SppTrend)
 # Or for a specific function:
 help(general_trend)
 ```
-Reference
+## References
 This package is based on the methodology described in:
 Jorge M. Lobo, Mario Mingarro, Martin Godefroid, Emilio García-Roselló 2023. Taking advantage of opportunistically collected historical occurrence data to detect responses to climate change: The case of temperature and Iberian dung beetles. Ecology and evolution, 13(12) e10674. https://doi.org/10.1002/ece3.10674 
 
-Contact
+## Contact
 For any questions or issues, please feel free to contact:
 
 Mario Mingarro Lopez
