@@ -5,7 +5,7 @@ Authors@R:
     person(given = "Mario", 
     family = "Mingarro Lopez", 
     comment = c(ORCID = "0000-0003-3977-7944"),
-    email = "mario_mingarro@mncn.csci.es", 
+    email = "mario_mingarro@mncn.csic.es", 
     role = c("aut", "cre"))
 Description: TEST of test.
 License: MIT + file LICENSE

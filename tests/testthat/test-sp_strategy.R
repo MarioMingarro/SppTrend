@@ -15,13 +15,10 @@ spp_trends_results <- data.frame(
 )
 
 spp <- unique(spp_trends_results$species)
-bonferroni = 0.05/length(spp)
+bonferroni = 0.05 / length(spp)
 
 testthat::test_that("spp_strategy works correctly", {
   strategies <- spp_strategy(spp_trends_results, bonferroni)
   expect_s3_class(strategies, "data.frame") # result = data frame
   expect_false(any(is.na(strategies$n))) # no NA
 })
-
-
-

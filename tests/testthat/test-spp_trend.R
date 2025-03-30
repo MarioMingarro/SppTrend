@@ -7,10 +7,10 @@ Data <- data.frame(
   Lon = runif(500, -10, 20),
   Lat = runif(500, 30, 70),
   Tmx = rnorm(500, 15, 10),
-  Tmn = rnorm(500, 10, 8))
+  Tmn = rnorm(500, 10, 8)
+)
 
-Data$year_month  <- Data$month * 0.075
-Data$year_month  <- Data$year + Data$year_month
+Data$year_month  = Data$year + Data$month * 0.075
 
 predictor <- "year_month"
 responses <- c("Lat", "Tmx")

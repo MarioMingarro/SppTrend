@@ -22,8 +22,7 @@
 #'   Tmx = rnorm(500, 15, 10),
 #'   Tmn = rnorm(500, 10, 8))
 #'
-#'Data$year_month  = Data$month * 0.075
-#'Data$year_month  = Data$year + Data$year_month
+#'Data$year_month  = Data$year + Data$month * 0.075
 #'
 #'predictor <- "year_month" # predictor <- "year" in case month is not available
 #'responses <- c("Lat", "Lon", "TMmx", "TMmn")
@@ -43,12 +42,13 @@ spp_trend <- function(Data, spp, predictor, responses, n_min = 50) {
     "ci_95_max" = NA,
     "ci_95_min" = NA,
     "dif_t" = NA,
-    "dif_pvalue" = NA)
+    "dif_pvalue" = NA
+  )
 
-  spp_trend_result <- spp_trend_result[-1,]
+  spp_trend_result <- spp_trend_result[-1, ]
 
   # Bucle para calcular las tendencias de cada una de las especies
-  for (n in 1:length(spp)){
+  for (n in 1:length(spp)) {
     # Bucle para actuar sobre cada una de las especies
     # Filtra la especie
     ind <- Data %>%
@@ -77,11 +77,15 @@ spp_trend <- function(Data, spp, predictor, responses, n_min = 50) {
               "n" = NA
             )
 
-          model_g <- stats::lm(stats::formula(paste(responses[i], paste(predictor, collapse = "+"), sep = " ~ ")), data = gen)
+          model_g <- stats::lm(stats::formula(paste(
+            responses[i], paste(predictor, collapse = "+"), sep = " ~ "
+          )), data = gen)
           table$species <- unique(ind$species)
           table$response <- responses[i]
 
-          model_i <- stats::lm(stats::formula(paste(responses[i], paste(predictor, collapse = "+"), sep = " ~ ")), data = ind)
+          model_i <- stats::lm(stats::formula(paste(
+            responses[i], paste(predictor, collapse = "+"), sep = " ~ "
+          )), data = ind)
 
           table$trend <- model_i$coefficients[[2]]
           table$t <- summary(model_i)$coefficients[2, 3]
@@ -90,9 +94,11 @@ spp_trend <- function(Data, spp, predictor, responses, n_min = 50) {
           table$ci_95_min <- stats::confint(model_i, predictor, level = 0.95)[, 1]
           table$n <- nrow(ind)
 
-          model_int <- lm(formula(paste(responses[i], paste(
-            predictor, "*group", collapse = "+"
-          ), sep = " ~ ")), data = dat)
+          model_int <- lm(formula(paste(
+            responses[i],
+            paste(predictor, "*group", collapse = "+"),
+            sep = " ~ "
+          )), data = dat)
 
 
           table$dif_t <- summary(model_int)$coefficients[4, 3]
@@ -102,7 +108,13 @@ spp_trend <- function(Data, spp, predictor, responses, n_min = 50) {
 
         }, error = function(e) {
           cat(
-            paste0("WARNING: Specie ", ind[1, 1], " response (", responses[i], ") has"),
+            paste0(
+              "WARNING: Specie ",
+              ind[1, 1],
+              " response (",
+              responses[i],
+              ") has"
+            ),
             conditionMessage(e),
             "\n"
           )

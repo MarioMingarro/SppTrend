@@ -14,6 +14,8 @@
 #' - `ci_95_max`: Upper bound of the 95% confidence interval.
 #' - `ci_95_min`: Lower bound of the 95% confidence interval.
 #'
+#' @importFrom stats as.formula confint formula lm
+#'
 #' @examples
 #'
 #'Data <- data.frame(
@@ -25,13 +27,12 @@
 #'   Tmx = rnorm(500, 15, 10),
 #'   Tmn = rnorm(500, 10, 8))
 #'
-#'Data$year_month  = Data$month * 0.075
-#'Data$year_month  = Data$year + Data$year_month
+#'Data$year_month  = Data$year + Data$month * 0.075
 #'
 #'predictor <- "year_month" # predictor <- "year" in case month is not available
 #'responses <- c("Lat", "Lon", "Tmx", "Tmn")
 #'
-#'general_trend_result = general_trend(Data, predictor, responses)
+#'general_trend_result <- general_trend(Data, predictor, responses)
 #'
 #' @export
 #'
@@ -42,7 +43,8 @@ general_trend <- function(Data, predictor, responses) {
     "t" = numeric(),
     "pvalue" = numeric(),
     "ci_95_max" = numeric(),
-    "ci_95_min" = numeric())
+    "ci_95_min" = numeric()
+  )
   for (var in responses) {
     table <- data.frame(
       "response" = var,
@@ -50,7 +52,8 @@ general_trend <- function(Data, predictor, responses) {
       "t" = NA,
       "pvalue" = NA,
       "ci_95_max" = NA,
-      "ci_95_min" = NA)
+      "ci_95_min" = NA
+    )
     formula_str <- paste(var, "~", paste(predictor, collapse = "+"))
     model_g <- lm(as.formula(formula_str), data = Data)
     table$trend <- model_g$coefficients[[2]]
