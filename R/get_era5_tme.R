@@ -8,7 +8,7 @@
 #' @param spp A vector of species names.
 #' @param n_min Value correspondign to minumun presences of a specie.
 #'
-#' @return A data frame with trend statistics.
+#' @return Data data frame with Mean Temperature in K
 #' @importFrom terra rast nlyr
 #' @examples
 #'

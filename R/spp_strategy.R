@@ -18,6 +18,7 @@
 #'
 #' @return A data frame summarizing significant trends and spatial/thermal
 #'         classification of species.
+#'
 #' @importFrom dplyr select mutate case_when
 #' @importFrom tidyr pivot_wider
 #'

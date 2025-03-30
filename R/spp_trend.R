@@ -8,7 +8,14 @@
 #' @param spp A vector of species names.
 #' @param n_min Value correspondign to minumun presences of a specie.
 #'
-#' @return A data frame with trend statistics.
+#' @return A data frame with trend statistics, including:
+#' - `Response`: The name of the variable analyzed.
+#' - `Trend`: The slope of the linear model.
+#' - `t`: The t-statistic of the model.
+#' - `pvalue`: The p-value of the trend.
+#' - `ci_95_max`: Upper bound of the 95% confidence interval.
+#' - `ci_95_min`: Lower bound of the 95% confidence interval.
+#'
 #' @importFrom stats as.formula confint formula lm
 #' @importFrom dplyr %>%
 #' @examples
