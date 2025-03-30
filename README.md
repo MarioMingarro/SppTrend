@@ -39,18 +39,73 @@ print(trend_result)
 Overview of Key Features
 The SppTrend package provides the following key functionalities:
 
-Temperature Data Integration: The get_era5_tme() function allows users to obtain average temperature data for species occurrences from ERA5 datasets.
-Overall Trend Analysis: The general_trend() function calculates the average trend (Overall Trend - OT) of different response variables across all species occurrences, providing a neutral reference point.
-Species-Specific Trend Analysis: The spp_trend() function estimates the individual trend (SpeciesTrend - SppT) of different response variables for each species in the dataset.
-Species Response Strategy Analysis: The spp_strategy() function compares individual species trends with the overall trend to identify specific response strategies (Spatial Adaptation, Spatial Discordance, Spatial Conformity, Thermal Tolerance, Thermal Adjustment, Thermal Conformity).
-Methodology
-The package follows a four-phase methodological approach:
+This package provides a methodology to derive explanatory hypotheses about the effects of distribution changes in species assemblages. It is based on the use of historical species presence datasets that include, at a minimum:
 
-Temperature Data Generation: Obtaining and integrating temperature data using get_era5_tme().
-Overall Trend Estimation: Calculating the average trend across all occurrences using general_trend().
-Individual Response Trend Estimation: Determining species-specific trends using spp_trend().
-Species-Specific Response Analysis: Comparing individual trends with the overall trend to categorize species responses using spp_strategy().
-Further Documentation
+Sampling date (year and preferably month and year)
+Geographic location (latitude and longitude)
+It is assumed that the data represent species occurrences along a temporal or predictive sequence of change in their responses.
+
+In this package, there are two important aspects:
+
+Predictors: (Date)
+Responses: (Latitude, longitude, elevation, maximum temperature, minimum temperature, and mean temperature).
+Methodological Proposal
+
+## Phase 1: Temperature Data Generation
+
+Before analyzing species assemblages, the package provides tools to complete the temperature data of the database. The SppTrend package provides the get_era5_tme() function to obtain the average temperature of the presences.
+
+Notes: ERA5 data starts in 1940.
+
+```{r}
+# Example usage
+# Data_with_Tme <- get_era5_tme(Data, nc_file, month_col = "month")
+```
+
+## Phase 2: Estimation of the Overall Trend of Responses
+
+The package calculates the Overall Trend (OT), which represents the average trend of the different responses for all species occurrences in the dataset. This serves as a neutral reference point to compare with the individual responses of different species.
+
+However, biodiversity databases often contain spatial and temporal biases (e.g., more sites sampled at high elevations in recent years, or low-altitude areas overlooked due to land-use changes). These biases can influence the OT, making its interpretation complex. Therefore, the OT should be considered a general pattern rather than a definitive measure of species adaptation.
+
+The general_trend() function:
+```{r}
+general_trend_result <- general_trend(Data, responses, predictor)
+```
+
+```{r}
+Phase 3: Estimation of Individual Trends of Responses
+
+The package calculates the individual trend per species (SppT, SpeciesTrend), which represents the individual trend of the different responses for each species in the dataset. This serves as a way to compare individual species responses with the overall trends.
+
+The spp_trend() function:
+```{r}
+general_trend_result <- spp_trend(Data, spp, predictor, responses, n_min = 50)
+```
+Phase 4: Analysis of Specific Species Responses
+
+The package provides methods to compare the presence patterns of individual species with the overall trend.
+
+The spp_strategy() function:
+```{r}
+spp_strategy_results <- spp_strategy(spp_trends_results, bonferroni = 0.05)
+```
+
+Three possible spatial responses and three thermal responses can be identified:
+
+Spatial Responses
+
+Spatial Adaptation (SA): The species' presence shows a positive temporal trend, significantly different from the OT.
+Spatial Discordance (SD): The species' presence shows a negative temporal trend, significantly different from the OT.
+Spatial Conformity (SC): The species' presence follows a temporal trend similar to the OT.
+Thermal Responses
+
+Thermal Tolerance (TT): The species shows a positive response to temperature over time, significantly different from the OT.
+Thermal Adjustment (TA): The species shows a negative response to temperature over time, significantly different from the OT.
+Thermal Conformity (TC): The species follows a thermal trend similar to the OT.
+Applications and Limitations
+This package is useful for researchers studying the effects of climate change on biodiversity. However, caution should be exercised when interpreting the results due to potential biases in species presence data. The OT serves as a reference but not as an absolute indicator of species responses to warming.
+
 For more detailed information and examples, please refer to the package documentation within R:
 
 ```{r}
@@ -60,28 +115,10 @@ help(general_trend)
 ```
 Reference
 This package is based on the methodology described in:
+Jorge M. Lobo, Mario Mingarro, Martin Godefroid, Emilio García-Roselló 2023. Taking advantage of opportunistically collected historical occurrence data to detect responses to climate change: The case of temperature and Iberian dung beetles. Ecology and evolution, 13(12) e10674. https://doi.org/10.1002/ece3.10674 
 
 Contact
 For any questions or issues, please feel free to contact:
 
 Mario Mingarro Lopez
 mario_mingarro@mncn.csic.es
-
-
-## Estrategias de Respuesta Específicas
-
-Basándonos en la documentación que proporcionaste, el paquete `SppTrend` identifica las siguientes estrategias de respuesta, divididas en espaciales y térmicas:
-
-**Respuestas Espaciales:**
-
-* **Adaptación Espacial (SA):** La presencia de la especie muestra una tendencia temporal positiva, que es significativamente diferente de la Tendencia General (OT). Esto sugiere que la especie está expandiendo su distribución en la dirección de la tendencia general.
-* **Discordancia Espacial (SD):** La presencia de la especie muestra una tendencia temporal negativa, que es significativamente diferente de la Tendencia General (OT). Esto sugiere que la especie está contrayendo su distribución en la dirección opuesta a la tendencia general.
-* **Conformidad Espacial (SC):** La presencia de la especie sigue una tendencia temporal similar a la Tendencia General (OT). Esto indica que la distribución de la especie está cambiando en sincronía con la tendencia general.
-
-**Respuestas Térmicas:**
-
-* **Tolerancia Térmica (TT):** La especie muestra una respuesta positiva a la temperatura a lo largo del tiempo, que es significativamente diferente de la Tendencia General (OT). Esto sugiere que la especie está favoreciendo condiciones de temperatura más altas con el tiempo.
-* **Ajuste Térmico (TA):** La especie muestra una respuesta negativa a la temperatura a lo largo del tiempo, que es significativamente diferente de la Tendencia General (OT). Esto sugiere que la especie está favoreciendo condiciones de temperatura más bajas con el tiempo.
-* **Conformidad Térmica (TC):** La especie sigue una tendencia térmica similar a la Tendencia General (OT). Esto indica que la respuesta de la especie a la temperatura está cambiando en sincronía con la tendencia general.
-
-
