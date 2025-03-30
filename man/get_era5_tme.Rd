@@ -18,7 +18,7 @@ get_era5_tme(df, nc_file, month_col = NULL)
 \item{n_min}{Value correspondign to minumun presences of a specie.}
 }
 \value{
-A data frame with trend statistics.
+Data data frame with Mean Temperature in K
 }
 \description{
 This function fits a linear model to analyze individual trends over time and comparing with general data trend
@@ -32,10 +32,7 @@ month = sample(1:12, 10, replace = TRUE),
 Lon = runif(10, -10, 20),
 Lat = runif(10, 30, 70)
 )
-
-Data$year_month  = Data$month * 0.075
-Data$year_month  = Data$year + Data$year_month
-
+nc_file <- "C:/A_TRABAJO/A_JORGE/SPP_VIRTUALES/MARIPOSAS/TEST_Spp_Trends/era5_1940_2023.nc"
 Data_with_Tme <- get_era5_tme(Data, nc_file, month_col = "month")
 
 }

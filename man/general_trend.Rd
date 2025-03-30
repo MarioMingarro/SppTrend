@@ -38,12 +38,11 @@ Data <- data.frame(
   Tmx = rnorm(500, 15, 10),
   Tmn = rnorm(500, 10, 8))
 
-Data$year_month  = Data$month * 0.075
-Data$year_month  = Data$year + Data$year_month
+Data$year_month  = Data$year + Data$month * 0.075
 
 predictor <- "year_month" # predictor <- "year" in case month is not available
 responses <- c("Lat", "Lon", "Tmx", "Tmn")
 
-general_trend_result = general_trend(Data, predictor, responses)
+general_trend_result <- general_trend(Data, predictor, responses)
 
 }

@@ -1,4 +1,4 @@
-# SppTrend: Analyze Trends in Species Data
+# SppTrend: Analyzing Linear Trends in Species Occurrence Data
 
 [![CRAN Status](https://www.r-pkg.org/badges/version/SppTrend)](https://cran.r-project.org/package=SppTrend)
 
@@ -10,6 +10,12 @@ You can install the released version of SppTrend from CRAN:
 
 ```{r}
 install.packages("SppTrend")
+```
+or
+```{r}
+install.packages("devtools")
+library(devtools)
+devtools::install_github("MarioMingarro/SppTrend")
 ```
 
 ## Overview of Key Features

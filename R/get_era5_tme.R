@@ -19,7 +19,7 @@
 #'Lon = runif(10, -10, 20),
 #'Lat = runif(10, 30, 70)
 #')
-#'
+#'nc_file <- "C:/A_TRABAJO/A_JORGE/SPP_VIRTUALES/MARIPOSAS/TEST_Spp_Trends/era5_1940_2023.nc"
 #'Data_with_Tme <- get_era5_tme(Data, nc_file, month_col = "month")
 #'
 #' @export

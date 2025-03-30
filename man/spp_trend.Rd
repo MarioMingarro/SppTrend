@@ -18,7 +18,15 @@ spp_trend(Data, spp, predictor, responses, n_min = 50)
 \item{n_min}{Value correspondign to minumun presences of a specie.}
 }
 \value{
-A data frame with trend statistics.
+A data frame with trend statistics, including:
+\itemize{
+\item \code{Response}: The name of the variable analyzed.
+\item \code{Trend}: The slope of the linear model.
+\item \code{t}: The t-statistic of the model.
+\item \code{pvalue}: The p-value of the trend.
+\item \code{ci_95_max}: Upper bound of the 95\% confidence interval.
+\item \code{ci_95_min}: Lower bound of the 95\% confidence interval.
+}
 }
 \description{
 This function fits a linear model to analyze individual trends over time and comparing with general data trend
@@ -34,8 +42,7 @@ Data <- data.frame(
   Tmx = rnorm(500, 15, 10),
   Tmn = rnorm(500, 10, 8))
 
-Data$year_month  = Data$month * 0.075
-Data$year_month  = Data$year + Data$year_month
+Data$year_month  = Data$year + Data$month * 0.075
 
 predictor <- "year_month" # predictor <- "year" in case month is not available
 responses <- c("Lat", "Lon", "TMmx", "TMmn")
