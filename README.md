@@ -29,9 +29,11 @@ It is assumed that the data represent species occurrences along a temporal or pr
 
 In this package, there are two important aspects:
 
-Predictors: (Date)
-Responses: (Latitude, longitude, elevation, maximum temperature, minimum temperature, and mean temperature).
-Methodological Proposal
+*Predictors*: Date
+
+*Responses*: Latitude, longitude, elevation, maximum temperature, minimum temperature, and mean temperature.
+
+## Methodological Proposal
 
 ### Phase 1: Temperature Data Generation
 
@@ -75,16 +77,17 @@ spp_strategy_results <- spp_strategy(spp_trends_results, bonferroni = 0.05)
 
 Three possible spatial responses and three thermal responses can be identified:
 
-Spatial Responses
+#### Spatial Responses
 
-Spatial Adaptation (SA): The species' presence shows a positive temporal trend, significantly different from the OT.
-Spatial Discordance (SD): The species' presence shows a negative temporal trend, significantly different from the OT.
-Spatial Conformity (SC): The species' presence follows a temporal trend similar to the OT.
-Thermal Responses
+*Spatial Adaptation (SA)*: The species' presence shows a positive temporal trend, significantly different from the OT.
+*Spatial Discordance (SD)*: The species' presence shows a negative temporal trend, significantly different from the OT.
+*Spatial Conformity (SC)*: The species' presence follows a temporal trend similar to the OT.
 
-Thermal Tolerance (TT): The species shows a positive response to temperature over time, significantly different from the OT. 
-Thermal Adjustment (TA): The species shows a negative response to temperature over time, significantly different from the OT. 
-Thermal Conformity (TC): The species follows a thermal trend similar to the OT. 
+#### Thermal Responses
+
+*Thermal Tolerance (TT)*: The species shows a positive response to temperature over time, significantly different from the OT. 
+*Thermal Adjustment (TA)*: The species shows a negative response to temperature over time, significantly different from the OT. 
+*Thermal Conformity (TC)*: The species follows a thermal trend similar to the OT. 
 
 ### Applications and Limitations
 This package is useful for researchers studying the effects of climate change on biodiversity. However, caution should be exercised when interpreting the results due to potential biases in species presence data. The OT serves as a reference but not as an absolute indicator of species responses to warming.
@@ -98,6 +101,7 @@ help(general_trend)
 ```
 ## References
 This package is based on the methodology described in:
+
 Jorge M. Lobo, Mario Mingarro, Martin Godefroid, Emilio García-Roselló 2023. Taking advantage of opportunistically collected historical occurrence data to detect responses to climate change: The case of temperature and Iberian dung beetles. Ecology and evolution, 13(12) e10674. https://doi.org/10.1002/ece3.10674 
 
 ## Contact
