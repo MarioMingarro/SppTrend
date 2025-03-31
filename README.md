@@ -19,7 +19,7 @@ devtools::install_github("MarioMingarro/SppTrend")
 ```
 
 ## Overview of Key Features
-The SppTrend package provides the following key functionalities:
+The `SppTrend` package provides the following key functionalities:
 
 This package provides a methodology to derive explanatory hypotheses about the effects of distribution changes in species assemblages. It is based on the use of historical species presence datasets that include, at a minimum:
 
@@ -37,13 +37,12 @@ In this package, there are two important aspects:
 
 ### Phase 1: Temperature Data Generation
 
-Before analyzing species assemblages, the package provides tools to complete the temperature data of the database. The SppTrend package provides the get_era5_tme() function to obtain the average temperature of the presences.
+Before analyzing species assemblages, the package provides tools to complete the temperature data of the database. The `SppTrend` package provides the `get_era5_tme()` function to obtain the average temperature of the presences.
 
 Notes: ERA5 data starts in 1940.
 
 ```{r}
-# Example usage
-# Data_with_Tme <- get_era5_tme(Data, nc_file, month_col = "month")
+Data_with_Tme <- get_era5_tme(Data, nc_file, month_col = "month")
 ```
 
 ### Phase 2: Estimation of the Overall Trend of Responses
@@ -52,7 +51,7 @@ The package calculates the Overall Trend (OT), which represents the average tren
 
 However, biodiversity databases often contain spatial and temporal biases (e.g., more sites sampled at high elevations in recent years, or low-altitude areas overlooked due to land-use changes). These biases can influence the OT, making its interpretation complex. Therefore, the OT should be considered a general pattern rather than a definitive measure of species adaptation.
 
-The general_trend() function:
+The `general_trend()` function:
 ```{r}
 general_trend_result <- general_trend(Data, responses, predictor)
 ```
@@ -61,7 +60,7 @@ general_trend_result <- general_trend(Data, responses, predictor)
 
 The package calculates the individual trend per species (SppT, SpeciesTrend), which represents the individual trend of the different responses for each species in the dataset. This serves as a way to compare individual species responses with the overall trends.
 
-The spp_trend() function:
+The `spp_trend()` function:
 ```{r}
 general_trend_result <- spp_trend(Data, spp, predictor, responses, n_min = 50)
 ```
@@ -69,7 +68,7 @@ general_trend_result <- spp_trend(Data, spp, predictor, responses, n_min = 50)
 
 The package provides methods to compare the presence patterns of individual species with the overall trend.
 
-The spp_strategy() function:
+The `spp_strategy()` function:
 ```{r}
 spp_strategy_results <- spp_strategy(spp_trends_results, bonferroni = 0.05)
 ```
