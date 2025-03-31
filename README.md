@@ -29,9 +29,9 @@ It is assumed that the data represent species occurrences along a temporal or pr
 
 In this package, there are two important aspects:
 
-*Predictors*: Date
+**Predictors**: Date
 
-*Responses*: Latitude, longitude, elevation, maximum temperature, minimum temperature, and mean temperature.
+**Responses**: Latitude, longitude, elevation, maximum temperature, minimum temperature, and mean temperature.
 
 ## Methodological Proposal
 
@@ -79,15 +79,19 @@ Three possible spatial responses and three thermal responses can be identified:
 
 #### Spatial Responses
 
-*Spatial Adaptation (SA)*: The species' presence shows a positive temporal trend, significantly different from the OT.
-*Spatial Discordance (SD)*: The species' presence shows a negative temporal trend, significantly different from the OT.
-*Spatial Conformity (SC)*: The species' presence follows a temporal trend similar to the OT.
+**Spatial Adaptation (SA)**: The species' presence shows a positive temporal trend, significantly different from the OT.
+
+**Spatial Discordance (SD)**: The species' presence shows a negative temporal trend, significantly different from the OT.
+
+**Spatial Conformity (SC)**: The species' presence follows a temporal trend similar to the OT.
 
 #### Thermal Responses
 
-*Thermal Tolerance (TT)*: The species shows a positive response to temperature over time, significantly different from the OT. 
-*Thermal Adjustment (TA)*: The species shows a negative response to temperature over time, significantly different from the OT. 
-*Thermal Conformity (TC)*: The species follows a thermal trend similar to the OT. 
+**Thermal Tolerance (TT)**: The species shows a positive response to temperature over time, significantly different from the OT.
+
+**Thermal Conformity (TC)**: The species follows a thermal trend similar to the OT. 
+
+**Thermal Adjustment (TA)**: The species shows a negative response to temperature over time, significantly different from the OT. 
 
 ### Applications and Limitations
 This package is useful for researchers studying the effects of climate change on biodiversity. However, caution should be exercised when interpreting the results due to potential biases in species presence data. The OT serves as a reference but not as an absolute indicator of species responses to warming.
