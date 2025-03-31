@@ -29,9 +29,9 @@ It is assumed that the data represent species occurrences along a temporal or pr
 
 In this package, there are two important aspects:
 
-**Predictors**: Date
+  - **Predictors**: Date
 
-**Responses**: Latitude, longitude, elevation, maximum temperature, minimum temperature, and mean temperature.
+  - **Responses**: Latitude, longitude, elevation, maximum temperature, minimum temperature, and mean temperature.
 
 ## Methodological Proposal
 
