@@ -76,6 +76,8 @@ spp_strategy_results <- spp_strategy(spp_trends_results, bonferroni = 0.05)
 
 Three possible spatial responses and three thermal responses can be identified:
 
+![Estrategias](strategies.png)
+
 **Spatial Responses**
 
   - *Spatial Adaptation (SA)*: The species' presence shows a positive temporal trend, significantly different from the OT.
