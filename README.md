@@ -25,9 +25,9 @@ devtools::install_github("MarioMingarro/SppTrend")
 
 The `SppTrend` package provides a methodology to derive explanatory hypotheses about the effects of distribution changes in species assemblages. It is based on the use of historical species presence datasets that include, at a minimum:
 
-  - **Predictors** Sampling date (year and preferably month and year)
+  - **Predictors** - Sampling date (year and preferably month and year)
 
-  - **Responses** Geographic location (latitude and longitude) and environmental factors (maximum temperature, minimum temperature and mean temperature).
+  - **Responses** - Geographic location (latitude and longitude) and environmental factors (maximum temperature, minimum temperature and mean temperature).
 
 It is assumed that the data represent species occurrences along a temporal sequence of change in their responses.
 
