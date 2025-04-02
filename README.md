@@ -40,7 +40,7 @@ It is assumed that the data represent species occurrences along a temporal seque
 
 Before analyzing species assemblages, the package provides tools to complete the temperature data of the database. The `SppTrend` package provides the `get_era5_tme()` function to obtain the average temperature of the presences.
 
-Notes: ERA5 data starts in 1940.
+*Notes: ERA5 data starts in 1940*
 
 ```{r}
 Data_with_Tme <- get_era5_tme(Data, nc_file, month_col = "month")
@@ -48,7 +48,7 @@ Data_with_Tme <- get_era5_tme(Data, nc_file, month_col = "month")
 
 ### Phase 2: Estimation of the Overall Trend of Responses
 
-The package calculates the Overall Trend (OT), which represents the average trend of the different responses for all species occurrences in the dataset. This serves as a neutral reference point to compare with the individual responses of different species.
+The `SppTrend` package calculates the Overall Trend (OT), which represents the average trend of the different responses for all species occurrences in the dataset. This serves as a neutral reference point to compare with the individual responses of different species.
 
 However, biodiversity databases often contain spatial and temporal biases (e.g., more sites sampled at high elevations in recent years, or low-altitude areas overlooked due to land-use changes). These biases can influence the OT, making its interpretation complex. Therefore, the OT should be considered a general pattern rather than a definitive measure of species adaptation.
 

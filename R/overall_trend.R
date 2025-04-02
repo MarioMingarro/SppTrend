@@ -1,4 +1,4 @@
-#' General Trend Analysis
+#' Overall Trend Analysis
 #'
 #' This function fits a linear model to analyze trends over time.
 #'
@@ -32,12 +32,12 @@
 #'predictor <- "year_month" # predictor <- "year" in case month is not available
 #'responses <- c("Lat", "Lon", "Tmx", "Tmn")
 #'
-#'general_trend_result <- general_trend(Data, predictor, responses)
+#'overall_trend_result <- overall_trend(Data, predictor, responses)
 #'
 #' @export
 #'
-general_trend <- function(Data, predictor, responses) {
-  general_trend_result <- data.frame(
+overall_trend <- function(Data, predictor, responses) {
+  overall_trend_result <- data.frame(
     "response" = character(),
     "trend" = numeric(),
     "t" = numeric(),
@@ -61,7 +61,7 @@ general_trend <- function(Data, predictor, responses) {
     table$pvalue <- summary(model_g)$coefficients[2, 4]
     table$ci_95_max <- confint(model_g, level = 0.95)[2, 2]
     table$ci_95_min <- confint(model_g, level = 0.95)[2, 1]
-    general_trend_result <- rbind(general_trend_result, table)
+    overall_trend_result <- rbind(overall_trend_result, table)
   }
-  return(general_trend_result)
+  return(overall_trend_result)
 }

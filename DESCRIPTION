@@ -15,5 +15,5 @@ RoxygenNote: 7.3.2
 Suggests: 
     testthat (>= 3.0.0)
 Imports:
-    dplyr, tidyr, terra
+    dplyr, tidyr, terra, utils, stats
 Config/testthat/edition: 3

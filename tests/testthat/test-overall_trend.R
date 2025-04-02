@@ -15,8 +15,8 @@ Data$year_month  = Data$year + Data$month * 0.075
 predictor <- "year_month"
 responses <- c("Lat", "Tmx")
 
-testthat::test_that("general_trend works correctly", {
-  general_trend_result <- general_trend(Data, predictor, responses)
-  expect_s3_class(general_trend_result, "data.frame")
-  expect_false(any(is.na(general_trend_result$Trend)))
+testthat::test_that("overall_trend works correctly", {
+  overall_trend_result <- overall_trend(Data, predictor, responses)
+  expect_s3_class(overall_trend_result, "data.frame")
+  expect_false(any(is.na(overall_trend_result$Trend)))
 })

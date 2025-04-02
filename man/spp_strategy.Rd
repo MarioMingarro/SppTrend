@@ -22,7 +22,18 @@ It is expected to contain columns such as:
 }
 \value{
 A data frame summarizing significant trends and spatial/thermal
-classification of species.
+classification of species, including:
+\itemize{
+\item \code{Response}: The name of the variable analyzed.
+\item \code{species}: Species names.
+\item \code{Trend}: Trend values.
+\item \code{t}: t-statistic values.
+\item \code{pvalue}: p-values.
+\item \code{Response}: Response variable (e.g., Lat, Tmx).
+\item \code{Dif_t}: Difference in t-statistic values.
+\item \code{Dif_pvalue}: Difference in p-values.
+\item \code{n}: Sample size.
+}
 }
 \description{
 This function takes a table of trend indicators 'spp_trends' and transforms it

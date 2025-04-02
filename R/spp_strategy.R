@@ -17,7 +17,16 @@
 #' @param bonferroni The Bonferroni adjusted significance threshold value.
 #'
 #' @return A data frame summarizing significant trends and spatial/thermal
-#'         classification of species.
+#'         classification of species, including:
+#' - `Response`: The name of the variable analyzed.
+#' - `species`: Species names.
+#' - `Trend`: Trend values.
+#' - `t`: t-statistic values.
+#' - `pvalue`: p-values.
+#' - `Response`: Response variable (e.g., Lat, Tmx).
+#' - `Dif_t`: Difference in t-statistic values.
+#' - `Dif_pvalue`: Difference in p-values.
+#' - `n`: Sample size.
 #'
 #' @importFrom dplyr select mutate case_when
 #' @importFrom tidyr pivot_wider
