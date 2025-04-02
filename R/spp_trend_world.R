@@ -19,7 +19,7 @@
 #'   - `ci_95_min`: Lower bound of the 95% confidence interval.
 #'   - `dif_t`: Difference in t-statistic values.
 #'   - `dif_pvalue`: Difference in p-values.
-#'   - `hemisphere`: Detected hemisphere ("N", "S", or "Both").
+#'   - `hemisphere`: Detected hemisphere ("N", "S", "Both" or "Unknown").
 #'
 #' @importFrom stats as.formula confint formula lm
 #' @importFrom dplyr %>% mutate filter
@@ -57,8 +57,7 @@ spp_trend_world <- function(Data, spp, predictor, responses, n_min = 50) {
 
   spp_trend_result <- spp_trend_result[-1, ]
 
-  # Function to transform longitude: Antimeridian becomes 0
-  transform_lon_antimeridian_zero <- function(lon) {
+  transform_lon_antimeridian <- function(lon) {
     new_lon <- lon - 180
     new_lon[new_lon <= -180] <- new_lon[new_lon <= -180] + 360
     return(new_lon)
@@ -75,18 +74,17 @@ spp_trend_world <- function(Data, spp, predictor, responses, n_min = 50) {
     dat <- rbind(gen, ind)
 
     if (nrow(ind) > n_min) {
-      # Detect hemisphere (using min/max latitudes)
       min_lat <- min(ind$Lat, na.rm = TRUE)
       max_lat <- max(ind$Lat, na.rm = TRUE)
 
       hemisphere <- if (min_lat < 0 && max_lat > 0) {
         "Both"
       } else if (min_lat >= 0 && max_lat >= 0) {
-        "N"
+        "North"
       } else if (min_lat < 0 && max_lat <= 0) {
-        "S"
+        "South"
       } else {
-        "Unknown" # Handle cases where min/max are NA or unexpected
+        "Unknown"
       }
 
       for (i in 1:length(responses)) {
@@ -104,20 +102,24 @@ spp_trend_world <- function(Data, spp, predictor, responses, n_min = 50) {
             "n" = nrow(ind),
             "hemisphere" = hemisphere
           )
-
-          # Transform longitude if response is "Lon"
           if (responses[i] == "Lon") {
-            ind$Lon_transformed <- transform_lon_antimeridian_zero(ind$Lon)
-            gen$Lon_transformed <- transform_lon_antimeridian_zero(gen$Lon)
-            dat$Lon_transformed <- transform_lon_antimeridian_zero(dat$Lon)
+            ind$Lon_transformed <- transform_lon_antimeridian(ind$Lon)
+            gen$Lon_transformed <- transform_lon_antimeridian(gen$Lon)
+            dat$Lon_transformed <- transform_lon_antimeridian(dat$Lon)
             model_g <- stats::lm(stats::formula(paste(
-              "Lon_transformed", paste(predictor, collapse = "+"), sep = " ~ "
+              "Lon_transformed",
+              paste(predictor, collapse = "+"),
+              sep = " ~ "
             )), data = gen)
             model_i <- stats::lm(stats::formula(paste(
-              "Lon_transformed", paste(predictor, collapse = "+"), sep = " ~ "
+              "Lon_transformed",
+              paste(predictor, collapse = "+"),
+              sep = " ~ "
             )), data = ind)
             model_int <- lm(formula(paste(
-              "Lon_transformed", paste(predictor, "*group", collapse = "+"), sep = " ~ "
+              "Lon_transformed",
+              paste(predictor, "*group", collapse = "+"),
+              sep = " ~ "
             )), data = dat)
           } else {
             model_g <- stats::lm(stats::formula(paste(
@@ -127,7 +129,9 @@ spp_trend_world <- function(Data, spp, predictor, responses, n_min = 50) {
               responses[i], paste(predictor, collapse = "+"), sep = " ~ "
             )), data = ind)
             model_int <- lm(formula(paste(
-              responses[i], paste(predictor, "*group", collapse = "+"), sep = " ~ "
+              responses[i],
+              paste(predictor, "*group", collapse = "+"),
+              sep = " ~ "
             )), data = dat)
           }
 
@@ -141,7 +145,17 @@ spp_trend_world <- function(Data, spp, predictor, responses, n_min = 50) {
 
           spp_trend_result <- rbind(spp_trend_result, table)
         }, error = function(e) {
-          cat(paste0("WARNING: Specie ", ind[1, 1], " response (", responses[i], ") has"), conditionMessage(e), "\n")
+          cat(
+            paste0(
+              "WARNING: Specie ",
+              ind[1, 1],
+              " response (",
+              responses[i],
+              ") has"
+            ),
+            conditionMessage(e),
+            "\n"
+          )
         })
       }
     } else {

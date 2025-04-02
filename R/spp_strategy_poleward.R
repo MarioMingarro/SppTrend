@@ -24,7 +24,6 @@
 #'
 #' @importFrom dplyr select mutate case_when all_of lead
 #' @importFrom tidyr pivot_wider
-#' @importFrom rlang data
 #'
 #' @examples
 #' \dontrun{
@@ -75,53 +74,34 @@ spp_strategy_poleward <- function(spp_trends, bonferroni = 0.05) {
       values_from = c(trend, t, pvalue, dif_t, dif_pvalue),
       names_sep = "_"
     )
-
-  # --- Classification Functions ---
-
-  # Standard Spatial Classification (used for Lon, Ele, and Lat if no hemisphere)
   classify_spatial_standard <- function(p, dif_p, trend) {
     dplyr::case_when(
-      p > bonferroni ~ "SC", # Stable/Constant (Not significant)
-      # Significant & Difference significant
-      p <= bonferroni & dif_p <= bonferroni & trend > 0 ~ "SA", # Significant Advance/Increase
-      p <= bonferroni & dif_p <= bonferroni & trend < 0 ~ "SD", # Significant Decline/Decrease
-      p <= bonferroni & trend > 0 ~ "SA_nsd", # Significant Advance, Non-Significant Difference
-      p <= bonferroni & trend < 0 ~ "SD_nsd", # Significant Decline, Non-Significant Difference
-      TRUE ~ "SC" # Default fallback
+      p > bonferroni ~ "SC",
+      p <= bonferroni & dif_p <= bonferroni & trend > 0 ~ "SA",
+      p <= bonferroni & dif_p <= bonferroni & trend < 0 ~ "SD",
+      p <= bonferroni & trend > 0 ~ "SA_nsd",
+      p <= bonferroni & trend < 0 ~ "SD_nsd",
+      TRUE ~ "SC"
     )
   }
 
-  # Poleward Latitudinal Classification (used only if hemisphere column exists)
   classify_lat_poleward <- function(p, dif_p, trend, hemisphere) {
     dplyr::case_when(
-      p > bonferroni ~ "SC", # Stable/Constant (Not significant)
-      # Significant Poleward Shift (Positive trend in N hemi OR Negative trend in S hemi)
-      # AND Difference significant
-      p <= bonferroni & dif_p <= bonferroni & ((hemisphere == "N" & trend > 0) | (hemisphere == "S" & trend < 0)) ~ "SP", # Significant Poleward
-      # Significant Equatorward Shift (Negative trend in N hemi OR Positive trend in S hemi)
-      # AND Difference significant
-      p <= bonferroni & dif_p <= bonferroni & ((hemisphere == "N" & trend < 0) | (hemisphere == "S" & trend > 0)) ~ "SE", # Significant Equatorward
-
-      # --- Cases where p is significant but dif_p is NOT ---
-      # Adjust codes as needed (e.g., SP_nsd, SE_nsd) if you want to track this
-      p <= bonferroni & ((hemisphere == "N" & trend > 0) | (hemisphere == "S" & trend < 0)) ~ "SP_nsd", # Sig Poleward, Non-Sig Diff
-      p <= bonferroni & ((hemisphere == "N" & trend < 0) | (hemisphere == "S" & trend > 0)) ~ "SE_nsd", # Sig Equatorward, Non-Sig Diff
-
-      # Handle "Both" hemisphere case - requires a specific rule.
-      # Placeholder: classify as SC if hemisphere is "Both" or other unexpected value
-      hemisphere == "Both" ~ "SC_Both", # Or apply specific logic for "Both"
-      TRUE ~ "SC_Unknown" # Default if p sig but other conditions fail
+      p > bonferroni ~ "SC",
+      p <= bonferroni & dif_p <= bonferroni & ((hemisphere == "N" & trend > 0) | (hemisphere == "S" & trend < 0)) ~ "SP", # Sig Poleward
+      p <= bonferroni & dif_p <= bonferroni & ((hemisphere == "N" & trend < 0) | (hemisphere == "S" & trend > 0)) ~ "SE", # Sig Equatorward
+      p <= bonferroni & ((hemisphere == "N" & trend > 0) | (hemisphere == "S" & trend < 0)) ~ "SP_nsd",
+      p <= bonferroni & ((hemisphere == "N" & trend < 0) | (hemisphere == "S" & trend > 0)) ~ "SE_nsd",
+      hemisphere == "Both" ~ "SC_Both",
+      TRUE ~ "SC_Unknown"
     )
   }
 
-  # Thermal Classification (Unchanged from original, check logic if needed)
   classify_thermal <- function(p, dif_p, trend) {
     dplyr::case_when(
-      p > bonferroni ~ "TC", # Thermal Constant/Stable
-      # Original logic: T < 0 -> TA (Adaptation?), T > 0 -> TT (Tracking?)
-      p <= bonferroni & dif_p <= bonferroni & trend < 0 ~ "TA", # Thermal Adaptation/Decline?
-      p <= bonferroni & dif_p <= bonferroni & trend > 0 ~ "TT", # Thermal Tracking/Increase?
-      # Add cases for non-significant difference if needed
+      p > bonferroni ~ "TC",
+      p <= bonferroni & dif_p <= bonferroni & trend < 0 ~ "TA", # Thermal Adaptation
+      p <= bonferroni & dif_p <= bonferroni & trend > 0 ~ "TT", # Thermal Tracking
       p <= bonferroni & trend < 0 ~ "TA_nsd",
       p <= bonferroni & trend > 0 ~ "TT_nsd",
       TRUE ~ "TC"
@@ -129,9 +109,6 @@ spp_strategy_poleward <- function(spp_trends, bonferroni = 0.05) {
   }
 
 
-  # --- Apply Classifications ---
-
-  # Latitude Classification
   if ("pvalue_Lat" %in% names(strategies)) {
     if (has_hemisphere_col && "hemisphere" %in% names(strategies)) {
       strategies <- strategies %>%
@@ -148,7 +125,6 @@ spp_strategy_poleward <- function(spp_trends, bonferroni = 0.05) {
     }
   }
 
-  # Longitude classification (0=Antimeridian)
   if ("pvalue_Lon" %in% names(strategies)) {
     strategies <- strategies %>%
       dplyr::mutate(Spatial_Lon = classify_spatial_standard(
@@ -157,7 +133,6 @@ spp_strategy_poleward <- function(spp_trends, bonferroni = 0.05) {
       )
   }
 
-  # Elevation classification
   if ("pvalue_Ele" %in% names(strategies)) {
     strategies <- strategies %>%
       dplyr::mutate(Spatial_Ele = classify_spatial_standard(
@@ -166,7 +141,6 @@ spp_strategy_poleward <- function(spp_trends, bonferroni = 0.05) {
       )
   }
 
-  # Thermal classifications
   if ("pvalue_Tmx" %in% names(strategies)) {
     strategies <- strategies %>%
       dplyr::mutate(Thermal_Tmx = classify_thermal(
@@ -189,9 +163,7 @@ spp_strategy_poleward <- function(spp_trends, bonferroni = 0.05) {
       )
   }
 
-  # Reorder columns potentially for clarity (optional)
-  # Example: put species first, then n, then maybe classifications, then raw stats
-  # strategies <- strategies %>% dplyr::select(species, n, starts_with("Spatial"), starts_with("Thermal"), everything())
+   strategies <- strategies %>% dplyr::select(species, n, starts_with("Spatial"), starts_with("Thermal"), everything())
 
   return(strategies)
 }
