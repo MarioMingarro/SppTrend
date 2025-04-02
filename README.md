@@ -117,3 +117,9 @@ For any questions or issues, please feel free to contact:
 
 Mario Mingarro Lopez
 mario_mingarro@mncn.csic.es
+
+Jorge M. Lobo 
+mcnj117@mncn.csic.es
+
+Emilio García-Roselló 
+egrosello@esei.uvigo.es
