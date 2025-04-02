@@ -26,15 +26,13 @@ The `SppTrend` package provides the following key functionalities:
 
 This package provides a methodology to derive explanatory hypotheses about the effects of distribution changes in species assemblages. It is based on the use of historical species presence datasets that include, at a minimum:
 
-Sampling date (year and preferably month and year)
-Geographic location (latitude and longitude)
-It is assumed that the data represent species occurrences along a temporal or predictive sequence of change in their responses.
+  - **Predictors** Sampling date (year and preferably month and year)
 
-In this package, there are two important aspects:
+  - **Responses** Geographic location (latitude and longitude) and environmental factors (maximum temperature, minimum temperature and mean temperature).
 
-  - **Predictors**: Date
+It is assumed that the data represent species occurrences along a temporal sequence of change in their responses.
 
-  - **Responses**: Latitude, longitude, elevation, maximum temperature, minimum temperature, and mean temperature.
+
 
 ## Methodological Proposal
 
