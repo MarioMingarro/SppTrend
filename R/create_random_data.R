@@ -9,7 +9,7 @@ num_years <- 100
 years <- 1900:(1900 + num_years - 1)
 
 # Generar especies SC (sin tendencia)
-num_spp_sc <- 80 # 80% de las especies serán SC
+num_spp_sc <- 33 # 80% de las especies serán SC
 spp_sc <- paste0("spp_", 1:num_spp_sc, "_SC")
 data_sc <- lapply(spp_sc, function(sp) {
   data.frame(
@@ -74,7 +74,14 @@ data_sa <- lapply(spp_sa, function(sp) {
 
 # Combinar todos los datos
 Data <- bind_rows(data_sc, data_sa)
+colnames(Data) <- c("species","Lat"  ,   "Lon"   ,  "year" )
 
+predictor <- "year"
+responses <- c("Lat")
+spp <- unique(Data$species)
+spp_trends_world_results <- spp_trend_world(Data, spp, predictor, responses, n_min = 10)
+
+spp_strategy_poleward_results <- spp_strategy_poleward(spp_trend_world_result, bonferroni = 0.05, responses = responses)
 
 # Convertir a objeto sf
 example_sf <- st_as_sf(example_data, coords = c("lon", "lat"), crs = 4326)
