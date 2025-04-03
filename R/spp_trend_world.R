@@ -7,11 +7,11 @@
 #' @param responses A vector of response variable names (e.g., "Lat", "Lon", "Tmx").
 #' @param predictor A vector of predictor variable names (e.g., "year_month").
 #' @param spp A vector of species names.
-#' @param n_min Minimum number of presences required for a species.
+#' @param n_min Minimum number of presences required for a species in each hemisphere.
 #'
 #' @return A data frame with trend statistics, including:
 #'   - `species`: Species name.
-#'   - `response`: The name of the variable analyzed.
+#'   - `responses`: The name of the variable analyzed.
 #'   - `trend`: The slope of the linear model.
 #'   - `t`: The t-statistic of the model.
 #'   - `pvalue`: The p-value of the trend.
@@ -19,7 +19,7 @@
 #'   - `ci_95_min`: Lower bound of the 95% confidence interval.
 #'   - `dif_t`: Difference in t-statistic values.
 #'   - `dif_pvalue`: Difference in p-values.
-#'   - `hemisphere`: Detected hemisphere ("N", "S", "Both" or "Unknown").
+#'   - `hemisphere`: Detected hemisphere ("North" or "South").
 #'
 #' @importFrom stats as.formula confint formula lm
 #' @importFrom dplyr %>% mutate filter
@@ -42,125 +42,95 @@
 #'
 #' @export
 spp_trend_world <- function(Data, spp, predictor, responses, n_min = 50) {
-  spp_trend_result <- data.frame(
-    "species" = NA,
-    "response" = NA,
-    "trend" = NA,
-    "t" = NA,
-    "pvalue" = NA,
-    "ci_95_max" = NA,
-    "ci_95_min" = NA,
-    "dif_t" = NA,
-    "dif_pvalue" = NA,
-    "hemisphere" = NA
-  )
-
-  spp_trend_result <- spp_trend_result[-1, ]
 
   transform_lon_antimeridian <- function(lon) {
-    new_lon <- lon - 180
-    new_lon[new_lon <= -180] <- new_lon[new_lon <= -180] + 360
-    return(new_lon)
+    lon_transformed <- ifelse(lon > 180, lon - 360, ifelse(lon < -180, lon + 360, lon))
+    return(lon_transformed)
   }
+
+  Data$hemisphere <- ifelse(Data$Lat >= 0, "North", "South")
+
+  results_list <- list()
 
   for (n in 1:length(spp)) {
-    ind <- Data %>%
-      dplyr::filter(species == spp[n]) %>%
-      dplyr::mutate(group = "i")
+    ind <- Data[Data$species == spp[n], ]
+    ind_list <- split(ind, f = ind$hemisphere)
 
-    gen <- Data %>%
-      dplyr::mutate(group = "g")
+    for (h in names(ind_list)) {
+      ind_sub <- ind_list[[h]]
+      data_hemisphere <- Data[Data$hemisphere == h, ]
 
-    dat <- rbind(gen, ind)
+      if (nrow(ind_sub) > n_min) {
+        for (i in 1:length(responses)) {
+          tryCatch({
 
-    if (nrow(ind) > n_min) {
-      min_lat <- min(ind$Lat, na.rm = TRUE)
-      max_lat <- max(ind$Lat, na.rm = TRUE)
+            if (nrow(ind_sub) > 0 && nrow(data_hemisphere) > 0) {
+              ind_sub$group <- "i"
+              data_hemisphere$group <- "g"
+              dat <- rbind(data_hemisphere, ind_sub)
 
-      hemisphere <- if (min_lat < 0 && max_lat > 0) {
-        "Both"
-      } else if (min_lat >= 0 && max_lat >= 0) {
-        "North"
-      } else if (min_lat < 0 && max_lat <= 0) {
-        "South"
+              if (responses[i] == "Lon") {
+                ind_sub$Lon_transformed <- transform_lon_antimeridian(ind_sub$Lon)
+                dat$Lon_transformed <- transform_lon_antimeridian(dat$Lon) #Transformar también dat
+                model_i <- lm(formula(paste("Lon_transformed", paste(predictor, collapse = "+"), sep = " ~ ")), data = ind_sub)
+                model_int <- lm(formula(paste("Lon_transformed", paste(predictor, "*group", collapse = "+"), sep = " ~ ")), data = dat)
+              } else {
+                model_i <- lm(formula(paste(responses[i], paste(predictor, collapse = "+"), sep = " ~ ")), data = ind_sub)
+                model_int <- lm(formula(paste(responses[i], paste(predictor, "*group", collapse = "+"), sep = " ~ ")), data = dat)
+              }
+
+              trend <- coef(model_i)[2]
+              t_value <- summary(model_i)$coefficients[2, 3]
+              p_value <- summary(model_i)$coefficients[2, 4]
+              ci <- confint(model_i, predictor, level = .95)[, ]
+              dif_t <- summary(model_int)$coefficients[4, 3]
+              dif_p <- summary(model_int)$coefficients[4, 4]
+
+              if (responses[i] == "Lat" && h == "South") {
+                trend <- -trend
+              }
+
+              results_list[[length(results_list) + 1]] <- data.frame(
+                species = spp[n],
+                responses = responses[i],
+                trend = trend,
+                t = t_value,
+                pvalue = p_value,
+                ci_95_max = ci[2],
+                ci_95_min = ci[1],
+                dif_t = dif_t,
+                dif_pvalue = dif_p,
+                n = nrow(ind_sub),
+                hemisphere = h
+              )
+            } else {
+              cat(paste0("WARNING: Specie ", spp[n], " responses (", responses[i], ") has insufficient data.\n"))
+            }
+          }, error = function(e) {
+            cat(
+              paste0(
+                "WARNING: Specie ",
+                ind_sub[1, 1],
+                " responses (",
+                responses[i],
+                ") has error: ",
+                conditionMessage(e),
+                "\n"
+              )
+            )
+          })
+        }
       } else {
-        "Unknown"
+        print(paste0("WARNING: Specie ", spp[n], " has few data in ", h, " hemisphere"))
       }
-
-      for (i in 1:length(responses)) {
-        tryCatch({
-          table <- data.frame(
-            "species" = unique(ind$species),
-            "response" = responses[i],
-            "trend" = NA,
-            "t" = NA,
-            "pvalue" = NA,
-            "ci_95_max" = NA,
-            "ci_95_min" = NA,
-            "dif_t" = NA,
-            "dif_pvalue" = NA,
-            "n" = nrow(ind),
-            "hemisphere" = hemisphere
-          )
-          if (responses[i] == "Lon") {
-            ind$Lon_transformed <- transform_lon_antimeridian(ind$Lon)
-            gen$Lon_transformed <- transform_lon_antimeridian(gen$Lon)
-            dat$Lon_transformed <- transform_lon_antimeridian(dat$Lon)
-            model_g <- stats::lm(stats::formula(paste(
-              "Lon_transformed",
-              paste(predictor, collapse = "+"),
-              sep = " ~ "
-            )), data = gen)
-            model_i <- stats::lm(stats::formula(paste(
-              "Lon_transformed",
-              paste(predictor, collapse = "+"),
-              sep = " ~ "
-            )), data = ind)
-            model_int <- lm(formula(paste(
-              "Lon_transformed",
-              paste(predictor, "*group", collapse = "+"),
-              sep = " ~ "
-            )), data = dat)
-          } else {
-            model_g <- stats::lm(stats::formula(paste(
-              responses[i], paste(predictor, collapse = "+"), sep = " ~ "
-            )), data = gen)
-            model_i <- stats::lm(stats::formula(paste(
-              responses[i], paste(predictor, collapse = "+"), sep = " ~ "
-            )), data = ind)
-            model_int <- lm(formula(paste(
-              responses[i],
-              paste(predictor, "*group", collapse = "+"),
-              sep = " ~ "
-            )), data = dat)
-          }
-
-          table$trend <- model_i$coefficients[[2]]
-          table$t <- summary(model_i)$coefficients[2, 3]
-          table$pvalue <- summary(model_i)$coefficients[2, 4]
-          table$ci_95_max <- stats::confint(model_i, predictor, level = 0.95)[, 2]
-          table$ci_95_min <- stats::confint(model_i, predictor, level = 0.95)[, 1]
-          table$dif_t <- summary(model_int)$coefficients[4, 3]
-          table$dif_pvalue <- summary(model_int)$coefficients[4, 4]
-
-          spp_trend_result <- rbind(spp_trend_result, table)
-        }, error = function(e) {
-          cat(
-            paste0(
-              "WARNING: Specie ",
-              ind[1, 1],
-              " response (",
-              responses[i],
-              ") has"
-            ),
-            conditionMessage(e),
-            "\n"
-          )
-        })
-      }
-    } else {
-      print(paste0("Data for ", ind[1, 1], " specie are insufficient"))
     }
   }
+
+  if (length(results_list) > 0) {
+    spp_trend_result <- do.call(rbind, results_list)
+  } else {
+    spp_trend_result <- data.frame()
+  }
+
   return(spp_trend_result)
 }
