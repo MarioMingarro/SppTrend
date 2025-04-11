@@ -35,7 +35,7 @@
 #' }
 #'
 #' @export
-spp_strategy_poleward <- function(spp_trend_world_result,
+spp_strategy_poleward <- function(spp_trend_result,
                                   sig_level = 0.05,
                                   responses = responses) {
   classify_spatial_standard <- function(pvalue, dif_pvalue, trend) {
@@ -95,8 +95,8 @@ spp_strategy_poleward <- function(spp_trend_world_result,
     "hemisphere"
   )
 
-  if (!all(required_cols %in% names(spp_trend_world_result))) {
-    missing_cols <- setdiff(required_cols, names(spp_trend_world_result))
+  if (!all(required_cols %in% names(spp_trend_result))) {
+    missing_cols <- setdiff(required_cols, names(spp_trend_result))
     stop(
       paste(
         "Error: The following columns were not found in 'spp_trends_world_results':",
@@ -107,7 +107,7 @@ spp_strategy_poleward <- function(spp_trend_world_result,
     )
   }
 
-  strategies <- spp_trend_world_result %>%
+  strategies <- spp_trend_result %>%
     dplyr::select(dplyr::all_of(intersect(
       required_cols, names(spp_trends_world_result)
     ))) %>%
