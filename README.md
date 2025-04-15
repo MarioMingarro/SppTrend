@@ -2,7 +2,7 @@
 
 [![CRAN Status](https://www.r-pkg.org/badges/version/SppTrend)](https://cran.r-project.org/package=SppTrend)
 
-![Estrategias](title3.png)
+![Estrategias](title2.png)
 
 
 `SppTrend` is an R package that provides a methodology to analyze trends in species occurrence data over time, with a particular focus on the influence of environmental factors such as temperature. This package facilitates the derivation of explanatory hypotheses about the effects of distribution changes in species assemblages, based on historical presence data that includes temporal and geographic information.
@@ -34,25 +34,24 @@ The methodology assumes that the observed species occurrences represent a tempor
 
 
 
-## Methodological Workflow
-The `SppTrend` package follows a structured workflow to analyze species trends:
+The `SppTrend` package provides a structured workflow for analyzing trends in species occurrence data:
 
-Environmental Data Generation (Optional): Functions like `get_era5_tme()` and `get_dem_ele()` can be used to supplement occurrence data with temperature and elevation information.
-Estimation of the Overall Trend of Responses: The `overall_trend()` function calculates the average temporal variation for all species, providing a baseline for comparison.
-Estimation of Individual Trends of Responses: The `spp_trend()` function analyzes the temporal trends of different responses for each individual species.
-Analysis of Specific Species Responses: The `spp_strategy()` function classifies species into different ecological strategies based on their individual trends compared to the overall trend.
+1.  **Environmental Data Integration (Optional)**: Utilize functions like `get_era5_tme()` to incorporate temperature data and `get_dem_ele()` to add elevation information to your occurrence records. This step enriches the dataset with environmental context.
+2.  **Overall Trend Estimation**: Employ the `overall_trend()` function to calculate the average temporal trend of the selected response variables across all species in your dataset. This provides a general baseline for comparison.
+3.  **Individual Trend Analysis**: Use the `spp_trend()` function to determine the individual temporal trends for each species and response variable. This step compares individual species' responses with the overall trends.
+4.  **Ecological Strategy Classification**: Apply the `spp_strategy()` function to categorize species into distinct ecological strategies based on the significance and direction of their individual trends relative to the overall trend.
 
 ### Detailed Steps
 
-The `SppTrend` package is designed to analyze species presence records. To utilize the package effectively, your dataset should, at a minimum, include the following information for each occurrence:
+The `SppTrend` package is designed to analyze species presence records. To utilize the package effectively, your dataset must, at a minimum, include the following information for each occurrence:
 
-* Species identification.
-* Latitude and Longitude.
-* Date of the observation (year, and preferably month).
+* Species identification (e.g., 'species').
+* Geographic coordinates: Latitude (e.g., 'Lat') and Longitude (e.g., 'Lon').
+* Temporal information: Year (e.g., 'year'), and preferably Month (e.g., 'month').
 
-Given the global scope of potential applications, it is assumed that the coordinate reference system used is WGS84 (World Geodetic System 1984).
+Given its potential for global applications, the package assumes the use of the WGS84 (World Geodetic System 1984) coordinate reference system.
 
-**It is crucial to ensure that the column names in your input dataset match the names expected by the `SppTrend` functions (e.g., 'species', 'year', 'month', 'lon', 'lat', Tme, Tmx or Tmn).** 
+**It is essential that the column names in your input dataset either match the default names expected by the `SppTrend` functions (e.g., 'species', 'year', 'month', 'Lon', 'Lat', and environmental response variables such as 'Tme', 'Tmx', or 'Tmn') or are correctly specified using the corresponding `*_col` arguments within the function calls.**
 
 The following is an example illustrating the structure of a data frame containing 500 randomly generated presence records for 10 distinct species:
 
@@ -73,7 +72,7 @@ The `SppTrend` package offers functions to enhance your species occurrence data 
 #### ERA5 Temperature Data
 
 ERA5 is the fifth generation European Centre for Medium-Range Weather Forecasts (ECMWF) reanalysis dataset for the global climate and weather. It provides comprehensive atmospheric, land, and ocean climate data from 1940 to the present, with high spatial and temporal resolution. This makes it a valuable resource for studying the impact of climate on species distributions.
-You can explore the ERA5 daily statistics dataset on the Copernicus Climate Change Service (C3S) Climate Data Store (CDS) at: [ERA5 Daily Statistics Overview](https://cds.climate.copernicus.eu/datasets/derived-era5-single-levels-daily-statistics?tab=overview). For more detailed information about the ERA5 dataset, please visit the [ECMWF website](https://www.ecmwf.int/en/forecasts/datasets/reanalysis-datasets/era5).
+You can explore the ERA5 daily statistics dataset on the Copernicus Climate Change Service (C3S) Climate Data Store (CDS) at: [ERA5 Daily Statistics Overview](https://cds.climate.copernicus.eu/datasets/reanalysis-era5-single-levels-monthly-means). For more detailed information about the ERA5 dataset, please visit the [ECMWF website](https://confluence.ecmwf.int/display/CKB/The+family+of+ERA5+datasets).
 
 The `SppTrend` package provides the following function to incorporate ERA5 temperature data:
 
