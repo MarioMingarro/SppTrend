@@ -1,57 +1,68 @@
-#' Indivudual Trend Analysis
+#' Get ERA5 Temperature Data
 #'
-#' This function fits a linear model to analyze individual trends over time and comparing with general data trend
+#' This function extracts temperature data from an ERA5 netCDF file for given coordinates and times.
+#' It can extract monthly temperature if a month column is provided, or annual mean temperature otherwise.
 #'
-#' @param Data A data frame containing the variables for the model.
-#' @param responses In this case date is response.
-#' @param predictor A vector of predictor variable names.
-#' @param spp A vector of species names.
-#' @param n_min Value correspondign to minumun presences of a specie.
+#' @param data A data frame with columns for longitude ('Lon'), latitude ('Lat'), and year ('year').
+#'             Optionally, a column specifying the month can be provided if the `month_col` argument is used.
+#' @param nc_file Path to the ERA5 netCDF file. This file should contain the 't2m' (2-meter temperature) variable.
+#' @param month_col (Optional) The name of the column in the `data` data frame that contains the month (as a numeric value from 1 to 12). If this argument is not NULL, the function will extract monthly temperature. If NULL, it will extract the annual mean temperature for the given year.
 #'
-#' @return Data data frame with Mean Temperature in K
-#' @importFrom terra rast nlyr
+#' @return A data frame identical to the input `data` but with an additional column named 'Tme' containing the temperature in degrees Celsius.
+#'
+#' @importFrom terra rast nlyr extract mean
+#' @importFrom utils tail
+#' @importFrom lubridate as_date
 #'
 #' @examples
 #' \dontrun{
-#'
-#' Data <- data.frame(
-#'    species = sample(paste0("spp_", 1:10), 500, replace = TRUE),
-#'    year = sample(1950:2020, 500, replace = TRUE),
-#'    month = sample(1:12, 500, replace = TRUE),
-#'    Lon = runif(500, -10, 20),
-#'    Lat = runif(500, 30, 70)
+#' data <- data.frame(
+#'   species = sample(paste0("spp_", 1:10), 500, replace = TRUE),
+#'   year = sample(1950:2020, 500, replace = TRUE),
+#'   month = sample(1:12, 500, replace = TRUE),
+#'   Lon = runif(500, -10, 20),
+#'   Lat = runif(500, 30, 70)
 #' )
 #'
-#' nc_file <- "C:/A_TRABAJO/A_JORGE/SPP_VIRTUALES/MARIPOSAS/TEST_Spp_Trends/era5_1940_2023.nc"
+#' nc_file <- "path/to/your/era5_data.nc" # Replace with the actual path to your file
 #'
-#' Data_with_Tme <- get_era5_tme(Data, nc_file, month_col = "month")
+#' data_with_monthly_Tme <- get_era5_tme(data, nc_file, month_col = "month")
+#' print(head(data_with_monthly_Tme))
 #'
-#' print(Data_with_Tme)
-#'}
+#' data_annual <- data.frame(
+#'   species = sample(paste0("spp_", 1:5), 200, replace = TRUE),
+#'   year = sample(1960:2010, 200, replace = TRUE),
+#'   Lon = runif(200, -5, 15),
+#'   Lat = runif(200, 35, 65)
+#' )
+#'
+#' data_with_annual_Tme <- get_era5_tme(data_annual, nc_file)
+#' print(head(data_with_annual_Tme))
+#' }
 #' @export
 #'
-get_era5_tme <- function(Data, nc_file, month_col = NULL) {
-  era5_raster <- terra::rast(nc_file)
+get_era5_tme <- function(data, nc_file, month_col = NULL) {
+  era5_raster <- terra::rast(nc_file, subds = "t2m")
   variable_name <- "t2m"
   num_layers <- terra::nlyr(era5_raster)
   start_date <- as.Date("1940-01-01")
   expected_months <- num_layers / 2
   date_sequence <- seq(start_date, by = "month", length.out = expected_months)
-  end_date <- as.Date(tail(date_sequence)[6])
-  print(paste("First year: ", start_date))
-  print(paste("Last dates:", end_date))
+  end_date <- tail(date_sequence, n = 1)
+  print(paste("Raster coverage: From ", start_date, " to ", end_date))
 
-  temperatures <- numeric(nrow(Data))
+  temperatures <- numeric(nrow(data))
 
-  for (i in 1:nrow(Data)) {
-    lon <- Data$Lon[i]
+  for (i in 1:nrow(data)) {
+    lon <- data$Lon[i]
     lon <- ifelse(lon < 0, 360 + lon, lon)
-    lat <- Data$Lat[i]
-    year <- Data$year[i]
+    lat <- data$Lat[i]
+    year <- data$year[i]
 
     if (!is.null(month_col) &&
-        month_col %in% colnames(Data) && !is.na(Data[[month_col]][i])) {
-      month_val <- sprintf("%02d", Data[[month_col]][i])
+        month_col %in% colnames(data) &&
+        !is.na(data[[month_col]][i])) {
+      month_val <- sprintf("%02d", data[[month_col]][i])
       target_date_str <- paste0(year, "-", month_val, "-01")
       target_date <- as.Date(target_date_str)
 
@@ -87,9 +98,6 @@ get_era5_tme <- function(Data, nc_file, month_col = NULL) {
       }
 
     } else {
-      start_year_date <- as.Date(paste0(year, "-01-01"))
-      end_year_date <- as.Date(paste0(year, "-12-31"))
-
       year_sequence <- as.numeric(format(date_sequence, "%Y"))
       relevant_month_indices <- which(year_sequence == year)
 
@@ -100,21 +108,14 @@ get_era5_tme <- function(Data, nc_file, month_col = NULL) {
         if (length(relevant_layer_indices) > 0) {
           annual_data <- era5_raster[[relevant_layer_indices]]
           if (terra::nlyr(annual_data) > 0) {
-            annual_mean_raster <- mean(annual_data)
+            annual_mean_raster <- terra::mean(annual_data)
             extracted_value <- terra::extract(annual_mean_raster, cbind(lon, lat))[1, 1]
             if (!is.null(extracted_value) &&
                 !is.na(extracted_value)) {
               temperatures[i] <- extracted_value
             } else {
               temperatures[i] <- NA
-              warning(paste(
-                "Extracted NA value for year",
-                year,
-                "at Lon:",
-                lon,
-                "Lat:",
-                lat
-              ))
+              # Removed warning as per user feedback
             }
           } else {
             temperatures[i] <- NA
@@ -129,32 +130,14 @@ get_era5_tme <- function(Data, nc_file, month_col = NULL) {
           }
         } else {
           temperatures[i] <- NA
-          warning(
-            paste(
-              "No relevant layer indices found for year",
-              year,
-              "at Lon:",
-              lon,
-              "Lat:",
-              lat
-            )
-          )
+          # Removed warning as per user feedback
         }
       } else {
         temperatures[i] <- NA
-        warning(
-          paste(
-            "No months found for the year",
-            year,
-            "in date_sequence at Lon:",
-            lon,
-            "Lat:",
-            lat
-          )
-        )
+        # Removed warning as per user feedback
       }
     }
   }
-  Data$Tme <- temperatures - 273.15
-  return(Data)
+  data$Tme <- temperatures - 273.15
+  return(data)
 }
