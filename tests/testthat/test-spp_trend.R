@@ -1,6 +1,6 @@
 library(testthat)
 
-Data <- data.frame(
+data <- data.frame(
   species = sample(paste0("spp_", 1:10), 500, replace = TRUE),
   year = sample(1900:2024, 500, replace = TRUE),
   month = sample(1:12, 500, replace = TRUE),
@@ -9,14 +9,14 @@ Data <- data.frame(
   Tme = rnorm(500, 15, 10)
 )
 
-Data$year_month  = Data$year + Data$month * 0.075
+data$year_month  = data$year + data$month * 0.075
 
 predictor <- "year_month"
 responses <- c("Lat", "Tme")
-spp <- unique(Data$species)
+spp <- unique(data$species)
 
 testthat::test_that("spp_trend works correctly", {
-  spp_trend_result <- spp_trend(Data, spp, predictor, responses, n_min = 10)
+  spp_trend_result <- spp_trend(data, spp, predictor, responses, n_min = 10)
   expect_s3_class(spp_trend_result, "data.frame")
   expect_false(any(is.na(spp_trend_result$Trend)))
 })

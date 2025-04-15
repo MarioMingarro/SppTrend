@@ -43,6 +43,29 @@ Estimation of Individual Trends of Responses: The `spp_trend()` function analyze
 Analysis of Specific Species Responses: The `spp_strategy()` function classifies species into different ecological strategies based on their individual trends compared to the overall trend.
 
 ### Detailed Steps
+
+The `SppTrend` package is designed to analyze species presence records. To utilize the package effectively, your dataset should, at a minimum, include the following information for each occurrence:
+
+* Species identification.
+* Latitude and Longitude.
+* Date of the observation (year, and preferably month).
+
+Given the global scope of potential applications, it is assumed that the coordinate reference system used is WGS84 (World Geodetic System 1984).
+
+**It is crucial to ensure that the column names in your input dataset match the names expected by the `SppTrend` functions (e.g., 'species', 'year', 'month', 'lon', 'lat', Tme, Tmx or Tmn).** 
+
+The following is an example illustrating the structure of a data frame containing 500 randomly generated presence records for 10 distinct species:
+
+```r
+data <- data.frame(
+  species = sample(paste0("spp_", 1:10), 500, replace = TRUE),
+  year = sample(1950:2020, 500, replace = TRUE),
+  month = sample(1:12, 500, replace = TRUE),
+  lon = runif(500, -10, 20),
+  lat = runif(500, 30, 70)
+)
+```
+
 ### Phase 1: Environmental Data Generation
 
 The `SppTrend` package offers functions to enhance your species occurrence data with relevant environmental information. Currently, it supports the integration of temperature and elevation data.
@@ -72,7 +95,7 @@ Furthermore, it is highly recommended to utilize any existing elevation data alr
 *Notes: DEM data must be in `.tif` format.*
 ```{r}
 dem_file <- "path/to/your/dem.tif"
-data <- get_dem_ele(Data, dem_file)
+data <- get_dem_ele(data, dem_file)
 ```
 ### Phase 2: Estimation of the Overall Trend of Responses
 
@@ -80,7 +103,7 @@ The `overall_trend()` function calculates the Overall Trend (OT) for specified r
 This trend serves as a neutral reference to evaluate individual species' responses. It's important to consider potential biases in the data when interpreting the OT.
 
 ```{r}
-overall_trend_result <- overall_trend(Data, responses, predictor)
+overall_trend_result <- overall_trend(data, responses, predictor)
 ```
 
 ### Phase 3: Estimation of Individual Trends of Responses
@@ -88,7 +111,7 @@ overall_trend_result <- overall_trend(Data, responses, predictor)
 The `spp_trend()` function calculates the individual temporal trend for each species and response variable, comparing it to the general trend observed in the data. It also handles longitude transformations and considers hemisphere-specific trends.
 
 ```{r}
-general_trend_result <- spp_trend(Data, spp, predictor, responses, n_min = 50)
+general_trend_result <- spp_trend(data, spp, predictor, responses, n_min = 50)
 ```
 
 ### Phase 4: Analysis of Specific Species Responses
