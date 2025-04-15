@@ -2,7 +2,7 @@
 
 [![CRAN Status](https://www.r-pkg.org/badges/version/SppTrend)](https://cran.r-project.org/package=SppTrend)
 
-![Estrategias](title2.png)
+![Estrategias](title.png)
 
 
 `SppTrend` is an R package that provides a methodology to analyze trends in species occurrence data over time, with a particular focus on the influence of environmental factors such as temperature. This package facilitates the derivation of explanatory hypotheses about the effects of distribution changes in species assemblages, based on historical presence data that includes temporal and geographic information.
@@ -51,7 +51,7 @@ The `SppTrend` package is designed to analyze species presence records. To utili
 
 Given its potential for global applications, the package assumes the use of the WGS84 (World Geodetic System 1984) coordinate reference system.
 
-**It is essential that the column names in your input dataset either match the default names expected by the `SppTrend` functions (e.g., 'species', 'year', 'month', 'Lon', 'Lat', and environmental response variables such as 'Tme', 'Tmx', or 'Tmn') or are correctly specified using the corresponding `*_col` arguments within the function calls.**
+**It is essential that the column names in your input dataset either match the default names expected by the `SppTrend` functions (e.g., 'species', 'year', 'month', 'Lon', 'Lat', and environmental response variables such as 'Ele', 'Tme', 'Tmx', or 'Tmn').**
 
 The following is an example illustrating the structure of a data frame containing 500 randomly generated presence records for 10 distinct species:
 
@@ -130,24 +130,24 @@ The `SppTrend` package identifies several spatial and thermal response strategie
 
 **Spatial Responses**
 
-  - *Spatial Adaptation (SA)*: The species' presence shows a positive temporal trend, significantly different from the OT. 
+  - **Spatial Adaptation (SA)**: The species' presence shows a positive temporal trend, significantly different from the OT. 
  
-  - *Spatial Discordance (SD)*: The species' presence shows a negative temporal trend, significantly different from the OT.
+  - **Spatial Discordance (SD)**: The species' presence shows a negative temporal trend, significantly different from the OT.
 
-  - *Spatial Conformity (SC)*: The species' presence follows a temporal trend similar to the OT.
+  - **Spatial Conformity (SC)**: The species' presence follows a temporal trend similar to the OT.
 
 **Thermal Responses**
 
-  - *Thermal Tolerance (TT)*: The species shows a positive response to temperature over time, significantly different from the OT.
+  - **Thermal Tolerance (TT)**: The species shows a positive response to temperature over time, significantly different from the OT.
 
-  - *Thermal Conformity (TC)*: The species follows a thermal trend similar to the OT. 
+  - **Thermal Conformity (TC)**: The species follows a thermal trend similar to the OT. 
 
-  - *Thermal Adjustment (TA)*: The species shows a negative response to temperature over time, significantly different from the OT. 
+  - **Thermal Adjustment (TA)**: The species shows a negative response to temperature over time, significantly different from the OT. 
 
 **World Latitudinal Responses**
-  - *Spatial Poleward (SP)*: This represents a significant positive temporal trend, indicating a shift towards higher latitudes (the pole in the Northern Hemisphere). 
+  - **Spatial Poleward (SP)**: This represents a significant positive temporal trend, indicating a shift towards higher latitudes (the pole in the Northern Hemisphere). 
   Also, it represents a significant negative temporal trend, also indicating a shift towards lower latitudes (the pole in Southern Hemisphere).
-  - *Spatial Equatorward (SE)*: This represents a significant negative temporal trend, indicating a shift towards lower latitudes (the equator in the Northern Hemisphere). 
+  - **Spatial Equatorward (SE)**: This represents a significant negative temporal trend, indicating a shift towards lower latitudes (the equator in the Northern Hemisphere). 
   Also, it represents a significant positive temporal trend, also indicating a shift towards higher latitudes (the equator in Southern Hemisphere).
 
 
