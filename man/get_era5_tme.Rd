@@ -4,7 +4,7 @@
 \alias{get_era5_tme}
 \title{Indivudual Trend Analysis}
 \usage{
-get_era5_tme(df, nc_file, month_col = NULL)
+get_era5_tme(Data, nc_file, month_col = NULL)
 }
 \arguments{
 \item{Data}{A data frame containing the variables for the model.}
@@ -24,15 +24,20 @@ Data data frame with Mean Temperature in K
 This function fits a linear model to analyze individual trends over time and comparing with general data trend
 }
 \examples{
+\dontrun{
 
 Data <- data.frame(
-species = sample(paste0("spp_", 1:10), 10, replace = TRUE),
-year = sample(1950:2023, 10, replace = TRUE),
-month = sample(1:12, 10, replace = TRUE),
-Lon = runif(10, -10, 20),
-Lat = runif(10, 30, 70)
+   species = sample(paste0("spp_", 1:10), 500, replace = TRUE),
+   year = sample(1950:2020, 500, replace = TRUE),
+   month = sample(1:12, 500, replace = TRUE),
+   Lon = runif(500, -10, 20),
+   Lat = runif(500, 30, 70)
 )
+
 nc_file <- "C:/A_TRABAJO/A_JORGE/SPP_VIRTUALES/MARIPOSAS/TEST_Spp_Trends/era5_1940_2023.nc"
+
 Data_with_Tme <- get_era5_tme(Data, nc_file, month_col = "month")
 
+print(Data_with_Tme)
+}
 }

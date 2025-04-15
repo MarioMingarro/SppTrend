@@ -14,25 +14,29 @@
 #' - `ci_95_max`: Upper bound of the 95% confidence interval.
 #' - `ci_95_min`: Lower bound of the 95% confidence interval.
 #'
-#' @importFrom stats as.formula confint formula lm summary
+#' @importFrom stats as.formula confint formula lm
 #'
 #' @examples
-#'
-#'Data <- data.frame(
+#' \dontrun{
+#' Data <- data.frame(
 #'    species = sample(paste0("spp_", 1:10), 500, replace = TRUE),
-#'    year = sample(1900:2024, 500, replace = TRUE),
+#'    year = sample(1950:2020, 500, replace = TRUE),
 #'    month = sample(1:12, 500, replace = TRUE),
 #'    Lon = runif(500, -10, 20),
 #'    Lat = runif(500, 30, 70),
 #'    Tmx = rnorm(500, 15, 10),
-#'    Tmn = rnorm(500, 10, 8))
+#'    Tmn = rnorm(500, 10, 8)
+#' )
 #'
-#'Data$year_month   = Data$year + Data$month * 0.075
+#' Data$year_month <- Data$year + Data$month * 0.075
 #'
-#'predictor <- "year_month" # predictor <- "year" in case month is not available
-#'responses <- c("Lat", "Lon", "Tmx", "Tmn")
+#' predictor <- "year_month"
+#' responses <- c("Lat", "Lon", "Tmx", "Tmn")
 #'
-#'overall_trend_result <- overall_trend(Data, predictor, responses)
+#' overall_trend_result <- overall_trend(Data, predictor, responses)
+#'
+#' print(overall_trend_result)
+#' }
 #'
 #' @export
 #'

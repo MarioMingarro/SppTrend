@@ -28,21 +28,25 @@ A data frame with trend statistics, including:
 This function fits a linear model to analyze trends over time.
 }
 \examples{
-
+\dontrun{
 Data <- data.frame(
-  species = sample(paste0("spp_", 1:10), 500, replace = TRUE),
-  year = sample(1900:2024, 500, replace = TRUE),
-  month = sample(1:12, 500, replace = TRUE),
-  Lon = runif(500, -10, 20),
-  Lat = runif(500, 30, 70),
-  Tmx = rnorm(500, 15, 10),
-  Tmn = rnorm(500, 10, 8))
+   species = sample(paste0("spp_", 1:10), 500, replace = TRUE),
+   year = sample(1950:2020, 500, replace = TRUE),
+   month = sample(1:12, 500, replace = TRUE),
+   Lon = runif(500, -10, 20),
+   Lat = runif(500, 30, 70),
+   Tmx = rnorm(500, 15, 10),
+   Tmn = rnorm(500, 10, 8)
+)
 
-Data$year_month  = Data$year + Data$month * 0.075
+Data$year_month <- Data$year + Data$month * 0.075
 
-predictor <- "year_month" # predictor <- "year" in case month is not available
+predictor <- "year_month"
 responses <- c("Lat", "Lon", "Tmx", "Tmn")
 
 overall_trend_result <- overall_trend(Data, predictor, responses)
+
+print(overall_trend_result)
+}
 
 }

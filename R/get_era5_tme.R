@@ -10,21 +10,27 @@
 #'
 #' @return Data data frame with Mean Temperature in K
 #' @importFrom terra rast nlyr
+#'
 #' @examples
+#' \dontrun{
 #'
-#'Data <- data.frame(
-#'species = sample(paste0("spp_", 1:10), 10, replace = TRUE),
-#'year = sample(1950:2023, 10, replace = TRUE),
-#'month = sample(1:12, 10, replace = TRUE),
-#'Lon = runif(10, -10, 20),
-#'Lat = runif(10, 30, 70)
-#')
-#'nc_file <- "C:/A_TRABAJO/A_JORGE/SPP_VIRTUALES/MARIPOSAS/TEST_Spp_Trends/era5_1940_2023.nc"
-#'Data_with_Tme <- get_era5_tme(Data, nc_file, month_col = "month")
+#' Data <- data.frame(
+#'    species = sample(paste0("spp_", 1:10), 500, replace = TRUE),
+#'    year = sample(1950:2020, 500, replace = TRUE),
+#'    month = sample(1:12, 500, replace = TRUE),
+#'    Lon = runif(500, -10, 20),
+#'    Lat = runif(500, 30, 70)
+#' )
 #'
+#' nc_file <- "C:/A_TRABAJO/A_JORGE/SPP_VIRTUALES/MARIPOSAS/TEST_Spp_Trends/era5_1940_2023.nc"
+#'
+#' Data_with_Tme <- get_era5_tme(Data, nc_file, month_col = "month")
+#'
+#' print(Data_with_Tme)
+#'}
 #' @export
 #'
-get_era5_tme <- function(df, nc_file, month_col = NULL) {
+get_era5_tme <- function(Data, nc_file, month_col = NULL) {
   era5_raster <- terra::rast(nc_file)
   variable_name <- "t2m"
   num_layers <- terra::nlyr(era5_raster)
@@ -35,17 +41,17 @@ get_era5_tme <- function(df, nc_file, month_col = NULL) {
   print(paste("First year: ", start_date))
   print(paste("Last dates:", end_date))
 
-  temperatures <- numeric(nrow(df))
+  temperatures <- numeric(nrow(Data))
 
-  for (i in 1:nrow(df)) {
-    lon <- df$Lon[i]
+  for (i in 1:nrow(Data)) {
+    lon <- Data$Lon[i]
     lon <- ifelse(lon < 0, 360 + lon, lon)
-    lat <- df$Lat[i]
-    year <- df$year[i]
+    lat <- Data$Lat[i]
+    year <- Data$year[i]
 
     if (!is.null(month_col) &&
-        month_col %in% colnames(df) && !is.na(df[[month_col]][i])) {
-      month_val <- sprintf("%02d", df[[month_col]][i])
+        month_col %in% colnames(Data) && !is.na(Data[[month_col]][i])) {
+      month_val <- sprintf("%02d", Data[[month_col]][i])
       target_date_str <- paste0(year, "-", month_val, "-01")
       target_date <- as.Date(target_date_str)
 
@@ -149,6 +155,6 @@ get_era5_tme <- function(df, nc_file, month_col = NULL) {
       }
     }
   }
-  df$Tme <- temperatures
-  return(df)
+  Data$Tme <- temperatures - 273.15
+  return(Data)
 }

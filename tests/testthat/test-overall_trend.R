@@ -6,14 +6,13 @@ Data <- data.frame(
   month = sample(1:12, 500, replace = TRUE),
   Lon = runif(500, -10, 20),
   Lat = runif(500, 30, 70),
-  Tmx = rnorm(500, 15, 10),
-  Tmx = rnorm(500, 10, 8)
+  Tme = rnorm(500, 15, 10)
 )
 
 Data$year_month  = Data$year + Data$month * 0.075
 
 predictor <- "year_month"
-responses <- c("Lat", "Tmx")
+responses <- c("Lat", "Tme")
 
 testthat::test_that("overall_trend works correctly", {
   overall_trend_result <- overall_trend(Data, predictor, responses)

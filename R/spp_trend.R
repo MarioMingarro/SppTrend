@@ -1,4 +1,4 @@
-#' @title spp_trend_world
+#' @title spp_trend
 #' @description This function fits a linear model to analyze individual trends
 #'    over time, comparing with general data trend, and includes longitude
 #'    transformation and hemisphere detection. For species distributed across
@@ -35,30 +35,35 @@
 #'    additionally compares the trend of the species (using all occurrences) with
 #'    the trend of the entire dataset (all hemispheres combined).
 #'
-#' @importFrom stats as.formula confint formula lm coef summary
+#' @importFrom stats as.formula confint formula lm coef
 #' @importFrom dplyr %>% mutate filter
 #'
 #' @examples
 #' \dontrun{
 #' Data <- data.frame(
 #'    species = sample(paste0("spp_", 1:10), 500, replace = TRUE),
-#'    year = sample(1900:2024, 500, replace = TRUE),
+#'    year = sample(1950:2020, 500, replace = TRUE),
 #'    month = sample(1:12, 500, replace = TRUE),
 #'    Lon = runif(500, -10, 20),
 #'    Lat = runif(500, 30, 70),
 #'    Tmx = rnorm(500, 15, 10),
 #'    Tmn = rnorm(500, 10, 8)
 #' )
+#'
 #' Data$year_month <- Data$year + Data$month * 0.075
+#'
 #' predictor <- "year_month"
 #' responses <- c("Lat", "Lon", "Tmx", "Tmn")
+#'
 #' spp <- unique(Data$species)
-#' general_trend_result <- spp_trend_world(Data, spp, predictor, responses, n_min = 50)
-#' print(general_trend_result)
+#'
+#' spp_trend_result <- spp_trend(Data, spp, predictor, responses, n_min = 50)
+#'
+#' print(spp_trend_result)
 #' }
 #'
 #' @export
-spp_trend_world <- function(Data, spp, predictor, responses, n_min = 50) {
+spp_trend <- function(Data, spp, predictor, responses, n_min = 50) {
   Data$hemisphere <- ifelse(Data$Lat >= 0, "North", "South")
   results_list <- list()
   for (n in 1:length(spp)) {
