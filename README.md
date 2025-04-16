@@ -146,11 +146,15 @@ The `SppTrend` package identifies several spatial and thermal response strategie
 
 **Spatial Responses**
 
-  - **Spatial Adaptation (SA)**: The species' presence shows a positive temporal trend, significantly different from the OT. 
+  - **Spatial Adaptation (SA)**: A positive trend in presence, which in the context of climate change in the Northern Hemisphere, might often be associated with a Spatial Poleward (SP) shift as the species expands into newly suitable, higher-latitude areas. 
+  In the Southern Hemisphere, this adaptation might involve a Spatial Equatorward (SE) shift (towards higher latitude values).
  
-  - **Spatial Discordance (SD)**: The species' presence shows a negative temporal trend, significantly different from the OT.
+  - **Spatial Discordance (SD)**: A negative trend in presence, which in the context of climate change in the Northern Hemisphere, might often be associated with a Spatial Equatorward (SE) shift as the species retreats from less suitable, lower-latitude areas. 
+  In the Southern Hemisphere, this discordance might involve a Spatial Poleward (SP) shift (towards lower latitude values).
 
-  - **Spatial Conformity (SC)**: The species' presence follows a temporal trend similar to the OT.
+  - **Spatial Conformity (SC)**: The species' presence trend follows the overall trend, suggesting less directional pressure in terms of range shift at this level of analysis.
+  
+  
 
 **Thermal Responses**
 
@@ -160,12 +164,9 @@ The `SppTrend` package identifies several spatial and thermal response strategie
 
   - **Thermal Adjustment (TA)**: The species shows a negative response to temperature over time, significantly different from the OT. 
 
-**World Latitudinal Responses**
-  - **Spatial Poleward (SP)**: This represents a significant positive temporal trend, indicating a shift towards higher latitudes (the pole in the Northern Hemisphere). 
-  Also, it represents a significant negative temporal trend, also indicating a shift towards lower latitudes (the pole in Southern Hemisphere).
-  - **Spatial Equatorward (SE)**: This represents a significant negative temporal trend, indicating a shift towards lower latitudes (the equator in the Northern Hemisphere). 
-  Also, it represents a significant positive temporal trend, also indicating a shift towards higher latitudes (the equator in Southern Hemisphere).
-
+In essence, while SA and SD describe the 'what' (change in presence) and SP/SE a potential 'how' (direction of geographic shift along the latitudinal gradient), 
+these spatial responses should be considered together with the thermal responses (TT, TA) to understand if both point towards a consistent overall direction of a species' 
+response to environmental change.
 
 ### Applications and Limitations
 `SppTrend` is a valuable tool for researchers investigating the impacts of environmental change on biodiversity. 
