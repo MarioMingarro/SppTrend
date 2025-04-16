@@ -87,6 +87,7 @@ The `SppTrend` package provides the following function to incorporate ERA5 tempe
 `get_era5_tme()`: Allows users to obtain average temperature data (mean temperature of the environment) for species occurrences using ERA5 reanalysis data. 
 
 *Notes: ERA5 data is available from 1940 onwards. The data must be in `.netcdf` format.*
+
 **Example Usage:**
 
 ```{r}
