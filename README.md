@@ -88,8 +88,6 @@ The `SppTrend` package provides the following function to incorporate ERA5 tempe
 
 *Notes: ERA5 data is available from 1940 onwards. The data must be in `.netcdf` format.*
 
-**Example Usage:**
-
 ```{r}
 nc_file <- "path/to/your/era5_data.nc"
 data <- get_era5_tme(data, nc_file, month_col = "month")
@@ -109,7 +107,7 @@ print(data$ele)
 ```
 ### Phase 2: Estimation of the Overall Trend of Responses
 
-The `overall_trend()` function calculates the Overall Trend (OT) for specified response variables across the entire dataset. 
+The `overall_trend()` function calculates the overall temporal trend  for specified response variables across the entire dataset. 
 This trend serves as a neutral reference to evaluate individual species' responses. It's important to consider potential biases in the data when interpreting the OT.
 
 ```{r}
@@ -121,7 +119,7 @@ print(overall_trend_result)
 
 ### Phase 3: Estimation of Individual Trends of Responses
 
-The `spp_trend()` function calculates the individual temporal trend for each species and response variable, comparing it to the general trend observed in the data. It also handles longitude transformations and considers hemisphere-specific trends.
+The `spp_trend()` function calculates the individual temporal trend for each species and response variable, comparing it to the overall temporal trend observed in the data. It also handles longitude transformations and considers hemisphere-specific trends.
 
 ```{r}
 predictor <- "year"
@@ -137,7 +135,7 @@ The `spp_strategy()` function analyzes the results from `spp_trend()` to classif
 This function incorporates logic for poleward shifts in latitude based on hemisphere and can also classify trends in elevation.
 
 ```{r}
-spp_strategy_results <- spp_strategy(spp_trends_results, sig_level = 0.05, responses = c("lat", "lon", "ele", "tme"))
+spp_strategy_result <- spp_strategy(spp_trend_result, sig_level = 0.05, responses = c("lat", "lon", "ele", "tme"))
 print(spp_strategy_results)
 ```
 
