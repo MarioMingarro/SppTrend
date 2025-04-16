@@ -1,14 +1,14 @@
-#' Get ERA5 Temperature Data
+#' Get ERA5 Temperature data
 #'
 #' This function extracts temperature data from an ERA5 netCDF file for given coordinates and times.
 #' It can extract monthly temperature if a month column is provided, or annual mean temperature otherwise.
 #'
-#' @param data A data frame with columns for longitude ('Lon'), latitude ('Lat'), and year ('year').
+#' @param data A data frame with columns for longitude ('lon'), latitude ('lat'), and year ('year').
 #'             Optionally, a column specifying the month can be provided if the `month_col` argument is used.
 #' @param nc_file Path to the ERA5 netCDF file. This file should contain the 't2m' (2-meter temperature) variable.
 #' @param month_col (Optional) The name of the column in the `data` data frame that contains the month (as a numeric value from 1 to 12). If this argument is not NULL, the function will extract monthly temperature. If NULL, it will extract the annual mean temperature for the given year.
 #'
-#' @return A data frame identical to the input `data` but with an additional column named 'Tme' containing the temperature in degrees Celsius.
+#' @return A data frame identical to the input `data` but with an additional column named 'tme' containing the temperature in degrees Celsius.
 #'
 #' @importFrom terra rast nlyr extract mean
 #' @importFrom utils tail
@@ -20,24 +20,24 @@
 #'   species = sample(paste0("spp_", 1:10), 500, replace = TRUE),
 #'   year = sample(1950:2020, 500, replace = TRUE),
 #'   month = sample(1:12, 500, replace = TRUE),
-#'   Lon = runif(500, -10, 20),
-#'   Lat = runif(500, 30, 70)
+#'   lon = runif(500, -10, 20),
+#'   lat = runif(500, 30, 70)
 #' )
 #'
 #' nc_file <- "path/to/your/era5_data.nc" # Replace with the actual path to your file
 #'
-#' data_with_monthly_Tme <- get_era5_tme(data, nc_file, month_col = "month")
-#' print(head(data_with_monthly_Tme))
+#' data_with_monthly_tme <- get_era5_tme(data, nc_file, month_col = "month")
+#' print(head(data_with_monthly_tme))
 #'
 #' data_annual <- data.frame(
 #'   species = sample(paste0("spp_", 1:5), 200, replace = TRUE),
 #'   year = sample(1960:2010, 200, replace = TRUE),
-#'   Lon = runif(200, -5, 15),
-#'   Lat = runif(200, 35, 65)
+#'   lon = runif(200, -5, 15),
+#'   lat = runif(200, 35, 65)
 #' )
 #'
-#' data_with_annual_Tme <- get_era5_tme(data_annual, nc_file)
-#' print(head(data_with_annual_Tme))
+#' data_with_annual_tme <- get_era5_tme(data_annual, nc_file)
+#' print(head(data_with_annual_tme))
 #' }
 #' @export
 #'
@@ -54,9 +54,9 @@ get_era5_tme <- function(data, nc_file, month_col = NULL) {
   temperatures <- numeric(nrow(data))
 
   for (i in 1:nrow(data)) {
-    lon <- data$Lon[i]
+    lon <- data$lon[i]
     lon <- ifelse(lon < 0, 360 + lon, lon)
-    lat <- data$Lat[i]
+    lat <- data$lat[i]
     year <- data$year[i]
 
     if (!is.null(month_col) &&
@@ -79,9 +79,9 @@ get_era5_tme <- function(data, nc_file, month_col = NULL) {
           warning(paste(
             "No data found for",
             target_date_str,
-            "at Lon:",
+            "at lon:",
             lon,
-            "Lat:",
+            "lat:",
             lat
           ))
         }
@@ -90,9 +90,9 @@ get_era5_tme <- function(data, nc_file, month_col = NULL) {
         warning(paste(
           "No data found for",
           target_date_str,
-          "at Lon:",
+          "at lon:",
           lon,
-          "Lat:",
+          "lat:",
           lat
         ))
       }
@@ -122,9 +122,9 @@ get_era5_tme <- function(data, nc_file, month_col = NULL) {
             warning(paste(
               "No layers for year",
               year,
-              "in annual_data at Lon:",
+              "in annual_data at lon:",
               lon,
-              "Lat:",
+              "lat:",
               lat
             ))
           }
@@ -138,6 +138,6 @@ get_era5_tme <- function(data, nc_file, month_col = NULL) {
       }
     }
   }
-  data$Tme <- temperatures - 273.15
+  data$tme <- temperatures - 273.15
   return(data)
 }

@@ -24,13 +24,13 @@
 #'    month = sample(1:12, 500, replace = TRUE),
 #'    lon = runif(500, -10, 20),
 #'    lat = runif(500, 30, 70),
-#'    Tme = rnorm(500, 15, 10)
+#'    tme = rnorm(500, 15, 10)
 #' )
 #'
 #' data$year_month <- data$year + data$month * 0.075
 #'
 #' predictor <- "year_month"
-#' responses <- c("lat", "lon", "Tme")
+#' responses <- c("lat", "lon", "tme")
 #'
 #' overall_trend_result <- overall_trend(data, predictor, responses)
 #'

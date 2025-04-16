@@ -9,10 +9,10 @@
 #'    workflow for analyzing individual species responses to environmental change.
 #'
 #' @param data A data frame containing the variables for the model, including
-#'    'species', 'year', 'month', 'Lon', 'Lat', 'Tmx', 'Tmn'.
-#' @param responses A vector of response variable names to analyze (e.g., "Lat"
-#'    for spatial trends, "Tmx" for thermal trends).
-#' @param predictor A vector of predictor variable names, ideally representing a
+#'    'species', 'year', 'month', 'lon', 'lat', 'tmx', 'tmn'.
+#' @param responses A vector of response variable names to analyze (e.g., "lat"
+#'    for spatial trends, "tmx" for thermal trends).
+#' @param predictor A vector of predictor variable names, idedata:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAAbElEQVR4Xs2RQQrAMAgEfZgf7W9LAguybljJpR3wEse5JOL3ZObDb4x1loDhHbBOFU6i2Ddnw2KNiXcdAXygJlwE8OFVBHDgKrLgSInN4WMe9iXiqIVsTMjH7z/GhNTEibOxQswcYIWYOR/zAjBJfiXh3jZ6AAAAAElFTkSuQmCCally representing a
 #'    temporal variable (e.g., "year_month").
 #' @param spp A vector of species names.
 #' @param n_min Minimum number of presences required for a species in each
@@ -56,15 +56,15 @@
 #'    species = sample(paste0("spp_", 1:10), 500, replace = TRUE),
 #'    year = sample(1950:2020, 500, replace = TRUE),
 #'    month = sample(1:12, 500, replace = TRUE),
-#'    Lon = runif(500, -10, 20),
-#'    Lat = runif(500, 30, 70),
-#'    Tme = rnorm(500, 15, 10)
+#'    lon = runif(500, -10, 20),
+#'    lat = runif(500, 30, 70),
+#'    tme = rnorm(500, 15, 10)
 #' )
 #'
 #' data$year_month <- data$year + data$month * 0.075
 #'
 #' predictor <- "year_month"
-#' responses <- c("Lat", "Lon", "Tme")
+#' responses <- c("lat", "lon", "tme")
 #'
 #' spp <- unique(data$species)
 #'
@@ -72,7 +72,7 @@
 #'
 #' print(head(spp_trend_result))
 #'
-#' # Example interpretation: A positive 'trend' for 'Lat' might indicate a
+#' # Example interpretation: A positive 'trend' for 'lat' might indicate a
 #' # northward shift in the Northern Hemisphere. A low 'pvalue' (e.g., < 0.05)
 #' # suggests this trend is statistically significant. A low 'dif_pvalue'
 #' # might indicate this trend is significantly different from the general trend.
@@ -80,7 +80,7 @@
 #' @export
 #'
 spp_trend <- function(data, spp, predictor, responses, n_min = 50) {
-  data$hemisphere <- ifelse(data$Lat >= 0, "North", "South")
+  data$hemisphere <- ifelse(data$lat >= 0, "North", "South")
   results_list <- list()
   for (n in 1:length(spp)) {
     ind <- data[data$species == spp[n], ]
@@ -98,16 +98,16 @@ spp_trend <- function(data, spp, predictor, responses, n_min = 50) {
                 ind_hemisphere$group <- "i"
                 data_hemisphere$group <- "g"
                 dat <- rbind(data_hemisphere, ind_hemisphere)
-                if (responses[i] == "Lon") {
-                  ind_hemisphere$Lon_transformed <- (ind_hemisphere$Lon + 180) %% 360
-                  dat$Lon_transformed <- (dat$Lon + 180) %% 360
+                if (responses[i] == "lon") {
+                  ind_hemisphere$lon_transformed <- (ind_hemisphere$lon + 180) %% 360
+                  dat$lon_transformed <- (dat$lon + 180) %% 360
                   model_i <- lm(formula(paste(
-                    "Lon_transformed",
+                    "lon_transformed",
                     paste(predictor, collapse = "+"),
                     sep = " ~ "
                   )), data = ind_hemisphere)
                   model_int <- lm(formula(paste(
-                    "Lon_transformed",
+                    "lon_transformed",
                     paste(predictor, "*group", collapse = "+"),
                     sep = " ~ "
                   )), data = dat)
@@ -138,7 +138,7 @@ spp_trend <- function(data, spp, predictor, responses, n_min = 50) {
                 } else {
                   NA
                 }
-                if (responses[i] == "Lat" && h == "South") {
+                if (responses[i] == "lat" && h == "South") {
                   trend <- trend
                 }
                 results_list[[length(results_list) + 1]] <- data.frame(
@@ -225,16 +225,16 @@ spp_trend <- function(data, spp, predictor, responses, n_min = 50) {
               ind$group_global <- "i"
               dat_global <- rbind(data, ind)
 
-              if (responses[i] == "Lon") {
-                ind$Lon_transformed <- (ind$Lon + 180) %% 360
-                dat_global$Lon_transformed <- (dat_global$Lon + 180) %% 360
+              if (responses[i] == "lon") {
+                ind$lon_transformed <- (ind$lon + 180) %% 360
+                dat_global$lon_transformed <- (dat_global$lon + 180) %% 360
                 model_i_global <- lm(formula(paste(
-                  "Lon_transformed",
+                  "lon_transformed",
                   paste(predictor, collapse = "+"),
                   sep = " ~ "
                 )), data = ind)
                 model_int_global <- lm(formula(paste(
-                  "Lon_transformed",
+                  "lon_transformed",
                   paste(predictor, "*group_global", collapse = "+"),
                   sep = " ~ "
                 )), data = dat_global)

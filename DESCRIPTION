@@ -1,6 +1,6 @@
 Package: SppTrend
 Title: Analyzing Linear Trends in Species Occurrence Data
-Version: 0.9
+Version: 0.92
 Authors@R: 
     person(given = "Mario", 
     family = "Mingarro Lopez", 

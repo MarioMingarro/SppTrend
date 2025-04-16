@@ -4,76 +4,91 @@
 \alias{spp_trend}
 \title{spp_trend}
 \usage{
-spp_trend(Data, spp, predictor, responses, n_min = 50)
+spp_trend(data, spp, predictor, responses, n_min = 50)
 }
 \arguments{
-\item{Data}{A data frame containing the variables for the model, including
-'species', 'year', 'month', 'Lon', 'Lat', 'Tmx', 'Tmn'.}
+\item{data}{A data frame containing the variables for the model, including
+'species', 'year', 'month', 'lon', 'lat', 'tmx', 'tmn'.}
 
 \item{spp}{A vector of species names.}
 
-\item{predictor}{A vector of predictor variable names (e.g., "year_month").}
+\item{predictor}{A vector of predictor variable names, idedata:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAAbElEQVR4Xs2RQQrAMAgEfZgf7W9LAguybljJpR3wEse5JOL3ZObDb4x1loDhHbBOFU6i2Ddnw2KNiXcdAXygJlwE8OFVBHDgKrLgSInN4WMe9iXiqIVsTMjH7z/GhNTEibOxQswcYIWYOR/zAjBJfiXh3jZ6AAAAAElFTkSuQmCCally representing a
+temporal variable (e.g., "year_month").}
 
-\item{responses}{A vector of response variable names (e.g., "Lat", "Lon",
-"Tmx").}
+\item{responses}{A vector of response variable names to analyze (e.g., "lat"
+for spatial trends, "tmx" for thermal trends).}
 
 \item{n_min}{Minimum number of presences required for a species in each
-hemisphere (or globally for species in both hemispheres).}
+hemisphere (or globally for species in both hemispheres) to perform the analysis.}
 }
 \value{
 A data frame with trend statistics, including:
 \itemize{
 \item \code{species}: Species name.
 \item \code{responses}: The name of the variable analyzed.
-\item \code{trend}: The slope of the linear model.
-\item \code{t}: The t-statistic of the model.
-\item \code{pvalue}: The p-value of the trend.
-\item \code{ci_95_max}: Upper bound of the 95\% confidence interval.
-\item \code{ci_95_min}: Lower bound of the 95\% confidence interval.
+\item \code{trend}: The slope of the linear model, indicating the direction and magnitude of the trend.
+\item \code{t}: The t-statistic of the model, used to assess the significance of the trend.
+\item \code{pvalue}: The p-value of the trend, indicating the probability of observing such a trend if there was no actual trend.
+\item \code{ci_95_max}: Upper bound of the 95\% confidence interval for the trend.
+\item \code{ci_95_min}: Lower bound of the 95\% confidence interval for the trend.
 \item \code{dif_t}: Difference in t-statistic values (comparison of species trend to general trend).
-\item \code{dif_pvalue}: Difference in p-values (comparison of species trend to general trend).
+\item \code{dif_pvalue}: Difference in p-values (comparison of species trend to general trend). A low p-value here suggests the species trend is significantly different from the general trend.
 \item \code{n}: Number of datapoints used for the specific species/hemisphere trend.
 \item \code{hemisphere}: Detected hemisphere ("North", "South", or "Both" for global comparison).
 }
 }
 \description{
 This function fits a linear model to analyze individual trends
-over time, comparing with general data trend, and includes longitude
-transformation and hemisphere detection. For species distributed across
+over time, comparing with a general data trend (often calculated by
+\code{overall_trend}), and includes longitude transformation to handle the
+antimeridian and hemisphere detection. For species distributed across
 both hemispheres, it also compares their overall trend with the global data trend.
+The comparison with the general trend is assessed using an interaction term
+in the linear model. This function is a key step in the \code{SppTrend} package
+workflow for analyzing individual species responses to environmental change.
 }
 \details{
 The function analyzes trends for each species in the provided data,
-considering different response variables and a specified predictor. It
-accounts for the antimeridian issue when analyzing longitude trends and
-separates the analysis by hemisphere. It also compares the trend of each
-species with a general trend calculated from the entire hemisphere's data.
-For species found in both the Northern and Southern Hemispheres, the function
-additionally compares the trend of the species (using all occurrences) with
-the trend of the entire dataset (all hemispheres combined).
+considering different response variables and a specified temporal predictor.
+It accounts for the antimeridian issue when analyzing longitude trends by
+transforming longitude values, allowing for robust trend analysis for species
+crossing the -180/180 degree meridian. The analysis is performed separately
+for each hemisphere to capture potential differences in ecological responses.
+The function compares the trend of each species within a hemisphere with a
+general trend calculated from the entire hemisphere's data. For species
+found in both the Northern and Southern Hemispheres, it additionally compares
+the trend of the species (using all occurrences) with the trend of the entire
+dataset (all hemispheres combined), providing a global perspective on the
+species' trend. Warnings are generated if a species has insufficient data
+(below \code{n_min}) in a given hemisphere or globally, or if errors occur during
+the linear model fitting process. This function typically follows the
+calculation of an overall trend using a function like \code{overall_trend()}.
 }
 \examples{
-\dontrun{
-Data <- data.frame(
+
+data <- data.frame(
    species = sample(paste0("spp_", 1:10), 500, replace = TRUE),
    year = sample(1950:2020, 500, replace = TRUE),
    month = sample(1:12, 500, replace = TRUE),
-   Lon = runif(500, -10, 20),
-   Lat = runif(500, 30, 70),
-   Tmx = rnorm(500, 15, 10),
-   Tmn = rnorm(500, 10, 8)
+   lon = runif(500, -10, 20),
+   lat = runif(500, 30, 70),
+   tme = rnorm(500, 15, 10)
 )
 
-Data$year_month <- Data$year + Data$month * 0.075
+data$year_month <- data$year + data$month * 0.075
 
 predictor <- "year_month"
-responses <- c("Lat", "Lon", "Tmx", "Tmn")
+responses <- c("lat", "lon", "tme")
 
-spp <- unique(Data$species)
+spp <- unique(data$species)
 
-spp_trend_result <- spp_trend(Data, spp, predictor, responses, n_min = 50)
+spp_trend_result <- spp_trend(data, spp, predictor, responses, n_min = 50)
 
-print(spp_trend_result)
-}
+print(head(spp_trend_result))
+
+# Example interpretation: A positive 'trend' for 'lat' might indicate a
+# northward shift in the Northern Hemisphere. A low 'pvalue' (e.g., < 0.05)
+# suggests this trend is statistically significant. A low 'dif_pvalue'
+# might indicate this trend is significantly different from the general trend.
 
 }

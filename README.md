@@ -68,6 +68,8 @@ data <- data.frame(
   lon = runif(500, -10, 20),
   lat = runif(500, 30, 70)
 )
+
+data$year_month  = data$year + data$month * 0.075
 ```
 ### Detailed Steps
 
@@ -169,16 +171,17 @@ these spatial responses should be considered together with the thermal responses
 response to environmental change.
 
 ### Applications and Limitations
-`SppTrend` is a valuable tool for researchers investigating the impacts of environmental change on biodiversity. 
-However, it's crucial to interpret results cautiously, considering potential biases inherent in species occurrence data. 
-The overall trend serves as a reference but might not always represent the absolute species responses to warming or other environmental changes.
+`SppTrend` offers a valuable methodology for researchers investigating how environmental change impacts biodiversity by analyzing trends in species occurrence data.
+However, it's crucial to interpret results cautiously, as species occurrence data can be subject to various biases (e.g., sampling effort, observer expertise). 
+While the overall trend provides a useful community-level reference, remember that it represents an average across all species and might mask diverse individual species responses to environmental drivers like warming. 
+Therefore, focusing on individual species trends and their classification into ecological strategies provides a more nuanced understanding of biodiversity responses.
 
 For more detailed information and examples, please refer to the package documentation within R:
 
 ```{r}
 help(package = SppTrend)
 # Or for a specific function:
-help(general_trend)
+help(spp_trend)
 ```
 ## References
 This package is based on the methodology described in:

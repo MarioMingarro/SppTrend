@@ -4,10 +4,10 @@
 \alias{get_dem_ele}
 \title{Extract Elevation from DEM}
 \usage{
-get_dem_ele(Data, dem_file)
+get_dem_ele(data, dem_file)
 }
 \arguments{
-\item{Data}{A data frame containing longitude and latitude coordinates.}
+\item{data}{A data frame containing longitude and latitude coordinates.}
 
 \item{dem_file}{Path to the DEM raster file.}
 }
@@ -21,19 +21,19 @@ for given longitude and latitude coordinates.
 \examples{
 \dontrun{
 
-Data <- data.frame(
+data <- data.frame(
    species = sample(paste0("spp_", 1:10), 500, replace = TRUE),
    year = sample(1950:2020, 500, replace = TRUE),
    month = sample(1:12, 500, replace = TRUE),
-   Lon = runif(500, -10, 20),
-   Lat = runif(500, 30, 70)
+   lon = runif(500, -10, 20),
+   lat = runif(500, 30, 70)
 )
 
  dem_file <- "path/to/your/dem.tif"
 
- Data_with_elevation <- get_dem_ele(Data, dem_file)
+ data_with_elevation <- get_dem_ele(data, dem_file)
 
- print(Data_with_elevation)
+ print(data_with_elevation)
 }
 
 }

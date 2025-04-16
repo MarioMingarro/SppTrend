@@ -2,42 +2,48 @@
 % Please edit documentation in R/get_era5_tme.R
 \name{get_era5_tme}
 \alias{get_era5_tme}
-\title{Indivudual Trend Analysis}
+\title{Get ERA5 Temperature data}
 \usage{
-get_era5_tme(Data, nc_file, month_col = NULL)
+get_era5_tme(data, nc_file, month_col = NULL)
 }
 \arguments{
-\item{Data}{A data frame containing the variables for the model.}
+\item{data}{A data frame with columns for longitude ('lon'), latitude ('lat'), and year ('year').
+Optionally, a column specifying the month can be provided if the \code{month_col} argument is used.}
 
-\item{responses}{In this case date is response.}
+\item{nc_file}{Path to the ERA5 netCDF file. This file should contain the 't2m' (2-meter temperature) variable.}
 
-\item{predictor}{A vector of predictor variable names.}
-
-\item{spp}{A vector of species names.}
-
-\item{n_min}{Value correspondign to minumun presences of a specie.}
+\item{month_col}{(Optional) The name of the column in the \code{data} data frame that contains the month (as a numeric value from 1 to 12). If this argument is not NULL, the function will extract monthly temperature. If NULL, it will extract the annual mean temperature for the given year.}
 }
 \value{
-Data data frame with Mean Temperature in K
+A data frame identical to the input \code{data} but with an additional column named 'tme' containing the temperature in degrees Celsius.
 }
 \description{
-This function fits a linear model to analyze individual trends over time and comparing with general data trend
+This function extracts temperature data from an ERA5 netCDF file for given coordinates and times.
+It can extract monthly temperature if a month column is provided, or annual mean temperature otherwise.
 }
 \examples{
 \dontrun{
-
-Data <- data.frame(
-   species = sample(paste0("spp_", 1:10), 500, replace = TRUE),
-   year = sample(1950:2020, 500, replace = TRUE),
-   month = sample(1:12, 500, replace = TRUE),
-   Lon = runif(500, -10, 20),
-   Lat = runif(500, 30, 70)
+data <- data.frame(
+  species = sample(paste0("spp_", 1:10), 500, replace = TRUE),
+  year = sample(1950:2020, 500, replace = TRUE),
+  month = sample(1:12, 500, replace = TRUE),
+  lon = runif(500, -10, 20),
+  lat = runif(500, 30, 70)
 )
 
-nc_file <- "C:/A_TRABAJO/A_JORGE/SPP_VIRTUALES/MARIPOSAS/TEST_Spp_Trends/era5_1940_2023.nc"
+nc_file <- "path/to/your/era5_data.nc" # Replace with the actual path to your file
 
-Data_with_Tme <- get_era5_tme(Data, nc_file, month_col = "month")
+data_with_monthly_tme <- get_era5_tme(data, nc_file, month_col = "month")
+print(head(data_with_monthly_tme))
 
-print(Data_with_Tme)
+data_annual <- data.frame(
+  species = sample(paste0("spp_", 1:5), 200, replace = TRUE),
+  year = sample(1960:2010, 200, replace = TRUE),
+  lon = runif(200, -5, 15),
+  lat = runif(200, 35, 65)
+)
+
+data_with_annual_tme <- get_era5_tme(data_annual, nc_file)
+print(head(data_with_annual_tme))
 }
 }

@@ -4,10 +4,10 @@
 \alias{overall_trend}
 \title{Overall Trend Analysis}
 \usage{
-overall_trend(Data, predictor, responses)
+overall_trend(data, predictor, responses)
 }
 \arguments{
-\item{Data}{A data frame containing the variables for the model.}
+\item{data}{A data frame containing the variables for the model.}
 
 \item{predictor}{A vector of predictor variable names.}
 
@@ -25,28 +25,26 @@ A data frame with trend statistics, including:
 }
 }
 \description{
-This function fits a linear model to analyze trends over time.
+This function fits a linear model to analyze the overall trends over time.
 }
 \examples{
-\dontrun{
-Data <- data.frame(
+
+data <- data.frame(
    species = sample(paste0("spp_", 1:10), 500, replace = TRUE),
    year = sample(1950:2020, 500, replace = TRUE),
    month = sample(1:12, 500, replace = TRUE),
-   Lon = runif(500, -10, 20),
-   Lat = runif(500, 30, 70),
-   Tmx = rnorm(500, 15, 10),
-   Tmn = rnorm(500, 10, 8)
+   lon = runif(500, -10, 20),
+   lat = runif(500, 30, 70),
+   tme = rnorm(500, 15, 10)
 )
 
-Data$year_month <- Data$year + Data$month * 0.075
+data$year_month <- data$year + data$month * 0.075
 
 predictor <- "year_month"
-responses <- c("Lat", "Lon", "Tmx", "Tmn")
+responses <- c("lat", "lon", "tme")
 
-overall_trend_result <- overall_trend(Data, predictor, responses)
+overall_trend_result <- overall_trend(data, predictor, responses)
 
 print(overall_trend_result)
-}
 
 }

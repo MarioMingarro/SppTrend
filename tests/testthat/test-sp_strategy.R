@@ -15,7 +15,7 @@ spp_trends_results <- data.frame(
 )
 
 spp <- unique(spp_trends_results$species)
-sig_level = 0.05 / length(spp)
+sig_level = 0.05 / length(spp) # Bonferroni
 
 testthat::test_that("spp_strategy works correctly", {
   strategies <- spp_strategy(spp_trends_results, sig_level)
