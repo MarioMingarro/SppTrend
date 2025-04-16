@@ -4,8 +4,8 @@
 
 ![Estrategias](title.png)
 
-
-`SppTrend` is an R package that provides a methodology to analyze trends in species occurrence data over time, with a particular focus on the influence of environmental factors such as temperature. This package facilitates the derivation of explanatory hypotheses about the effects of distribution changes in species assemblages, based on historical presence data that includes temporal and geographic information.
+The R package `SppTrend` provides a methodology to analyze how species occurrence changes over time, particularly in relation to environmental factors like temperature. 
+It helps researchers develop explanatory hypotheses about the impact of environmental shifts on species assemblages by analyzing historical presence data that includes temporal and geographic information.
 
 ## Installation
 
@@ -23,35 +23,40 @@ devtools::install_github("MarioMingarro/SppTrend")
 
 ## Overview of Key Features
 
-The `SppTrend` package provides a methodology to derive explanatory hypotheses about the effects of distribution changes in species assemblages. 
-It attempts to help researchers understand species responses to environmental change by analyzing historical occurrence data includes:
+`SppTrend` helps understand species responses to environmental change by analyzing historical occurrence data that includes:
 
-  - **Predictors** - Sampling date (year and preferably month and year)
+  - **Predictors** - Sampling date (year, preferably month and year)
 
   - **Responses** - Geographic location (latitude and longitude) and environmental factors (elevation and temperature).
 
-The methodology assumes that the observed species occurrences represent a temporal sequence reflecting changes in their responses to these factors.
+The methodology assumes that the observed species occurrences reflect a temporal sequence of changes in response to these factors.
 
+## Workflow
 
+`SppTrend` provides a structured workflow for analyzing these trends:
 
-The `SppTrend` package provides a structured workflow for analyzing trends in species occurrence data:
+1.  **Environmental Data Integration (Optional)**:  Enhance your occurrence records with environmental context using functions like `get_era5_tme()` for temperature data and `get_dem_ele()` for elevation.
+2.  **Overall Trend Estimation**: Calculate the average temporal trend of selected response variables across all species using `overall_trend()`. This provides a general baseline to compare with individual specie trend.
+3.  **Individual Trend Analysis**: Determine the specific temporal trends for each species and response variable using `spp_trend()`. This allows comparison of individual species' responses to the overall trend.
+4.  **Ecological Strategy Classification**: Categorize species into distinct ecological strategies based on the significance and direction of their individual trends relative to the overall trend using `spp_strategy()`.
 
-1.  **Environmental Data Integration (Optional)**: Utilize functions like `get_era5_tme()` to incorporate temperature data and `get_dem_ele()` to add elevation information to your occurrence records. This step enriches the dataset with environmental context.
-2.  **Overall Trend Estimation**: Employ the `overall_trend()` function to calculate the average temporal trend of the selected response variables across all species in your dataset. This provides a general baseline for comparison.
-3.  **Individual Trend Analysis**: Use the `spp_trend()` function to determine the individual temporal trends for each species and response variable. This step compares individual species' responses with the overall trends.
-4.  **Ecological Strategy Classification**: Apply the `spp_strategy()` function to categorize species into distinct ecological strategies based on the significance and direction of their individual trends relative to the overall trend.
+### Data Requirements
 
-### Detailed Steps
-
-The `SppTrend` package is designed to analyze species presence records. To utilize the package effectively, your dataset must, at a minimum, include the following information for each occurrence:
+The `SppTrend` package has been designed to analyze species presence records. 
+To utilize the package effectively, your dataset must, at a minimum, include the following information for each occurrence:
 
 * Species identification (e.g., 'species').
-* Geographic coordinates: Latitude (e.g., 'Lat') and Longitude (e.g., 'Lon').
-* Temporal information: Year (e.g., 'year'), and preferably Month (e.g., 'month').
+* Geographic coordinates: Latitude (e.g., 'lat') and Longitude (e.g., 'lon'). The package assumes the use of the **WGS84 (World Geodetic System 1984)** coordinate reference system for global applicability.
+* Temporal information: Year (e.g., 'year') is required. Including Month (e.g., 'month') is highly recommended for more detailed analysis.
 
-Given its potential for global applications, the package assumes the use of the WGS84 (World Geodetic System 1984) coordinate reference system.
 
-**It is essential that the column names in your input dataset either match the default names expected by the `SppTrend` functions (e.g., 'species', 'year', 'month', 'Lon', 'Lat', and environmental response variables such as 'Ele', 'Tme', 'Tmx', or 'Tmn').**
+**Important** Ensure that the column names in your input dataset match the default names expected by the `SppTrend` functions. These default names are:
+- **Species Name**: 'species'
+- **Year**: 'year'
+- **Month**: 'month'
+- **Longitude**: 'lon'
+- **Latitude**: 'lat'
+- **Environmental Response Variables** (if applicable): 'ele' (elevation), 'tme' (temperature), 'tmx' (maximum temperature), 'tmn' (minimum temperature).
 
 The following is an example illustrating the structure of a data frame containing 500 randomly generated presence records for 10 distinct species:
 
@@ -64,6 +69,7 @@ data <- data.frame(
   lat = runif(500, 30, 70)
 )
 ```
+### Detailed Steps
 
 ### Phase 1: Environmental Data Generation
 
@@ -84,6 +90,7 @@ The `SppTrend` package provides the following function to incorporate ERA5 tempe
 ```{r}
 nc_file <- "path/to/your/era5_data.nc"
 data <- get_era5_tme(data, nc_file, month_col = "month")
+print(data$tme)
 ```
 #### Digital Elevation Model (DEM) Data
 
@@ -95,6 +102,7 @@ Furthermore, it is highly recommended to utilize any existing elevation data alr
 ```{r}
 dem_file <- "path/to/your/dem.tif"
 data <- get_dem_ele(data, dem_file)
+print(data$ele)
 ```
 ### Phase 2: Estimation of the Overall Trend of Responses
 
@@ -102,7 +110,10 @@ The `overall_trend()` function calculates the Overall Trend (OT) for specified r
 This trend serves as a neutral reference to evaluate individual species' responses. It's important to consider potential biases in the data when interpreting the OT.
 
 ```{r}
+predictor <- "year"
+responses <- c("lat", "lon", "ele", "tme")
 overall_trend_result <- overall_trend(data, responses, predictor)
+print(overall_trend_result)
 ```
 
 ### Phase 3: Estimation of Individual Trends of Responses
@@ -110,7 +121,11 @@ overall_trend_result <- overall_trend(data, responses, predictor)
 The `spp_trend()` function calculates the individual temporal trend for each species and response variable, comparing it to the general trend observed in the data. It also handles longitude transformations and considers hemisphere-specific trends.
 
 ```{r}
-general_trend_result <- spp_trend(data, spp, predictor, responses, n_min = 50)
+predictor <- "year"
+responses <- c("lat", "lon", "ele", "tme")
+spp <- unique(data$species)
+spp_trend_result <- spp_trend(data, spp, predictor, responses, n_min = 50)
+print(spp_trend_result)
 ```
 
 ### Phase 4: Analysis of Specific Species Responses
@@ -119,7 +134,8 @@ The `spp_strategy()` function analyzes the results from `spp_trend()` to classif
 This function incorporates logic for poleward shifts in latitude based on hemisphere and can also classify trends in elevation.
 
 ```{r}
-spp_strategy_results <- spp_strategy(spp_trends_results, sig_level = 0.05, responses = c("Lat", "Lon", "Ele", "Tmx"))
+spp_strategy_results <- spp_strategy(spp_trends_results, sig_level = 0.05, responses = c("lat", "lon", "ele", "tme"))
+print(spp_strategy_results)
 ```
 
 ### Ecological strategies
