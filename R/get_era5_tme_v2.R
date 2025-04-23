@@ -2,8 +2,7 @@
 #'
 #' This function extracts monthly temperature data from an ERA5 netCDF file for given coordinates and times.
 #'
-#' @param data A data frame with columns for longitude ('lon'), latitude ('lat'), and year ('year').
-#'             Optionally, a column specifying the month can be provided if the `month_col` argument is used.
+#' @param data A data frame with columns for longitude ('lon'), latitude ('lat'), year ('year') and month ('month').
 #' @param nc_file Path to the ERA5 netCDF file. This file should contain the 't2m' (2-meter temperature) variable.
 #'
 #' @return A data frame identical to the input `data` but with an additional column named 'tme' containing the temperature in degrees Celsius.
@@ -24,13 +23,13 @@
 #'
 #' nc_file <- "path/to/your/era5_data.nc" # Replace with the actual path to your file
 #'
-#' data_with_monthly_tme <- get_era5_tme(data, nc_file, month_col = "month")
+#' data_with_monthly_tme <- get_era5_tme(data, nc_file)
 #' print(head(data_with_monthly_tme))
 #'
 #' }
 #' @export
 #'
-get_era5_tme2 <- function(data, nc_file) {
+get_era5_tme <- function(data, nc_file) {
   era5_raster <- terra::rast(nc_file)
   variable_name <- terra::varnames(era5_raster)
   num_layers <- terra::nlyr(era5_raster)
@@ -45,7 +44,7 @@ get_era5_tme2 <- function(data, nc_file) {
     lon <- ifelse(lon < 0, 360 + lon, lon) #ERA5
     lat <- data$lat[i]
     year <- data$year[i]
-    month_val <- sprintf("%02d", data[[month_col]][i])
+    month_val <- sprintf("%02d", data[["month"]][i])
     target_date_str <- paste0(year, "-", month_val, "-01")
     target_date <- as.Date(target_date_str)
     month_year_str <- format(target_date, "%Y-%m")
