@@ -42,12 +42,13 @@
 #' @export
 #'
 overall_trend <- function(data, predictor, responses) {
-  data$hemisphere_tag <- ifelse(data$lat >= 0, "North", "South")
+
+  data$hemisphere <- ifelse(data$lat >= 0, "North", "South")
 
   groups_to_analyze <- list(
     Global = data,
-    North = data[data$hemisphere_tag == "North", ],
-    South = data[data$hemisphere_tag == "South", ]
+    North = data[data$hemisphere == "North", ],
+    South = data[data$hemisphere == "South", ]
   )
 
   results_list <- list()
@@ -55,21 +56,21 @@ overall_trend <- function(data, predictor, responses) {
     for (h_name in names(groups_to_analyze)) {
       data_set <- groups_to_analyze[[h_name]]
       current_var <- var
+
       if (var == "lon") {
         data_set$lon_transformed <- (data_set$lon + 180) %% 360
         current_var <- "lon_transformed"
       }
       if (nrow(data_set) > 0 && length(unique(data_set[[predictor]])) > 1) {
-
         formula_str <- paste(current_var, "~", paste(predictor, collapse = "+"))
 
         tryCatch({
           model_g <- lm(as.formula(formula_str), data = data_set)
           if (length(coef(model_g)) > 1) {
-            trend_value <- coef(model_g)[2]
             summary_model <- summary(model_g)
 
             if (nrow(summary_model$coefficients) >= 2 && !is.na(summary_model$coefficients[2, 3])) {
+              trend_value <- coef(model_g)[2]
               conf_int <- confint(model_g, level = 0.95)
 
               results_list[[length(results_list) + 1]] <- data.frame(
@@ -77,8 +78,8 @@ overall_trend <- function(data, predictor, responses) {
                 trend = trend_value,
                 t = summary_model$coefficients[2, 3],
                 pvalue = summary_model$coefficients[2, 4],
-                ci_95_max = conf_int[2, 2],
-                ci_95_min = conf_int[2, 1],
+                ci_95_max = conf_int[predictor, 2],
+                ci_95_min = conf_int[predictor, 1],
                 n = nrow(data_set),
                 hemisphere = h_name,
                 stringsAsFactors = FALSE
@@ -88,8 +89,9 @@ overall_trend <- function(data, predictor, responses) {
         }, error = function(e) {
           warning(paste("Error fitting model for response", var, "in", h_name, ":", conditionMessage(e)))
         })
-      } else {if (h_name != "Global") {
-          warning(paste("Insufficient data for response", var, "in", h_name, "hemisphere."))
+      } else {
+        if (h_name != "Global") {
+          warning(paste("Insufficient data or predictor variation for response", var, "in", h_name, "hemisphere."))
         }
       }
     }

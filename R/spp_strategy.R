@@ -211,26 +211,31 @@ spp_strategy <- function(spp_trend_result,
     dplyr::summarise(
       n = sum(n),
       Spatial_lat_Poleward = dplyr::first(Spatial_lat_Poleward),
-      Spatial_lon = if ("lon" %in% unique(responses))
+      Spatial_lon = if("lon" %in% unique(responses)){
         dplyr::first(Spatial_lon[!is.na(Spatial_lon)])
-      else
-        NULL,
-      Spatial_ele = if ("ele" %in% unique(responses))
+      }else{
+        NA_character_
+        },
+      Spatial_ele = if ("ele" %in% unique(responses)){
         dplyr::first(Spatial_ele[!is.na(Spatial_ele)])
-      else
-        NULL,
-      Thermal_tmx = if ("tmx" %in% unique(responses))
+      }else{
+        NA_character_
+        },
+      Thermal_tmx = if ("tmx" %in% unique(responses)){
         dplyr::first(Thermal_tmx[!is.na(Thermal_tmx)])
-      else
-        NULL,
-      Thermal_tmn = if ("tmn" %in% unique(responses))
+      }else{
+        NA_character_
+        },
+      Thermal_tmn = if ("tmn" %in% unique(responses)){
         dplyr::first(Thermal_tmn[!is.na(Thermal_tmn)])
-      else
-        NULL,
-      Thermal_tme = if ("tme" %in% unique(responses))
+      }else{
+        NA_character_
+        },
+      Thermal_tme = if ("tme" %in% unique(responses)){
         dplyr::first(Thermal_tme[!is.na(Thermal_tme)])
-      else
-        NULL,
+      }else{
+        NA_character_
+        },
       .groups = "drop"
     ) %>%
     tidyr::pivot_wider(

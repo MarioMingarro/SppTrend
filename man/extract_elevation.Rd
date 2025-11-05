@@ -31,20 +31,3 @@ elevation values.
 This function extracts elevation values from a Digital Elevation Model (DEM) raster file for given longitude and latitude coordinates.
 It ensures that point coordinates are correctly transformed to the DEM's Coordinate Reference System (CRS) before extraction.
 }
-\examples{
-
-data <- data.frame(
-   species = sample(paste0("spp_", 1:10), 500, replace = TRUE),
-   year = sample(1950:2020, 500, replace = TRUE),
-   month = sample(1:12, 500, replace = TRUE),
-   lon = runif(500, -10, 20),
-   lat = runif(500, 30, 70)
-)
-
- dem_path <- "path/to/your/dem.tif"
-
- data_with_elevation <- extract_elevation(locations, dem_path, lon_col = "lon", lat_col = "lat")
-
- print(data_with_elevation)
-
-}
