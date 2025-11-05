@@ -35,7 +35,7 @@ The methodology assumes that the observed species occurrences reflect a temporal
 
 `SppTrend` provides a structured workflow for analyzing these trends:
 
-1.  **Environmental Data Integration (Optional)**:  Enhance your occurrence records with environmental context using functions like `get_era5_tme()` for temperature data and `get_dem_ele()` for elevation.
+1.  **Environmental Data Integration (Optional)**:  Enhance your occurrence records with environmental context using functions like `extract_era5_data()` for temperature data and `extract_elevation()` for elevation.
 2.  **Overall Trend Estimation**: Calculate the average temporal trend of selected response variables across all species using `overall_trend()`. This provides a general baseline to compare with individual specie trend.
 3.  **Individual Trend Analysis**: Determine the specific temporal trends for each species and response variable using `spp_trend()`. This allows comparison of individual species' responses to the overall trend.
 4.  **Ecological Strategy Classification**: Categorize species into distinct ecological strategies based on the significance and direction of their individual trends relative to the overall trend using `spp_strategy()`.
@@ -84,25 +84,25 @@ You can explore the ERA5 daily statistics dataset on the Copernicus Climate Chan
 
 The `SppTrend` package provides the following function to incorporate ERA5 temperature data:
 
-`get_era5_tme()`: Allows users to obtain average temperature data (mean temperature of the environment) for species occurrences using ERA5 reanalysis data. 
+`extract_era5_data()`: Allows users to obtain average temperature data (mean temperature of the environment) for species occurrences using ERA5 reanalysis data. 
 
 *Notes: ERA5 data is available from 1940 onwards. The data must be in `.netcdf` format.*
 
 ```{r}
 nc_file <- "path/to/your/era5_data.nc"
-data <- get_era5_tme(data, nc_file, month_col = "month")
+data <- extract_era5_data(data, nc_file, month_col = "month")
 print(data$tme)
 ```
 #### Digital Elevation Model (DEM) Data
 
-`get_dem_ele()`: This function can be used to retrieve Digital Elevation Model (DEM) data for the species occurrences, providing information about the elevation at which the species were recorded.
+`extract_elevation()`: This function can be used to retrieve Digital Elevation Model (DEM) data for the species occurrences, providing information about the elevation at which the species were recorded.
 For obtaining elevation data for species occurrences, this example utilizes the WorldClim dataset ([WorldClim](https://www.worldclim.org/data/worldclim21.html)). However, users are encouraged to consider other Digital Elevation Models (DEMs) based on the specific resolution requirements of their analysis. For instance, the [EU-DEM dataset](https://dataspace.copernicus.eu/explore-data/data-collections/copernicus-contributing-missions/collections-description/COP-DEM) provides high-resolution elevation data for Europe.
 
 Furthermore, it is highly recommended to utilize any existing elevation data already present within the user's occurrence dataset. This allows for a direct comparison and validation of the retrieved elevation values, potentially improving the accuracy and reliability of the analysis.
 *Notes: DEM data must be in `.tif` format.*
 ```{r}
 dem_file <- "path/to/your/dem.tif"
-data <- get_dem_ele(data, dem_file)
+data <- extract_elevation(data, dem_file)
 print(data$ele)
 ```
 ### Phase 2: Estimation of the Overall Trend of Responses

@@ -7,25 +7,28 @@
 overall_trend(data, predictor, responses)
 }
 \arguments{
-\item{data}{A data frame containing the variables for the model.}
+\item{data}{A \verb{data frame} containing the variables for the model, including 'species', 'year', 'month', 'lon', 'lat', 'tmx' and/or 'tmn'.}
 
-\item{predictor}{A vector of predictor variable names.}
+\item{predictor}{A \code{character}vector of predictor variable names representing a temporal variable (e.g., "year_month").}
 
-\item{responses}{A vector of response variable names.}
+\item{responses}{A \code{character} vector of response variable names to analyze (e.g., "lat"  for spatial trends, "tmx" for thermal trends).}
 }
 \value{
 A data frame with trend statistics, including:
 \itemize{
-\item \code{Response}: The name of the variable analyzed.
-\item \code{Trend}: The slope of the linear model.
+\item \code{responses}: The name of the variable analyzed.
+\item \code{trend}: The slope of the linear model.
 \item \code{t}: The t-statistic of the model.
 \item \code{pvalue}: The p-value of the trend.
 \item \code{ci_95_max}: Upper bound of the 95\% confidence interval.
 \item \code{ci_95_min}: Lower bound of the 95\% confidence interval.
+\item \code{n}: Number of datapoints used for the specific hemisphere trend.
+\item \code{hemisphere}: The geographical context of the trend ("Global", "North", or "South").
 }
 }
 \description{
-This function fits a linear model to analyze the overall trends over time.
+This function fits a linear model to analyze the overall trends over time for multiple response variables, extracting statistics.
+For 'lat' responses, the trend is calculated separately for each hemisphere.
 }
 \examples{
 

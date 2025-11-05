@@ -5,7 +5,7 @@ data <- data.frame(
   year = sample(1900:2024, 500, replace = TRUE),
   month = sample(1:12, 500, replace = TRUE),
   lon = runif(500, -10, 20),
-  lat = runif(500, 30, 70),
+  lat = runif(500, -30, 70),
   tme = rnorm(500, 15, 10)
 )
 

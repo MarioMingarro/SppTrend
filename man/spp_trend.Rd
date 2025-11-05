@@ -7,19 +7,15 @@
 spp_trend(data, spp, predictor, responses, n_min = 50)
 }
 \arguments{
-\item{data}{A data frame containing the variables for the model, including
-'species', 'year', 'month', 'lon', 'lat', 'tmx', 'tmn'.}
+\item{data}{A \verb{data frame} containing the variables for the model, including 'species', 'year', 'month', 'lon', 'lat', 'tmx' and/or similar.}
 
-\item{spp}{A vector of species names.}
+\item{spp}{A \code{character} vector of unique species names.}
 
-\item{predictor}{A vector of predictor variable names, idedata:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAAbElEQVR4Xs2RQQrAMAgEfZgf7W9LAguybljJpR3wEse5JOL3ZObDb4x1loDhHbBOFU6i2Ddnw2KNiXcdAXygJlwE8OFVBHDgKrLgSInN4WMe9iXiqIVsTMjH7z/GhNTEibOxQswcYIWYOR/zAjBJfiXh3jZ6AAAAAElFTkSuQmCCally representing a
-temporal variable (e.g., "year_month").}
+\item{predictor}{A \code{character}vector of predictor variable names representing a temporal variable (e.g., "year_month").}
 
-\item{responses}{A vector of response variable names to analyze (e.g., "lat"
-for spatial trends, "tmx" for thermal trends).}
+\item{responses}{A \code{character} vector of response variable names to analyze (e.g., "lat"  for spatial trends, "tmx" for thermal trends).}
 
-\item{n_min}{Minimum number of presences required for a species in each
-hemisphere (or globally for species in both hemispheres) to perform the analysis.}
+\item{n_min}{Minimum \code{numeric} number of presences required for a species in each hemisphere (or globally for species in both hemispheres) to perform the analysis.}
 }
 \value{
 A data frame with trend statistics, including:
@@ -38,21 +34,15 @@ A data frame with trend statistics, including:
 }
 }
 \description{
-This function fits a linear model to analyze individual trends
-over time, comparing with a general data trend (often calculated by
-\code{overall_trend}), and includes longitude transformation to handle the
-antimeridian and hemisphere detection. For species distributed across
-both hemispheres, it also compares their overall trend with the global data trend.
-The comparison with the general trend is assessed using an interaction term
-in the linear model. This function is a key step in the \code{SppTrend} package
-workflow for analyzing individual species responses to environmental change.
+This function fits a linear model to analyze individual trends over time, comparing with a general data trend (often calculated by\code{overall_trend}),
+and includes longitude transformation to handle the antimeridian and hemisphere detection. For species distributed across both hemispheres, it also compares their overall trend
+with the global data trend. The comparison with the general trend is assessed using an interaction term in the linear model.
 }
 \details{
 The function analyzes trends for each species in the provided data,
 considering different response variables and a specified temporal predictor.
 It accounts for the antimeridian issue when analyzing longitude trends by
-transforming longitude values, allowing for robust trend analysis for species
-crossing the -180/180 degree meridian. The analysis is performed separately
+transforming longitude values. The analysis is performed separately
 for each hemisphere to capture potential differences in ecological responses.
 The function compares the trend of each species within a hemisphere with a
 general trend calculated from the entire hemisphere's data. For species
