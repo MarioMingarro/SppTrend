@@ -1,6 +1,6 @@
-#' Extract elevation from DEM
+#' @title Extract elevation from DEM
 #'
-#' This function extracts elevation values from a Digital Elevation Model (DEM) raster file for given longitude and latitude coordinates.
+#' @description This function extracts elevation values from a Digital Elevation Model (DEM) raster file for given longitude and latitude coordinates.
 #' It ensures that point coordinates are correctly transformed to the DEM's Coordinate Reference System (CRS) before extraction.
 #'
 #' @param data A data frame containing location coordinates. Must include columns specified by 'lon_col' and 'lat_col'.

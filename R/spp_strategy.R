@@ -1,4 +1,4 @@
-#' @title spp_strategy
+#' @title Classify species ecological strategies
 #' @description Creates a summary table classifying species based on their significant spatial and thermal trends, potentially incorporating poleward shift logic for
 #'   latitude based on hemisphere information. It compares individual species trends (from `spp_trend`) with a general trend and classifies them into different
 #'   ecological strategies as defined in the SppTrend methodology. Note that longitude trend interpretation depends on whether the input used transformed coordinates (Antimeridian=0).

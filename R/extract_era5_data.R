@@ -1,6 +1,6 @@
-#' Extract ERA5 data from NetCDF file
+#' @title Extract ERA5 data from NetCDF file
 #'
-#' This function extracts climate variable values from an ERA5 NetCDF file (or similar structure) based on location (lon/lat) and time (year/month) for a set of data points.
+#' @description This function extracts climate variable values from an ERA5 NetCDF file (or similar structure) based on location (lon/lat) and time (year/month) for a set of data points.
 #'
 #' @param data A data frame containing points of interest. Must include 'lon', 'lat', 'year', and 'month' columns.
 #' @param nc_file Path to the NetCDF raster file containing the climate data.

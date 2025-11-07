@@ -2,7 +2,7 @@
 % Please edit documentation in R/spp_strategy.R
 \name{spp_strategy}
 \alias{spp_strategy}
-\title{spp_strategy}
+\title{Classify species ecological strategies}
 \usage{
 spp_strategy(spp_trend_result, sig_level = 0.05, responses = responses)
 }

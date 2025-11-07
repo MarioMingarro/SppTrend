@@ -1,5 +1,5 @@
-#' @title spp_trend
-#' @description This function fits a linear model to analyze individual trends over time, comparing with a general data trend (often calculated by`overall_trend`),
+#' @title Individual trend analysis
+#' @description This function fits a linear model to analyze individual trends over time, comparing with a general data trend (`overall_trend`),
 #' and includes longitude transformation to handle the antimeridian and hemisphere detection. For species distributed across both hemispheres, it also compares their overall trend
 #' with the global data trend. The comparison with the general trend is assessed using an interaction term in the linear model.
 #'

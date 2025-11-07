@@ -2,7 +2,7 @@
 % Please edit documentation in R/spp_trend.R
 \name{spp_trend}
 \alias{spp_trend}
-\title{spp_trend}
+\title{Individual trend analysis}
 \usage{
 spp_trend(data, spp, predictor, responses, n_min = 50)
 }
@@ -34,7 +34,7 @@ A data frame with trend statistics, including:
 }
 }
 \description{
-This function fits a linear model to analyze individual trends over time, comparing with a general data trend (often calculated by\code{overall_trend}),
+This function fits a linear model to analyze individual trends over time, comparing with a general data trend (\code{overall_trend}),
 and includes longitude transformation to handle the antimeridian and hemisphere detection. For species distributed across both hemispheres, it also compares their overall trend
 with the global data trend. The comparison with the general trend is assessed using an interaction term in the linear model.
 }

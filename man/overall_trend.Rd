@@ -2,7 +2,7 @@
 % Please edit documentation in R/overall_trend.R
 \name{overall_trend}
 \alias{overall_trend}
-\title{Overall Trend Analysis}
+\title{Overall trend analysis}
 \usage{
 overall_trend(data, predictor, responses)
 }
@@ -27,8 +27,9 @@ A data frame with trend statistics, including:
 }
 }
 \description{
-This function fits a linear model to analyze the overall trends over time for multiple response variables, extracting statistics.
-For 'lat' responses, the trend is calculated separately for each hemisphere.
+This function fits a linear model to stimate trends over time to get a general data trend,
+and includes longitude transformation to handle the antimeridian and hemisphere detection. For species distributed across both hemispheres, it generates their overall trend
+for each hemisphere and for the global data trend. The comparison with the general trend is assessed using an interaction term in the linear model.
 }
 \examples{
 
