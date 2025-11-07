@@ -2,7 +2,7 @@
 
 [![CRAN Status](https://www.r-pkg.org/badges/version/SppTrend)](https://cran.r-project.org/package=SppTrend)
 
-![Estrategias](title.png)
+![Estrategias](man/figures/title.png)
 
 The R package `SppTrend` provides a methodology to analyze how species occurrence changes over time, particularly in relation to environmental factors like temperature. 
 It helps researchers develop explanatory hypotheses about the impact of environmental shifts on species assemblages by analyzing historical presence data that includes temporal and geographic information.
@@ -143,7 +143,7 @@ print(spp_strategy_results)
 
 The `SppTrend` package identifies several spatial and thermal response strategies:
 
-![Estrategias](strategies.png)
+![Estrategias](man/figures/strategies.png)
 
 **Spatial Responses**
 

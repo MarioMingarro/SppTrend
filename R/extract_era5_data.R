@@ -11,6 +11,7 @@
 #'
 #' @importFrom terra rast varnames nlyr time vect project extract
 #' @importFrom stringr str_extract
+#' @importFrom stats na.omit
 #'
 #' @export
 extract_era5_data <- function(data, nc_file, variable = "t2m", input_crs = "EPSG:4326") {

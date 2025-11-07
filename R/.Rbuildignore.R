@@ -1,0 +1,2 @@
+^SppTrend\.Rproj$
+  ^\.Rproj\.user$
