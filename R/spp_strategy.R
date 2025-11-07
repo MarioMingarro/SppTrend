@@ -20,17 +20,19 @@
 #'   classification columns for responses present in this vector and in the
 #'   'responses' column of `spp_trend_result`.
 #'
-#' @return A data frame summarizing the ecological strategy of each species for each
-#'   analyzed response variable. The table includes the species name, hemisphere,
-#'   sample size, and classification columns for spatial (latitude, longitude,
-#'   elevation if present) and thermal (tmx, tmn, tme if present) responses.
-#'   The classification for latitude ('lat') is 'Spatial_lat_Poleward' and indicates
-#'   poleward (SP) or equatorward (SE) shifts based on hemisphere. Other spatial
-#'   responses ('lon', 'ele') are classified as 'Spatial_lon' and 'Spatial_ele'
-#'   (Spatial Adaptation 'SA', Spatial Discordance 'SD', Spatial Conformity 'SC').
-#'   Thermal responses ('tmx', 'tmn', 'tme') are classified as 'Thermal_tmx',
-#'   'Thermal_tmn', and 'Thermal_tme' (Thermal Tolerance 'TT', Thermal Adjustment
-#'   'TA', Thermal Conformity 'TC').
+#' @return A `data frame` summarizing the ecological strategy of each species for each
+#'   analyzed response variable.
+#'   The table includes:
+#'    - Species name
+#'    - Hemisphere
+#'    - Sample size
+#'    - Classification columns for:
+#'        - Spatial (latitude, longitude and elevation if present) responses. Spatial Adaptation `SA`, Spatial Discordance `SD`, Spatial Conformity `SC`
+#'        - Thermal (tmx, tmn, tme if present) responses. Thermal Tolerance `TT`, Thermal Adjustment `TA`, Thermal Conformity `TC`
+#'
+#'   Classification for latitude (`lat`) is `Spatial_lat_Poleward` and indicates poleward (SP) or equatorward (SE) shifts based on hemisphere.
+#'   Other spatial responses (`lon`, `ele`) are classified as `Spatial_lon` and `Spatial_ele`
+#'   Thermal responses (`tmx`, `tmn`, `tme`) are classified as `Thermal_tmx`, `Thermal_tmn`, and `Thermal_tme`.
 #'
 #' @details This function takes the trend analysis results from `spp_trend` and
 #'   classifies each species' response based on the significance of its trend and
@@ -67,8 +69,9 @@
 #'       }
 #'   }
 #'   The function handles latitude trends with a poleward shift logic based on the
-#'   detected hemisphere. The interpretation of longitude trends assumes that if
-#'   transformation was applied in `spp_trend`, it used the Antimeridian as 0.
+#'   detected hemisphere.
+#'
+#'   NOTE: The interpretation of longitude trends assumes that if transformation was applied in `spp_trend`, it used the Antimeridian as 0.
 #'
 #' @importFrom dplyr select mutate case_when all_of lead group_by summarise if_else ungroup
 #' @importFrom tidyr pivot_wider
