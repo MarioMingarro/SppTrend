@@ -36,16 +36,16 @@ extract_elevation <- function(data, dem_file) {
     warning("DEM file has more than one layer. Only the first layer will be used for extraction.")
     dem_raster <- dem_raster[[1]]
   }
-  current_crs <- terra::crs(dem_raster, proj = TRUE)
-  if (is.na(current_crs) || current_crs != target_crs) {
-    message(paste("Reproyectando DEM de", current_crs, "a", target_crs, "para estandarización."))
+  is_same_crs <- terra::same.crs(dem_raster, target_crs)
+  if (!is_same_crs) {
+    message(paste("Reproyectando DEM a", target_crs, "para estandarización."))
     dem_raster <- terra::project(dem_raster, target_crs)
   }
   coords <- data[, c("lon", "lat")]
   coords_spatvector <- terra::vect(coords, geom = c("lon", "lat"), crs = target_crs)
   elevations <- terra::extract(dem_raster, coords_spatvector, ID = FALSE)
-  data[["elevation"]] <- elevations[, 1]
-  if (any(is.na(data[["elevation"]]))) {
+  data[["ele"]] <- elevations[, 1]
+  if (any(is.na(data[["ele"]]))) {
     warning(paste(
       "Missing elevation data (NA) for", sum(is.na(data[["elevation"]])),
       "points. Points may be outside DEM extent."

@@ -1,6 +1,19 @@
-library(stringr)
+#' @title Extract ERA5 data from NetCDF file
+#'
+#' @description This function extracts climate variable values from an ERA5 NetCDF file (or similar structure) based on location (lon/lat) and time (year/month) for a set of data points.
+#'
+#' @param data A data frame containing points of interest. Must include 'lon', 'lat', 'year', and 'month' columns.
+#' @param nc_file Path to the NetCDF raster file containing the climate data.
+#'
+#' @return The input data frame `data` with a new column named (`tempetarure`), containing the climate values.
+#'
+#' @importFrom terra rast varnames nlyr time vect project extract
+#' @importFrom stringr str_extract
+#' @importFrom stats na.omit
+#'
+#' @export
 
-get_era5_tm <- function(data, nc_file) {
+get_era5_tme <- function(data, nc_file) {
   required_cols <- c("lon", "lat", "year", "month")
   if (!all(required_cols %in% names(data))) {
     missing_cols <- setdiff(required_cols, names(data))
@@ -64,12 +77,9 @@ get_era5_tm <- function(data, nc_file) {
     year_month=unique_year_month_combinations[year_month_index,]
     selected_row_indexes=which(data$year==year_month$year & data$month==year_month$month)
     layer_index <- which(year_month$year==layer$years & year_month$month==layer$months)
-
-    print(year_month) ##DEBUGGING. Quitar en versi?n final
-
     if (length(layer_index)==0)
     {
-      data[selected_row_indexes,"temperature"] <- NA
+      data[selected_row_indexes,"tme"] <- NA
       warning(paste(
         "No data found for year", year_month$year, "month", year_month$month
       ))
@@ -79,8 +89,8 @@ get_era5_tm <- function(data, nc_file) {
       temperatures=terra::extract(era5_raster[[layer_index]],
                                   coords_spatvector[selected_row_indexes],
                                   ID=F)
-      data[selected_row_indexes,"temperature"]=temperatures - 273.15
-      null_temps=sapply(data[selected_row_indexes,"temperature" ], is.null)
+      data[selected_row_indexes,"tme"]=temperatures - 273.15
+      null_temps=sapply(data[selected_row_indexes,"tme" ], is.null)
       if (any(null_temps))
       {
         warning(paste(

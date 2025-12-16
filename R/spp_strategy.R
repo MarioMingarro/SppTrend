@@ -244,7 +244,7 @@ spp_strategy <- function(spp_trend_result,
     tidyr::pivot_wider(
       names_from = hemisphere,
       values_from = Spatial_lat_Poleward,
-      names_prefix = "lat_"
+      names_prefix = "Spatial_lat_"
     ) %>%
     dplyr::ungroup()
 }
