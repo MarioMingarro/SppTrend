@@ -81,44 +81,44 @@ data <- data.frame(
 
 data$year_month  = data$year + data$month * 0.075
 ```
-### Detailed Steps
+### Detailed steps
 
-### Phase 1: Environmental Data Generation
+### Phase 1: Environmental data generation
 
-The `SppTrend` package offers functions to enhance your species occurrence data with relevant environmental information. Currently, it supports the integration of temperature and elevation data.
+The `SppTrend` package offers functions to enhance your species occurrence data with relevant environmental information. Currently, it supports the integration of monthly temperature and elevation data.
 
-#### ERA5 Temperature Data
+#### ERA5 temperature data
 
 ERA5 is the fifth generation European Centre for Medium-Range Weather Forecasts (ECMWF) reanalysis dataset for the global climate and weather. It provides comprehensive atmospheric, land, and ocean climate data from 1940 to the present, with high spatial and temporal resolution. This makes it a valuable resource for studying the impact of climate on species distributions.
-You can explore the ERA5 daily statistics dataset on the Copernicus Climate Change Service (C3S) Climate Data Store (CDS) at: [ERA5 Daily Statistics Overview](https://cds.climate.copernicus.eu/datasets/reanalysis-era5-single-levels-monthly-means). For more detailed information about the ERA5 dataset, please visit the [ECMWF website](https://confluence.ecmwf.int/display/CKB/The+family+of+ERA5+datasets).
+You can explore the **ERA5-Land monthly averaged data from 1950 to present** dataset on the Copernicus Climate Change Service (C3S) Climate Data Store (CDS) at: [ERA5 Land monthly](https://cds.climate.copernicus.eu/datasets/reanalysis-era5-land-monthly-means). For more detailed information about the ERA5 dataset, please visit the [ECMWF website](https://confluence.ecmwf.int/display/CKB/The+family+of+ERA5+datasets).
 
-The `SppTrend` package provides the following function to incorporate ERA5 temperature data:
+The `SppTrend` package provides the following function to incorporate ERA5-Land monthly  data:
 
-`extract_era5_data()`: Allows users to obtain average temperature data (mean temperature of the environment) for species occurrences using ERA5 reanalysis data. 
+`extract_era5_data()`: Allows users to obtain average temperature data (mean temperature of the environment) for species occurrences using latitude, longitude and date (year and month). 
 
 *Notes: ERA5 data is available from 1950 onwards. The data must be in `.netcdf` format.*
 
 ```{r}
 nc_file <- "path/to/your/era5_data.nc"
-data <- extract_era5_data(data, nc_file, month_col = "month")
+data <- extract_era5_data(data, nc_file)
 print(data$tme)
 ```
-#### Digital Elevation Model (DEM) Data
+#### Digital Elevation Model (DEM) data
 
 `extract_elevation()`: This function can be used to retrieve Digital Elevation Model (DEM) data for the species occurrences, providing information about the elevation at which the species were recorded.
 For obtaining elevation data for species occurrences, this example utilizes the WorldClim dataset ([WorldClim](https://www.worldclim.org/data/worldclim21.html)). However, users are encouraged to consider other Digital Elevation Models (DEMs) based on the specific resolution requirements of their analysis. For instance, the [EU-DEM dataset](https://dataspace.copernicus.eu/explore-data/data-collections/copernicus-contributing-missions/collections-description/COP-DEM) provides high-resolution elevation data for Europe.
 
-Furthermore, it is highly recommended to utilize any existing elevation data already present within the user's occurrence dataset. This allows for a direct comparison and validation of the retrieved elevation values, potentially improving the accuracy and reliability of the analysis.
 *Notes: DEM data must be in `.tif` format.*
+
 ```{r}
 dem_file <- "path/to/your/dem.tif"
 data <- extract_elevation(data, dem_file)
 print(data$ele)
 ```
-### Phase 2: Estimation of the Overall Trend of Responses
+### Phase 2: Estimation of the overall trend of responses
 
-The `overall_trend()` function calculates the overall temporal trend  for specified response variables across the entire dataset. 
-This trend serves as a neutral reference to evaluate individual species' responses. It's important to consider potential biases in the data when interpreting the OT.
+The `overall_trend()` function calculates the overall temporal trend (OT) for specified response variables across the entire dataset. 
+This trend serves as a neutral reference to evaluate individual species' responses.
 
 ```{r}
 predictor <- "year"
@@ -127,9 +127,9 @@ overall_trend_result <- overall_trend(data, responses, predictor)
 print(overall_trend_result)
 ```
 
-### Phase 3: Estimation of Individual Trends of Responses
+### Phase 3: Estimation of individual trends of responses
 
-The `spp_trend()` function calculates the individual temporal trend for each species and response variable, comparing it to the overall temporal trend observed in the data. It also handles longitude transformations and considers hemisphere-specific trends.
+The `spp_trend()` function estimates the individual temporal trend for each species and response variable, comparing it to the overall temporal trend observed in the data. It also handles longitude transformations and considers hemisphere-specific trends.
 
 ```{r}
 predictor <- "year"
@@ -149,9 +149,9 @@ spp_strategy_result <- spp_strategy(spp_trend_result, sig_level = 0.05, response
 print(spp_strategy_results)
 ```
 
-### Ecological strategies
+## Ecological strategies
 
-The `SppTrend` package identifies several spatial and thermal response strategies:
+The `SppTrend` package identifies several Spatial and Thermal response strategies:
 
 <div align="center">
   <img src="man/figures/strategies.png" width="50%">
@@ -166,7 +166,6 @@ The `SppTrend` package identifies several spatial and thermal response strategie
   In the Southern Hemisphere, this discordance might involve a Spatial Poleward (SP) shift (towards lower latitude values).
 
   - **Spatial Conformity (SC)**: The species' presence trend follows the overall trend, suggesting less directional pressure in terms of range shift at this level of analysis.
-  
   
 
 **Thermal Responses**
@@ -184,7 +183,7 @@ response to environmental change.
 ### Applications and Limitations
 `SppTrend` offers a valuable methodology for researchers investigating how environmental change impacts biodiversity by analyzing trends in species occurrence data.
 However, it's crucial to interpret results cautiously, as species occurrence data can be subject to various biases (e.g., sampling effort, observer expertise). 
-While the overall trend provides a useful community-level reference, remember that it represents an average across all species and might mask diverse individual species responses to environmental drivers like warming. 
+While the overall trend provides a useful community-level reference, remember that it represents an average across all species and might mask how diverse species respond differently to drivers such as warming. 
 Therefore, focusing on individual species trends and their classification into ecological strategies provides a more nuanced understanding of biodiversity responses.
 
 For more detailed information and examples, please refer to the package documentation within R:
@@ -202,7 +201,7 @@ Jorge M. Lobo, Mario Mingarro, Martin Godefroid, Emilio García-Roselló 2023. T
 ## Contact
 For any questions or issues, please feel free to contact:
 
-Mario Mingarro Lopez
+Mario Mingarro
 mario_mingarro@mncn.csic.es
 
 Jorge M. Lobo 
