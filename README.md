@@ -147,7 +147,9 @@ print(spp_strategy_results)
 
 The `SppTrend` package identifies several spatial and thermal response strategies:
 
-![Estrategias](man/figures/strategies.png)
+<div align="center">
+  <img src="man/figures/strategies.png" width="50%">
+</div>
 
 **Spatial Responses**
 
