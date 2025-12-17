@@ -39,14 +39,13 @@ The methodology assumes that the observed species occurrences reflect a temporal
 
 `SppTrend` provides a structured workflow for analyzing these trends:
 
-1.  **Environmental Data Integration (Optional)**:  Enhance your occurrence records with environmental context using functions like `extract_era5_data()` for temperature data and `extract_elevation()` for elevation.
+1.  **Environmental Data Integration (Optional)**:  Enhance your occurrence records with environmental context using functions like `get_era5_tme()` for temperature data or `extract_elevation()` for elevation.
 2.  **Overall Trend Estimation**: Calculate the average temporal trend of selected response variables across all species using `overall_trend()`. This provides a general baseline to compare with individual specie trend.
 3.  **Individual Trend Analysis**: Determine the specific temporal trends for each species and response variable using `spp_trend()`. This allows comparison of individual species' responses to the overall trend.
 4.  **Ecological Strategy Classification**: Categorize species into distinct ecological strategies based on the significance and direction of their individual trends relative to the overall trend using `spp_strategy()`.
 
 ### Data Requirements
 
-The `SppTrend` package has been designed to analyze species presence records. 
 To utilize the package effectively, your dataset must, at a minimum, include the following information for each occurrence:
 
 * Species identification (e.g., 'species').
@@ -54,13 +53,20 @@ To utilize the package effectively, your dataset must, at a minimum, include the
 * Temporal information: Year (e.g., 'year') is required. Including Month (e.g., 'month') is highly recommended for more detailed analysis.
 
 
-**Important** Ensure that the column names in your input dataset match the default names expected by the `SppTrend` functions. These default names are:
+**Important** 
+
+Ensure that the column names in your input dataset match the default names expected by the `SppTrend` functions. These default names are:
+
 - **Species Name**: 'species'
-- **Year**: 'year'
-- **Month**: 'month'
-- **Longitude**: 'lon'
-- **Latitude**: 'lat'
-- **Environmental Response Variables** (if applicable): 'ele' (elevation), 'tme' (temperature), 'tmx' (maximum temperature), 'tmn' (minimum temperature).
+- **Year**: `year`
+- **Month**: `month`
+- **Longitude**: `lon`
+- **Latitude**: `lat`
+- **Environmental Response Variables** (if applicable): 
+  - **Elevation**: `ele`
+  - **Temperature**: `tme`
+  - **Maximum temperature**: `tmx`
+  - **Minimum temperature**: `tmn`
 
 The following is an example illustrating the structure of a data frame containing 500 randomly generated presence records for 10 distinct species:
 
@@ -90,7 +96,7 @@ The `SppTrend` package provides the following function to incorporate ERA5 tempe
 
 `extract_era5_data()`: Allows users to obtain average temperature data (mean temperature of the environment) for species occurrences using ERA5 reanalysis data. 
 
-*Notes: ERA5 data is available from 1940 onwards. The data must be in `.netcdf` format.*
+*Notes: ERA5 data is available from 1950 onwards. The data must be in `.netcdf` format.*
 
 ```{r}
 nc_file <- "path/to/your/era5_data.nc"
