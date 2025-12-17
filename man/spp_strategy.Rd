@@ -29,17 +29,23 @@ classification columns for responses present in this vector and in the
 'responses' column of \code{spp_trend_result}.}
 }
 \value{
-A data frame summarizing the ecological strategy of each species for each
-analyzed response variable. The table includes the species name, hemisphere,
-sample size, and classification columns for spatial (latitude, longitude,
-elevation if present) and thermal (tmx, tmn, tme if present) responses.
-The classification for latitude ('lat') is 'Spatial_lat_Poleward' and indicates
-poleward (SP) or equatorward (SE) shifts based on hemisphere. Other spatial
-responses ('lon', 'ele') are classified as 'Spatial_lon' and 'Spatial_ele'
-(Spatial Adaptation 'SA', Spatial Discordance 'SD', Spatial Conformity 'SC').
-Thermal responses ('tmx', 'tmn', 'tme') are classified as 'Thermal_tmx',
-'Thermal_tmn', and 'Thermal_tme' (Thermal Tolerance 'TT', Thermal Adjustment
-'TA', Thermal Conformity 'TC').
+A \verb{data frame} summarizing the ecological strategy of each species for each
+analyzed response variable.
+The table includes:
+\itemize{
+\item Species name
+\item Hemisphere
+\item Sample size
+\item Classification columns for:
+\itemize{
+\item Spatial (latitude, longitude and elevation if present) responses. Spatial Adaptation \code{SA}, Spatial Discordance \code{SD}, Spatial Conformity \code{SC}
+\item Thermal (tmx, tmn, tme if present) responses. Thermal Tolerance \code{TT}, Thermal Adjustment \code{TA}, Thermal Conformity \code{TC}
+}
+}
+
+Classification for latitude (\code{lat}) is \code{Spatial_lat_Poleward} and indicates poleward (SP) or equatorward (SE) shifts based on hemisphere.
+Other spatial responses (\code{lon}, \code{ele}) are classified as \code{Spatial_lon} and \code{Spatial_ele}
+Thermal responses (\code{tmx}, \code{tmn}, \code{tme}) are classified as \code{Thermal_tmx}, \code{Thermal_tmn}, and \code{Thermal_tme}.
 }
 \description{
 Creates a summary table classifying species based on their significant spatial and thermal trends, potentially incorporating poleward shift logic for
@@ -82,8 +88,9 @@ trend that is not significantly different from the overall trend.
 }
 }
 The function handles latitude trends with a poleward shift logic based on the
-detected hemisphere. The interpretation of longitude trends assumes that if
-transformation was applied in \code{spp_trend}, it used the Antimeridian as 0.
+detected hemisphere.
+
+NOTE: The interpretation of longitude trends assumes that if transformation was applied in \code{spp_trend}, it used the Antimeridian as 0.
 }
 \examples{
 

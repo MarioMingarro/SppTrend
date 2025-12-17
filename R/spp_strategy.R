@@ -73,8 +73,9 @@
 #'
 #'   NOTE: The interpretation of longitude trends assumes that if transformation was applied in `spp_trend`, it used the Antimeridian as 0.
 #'
-#' @importFrom dplyr select mutate case_when all_of lead group_by summarise if_else ungroup
+#' @importFrom dplyr select mutate case_when all_of lead group_by summarise if_else ungroup relocate
 #' @importFrom tidyr pivot_wider
+#' @importFrom tidyselect starts_with
 #'
 #' @examples
 #'
@@ -246,5 +247,6 @@ spp_strategy <- function(spp_trend_result,
       values_from = Spatial_lat_Poleward,
       names_prefix = "Spatial_lat_"
     ) %>%
-    dplyr::ungroup()
+    dplyr::ungroup() %>%
+    dplyr::relocate(tidyselect::starts_with("Spatial_lat_"), .after = Spatial_lon)
 }

@@ -2,7 +2,7 @@
 #'
 #' @description This function extracts elevation values from a Digital Elevation Model (DEM) raster file for given longitude and latitude coordinates.
 #' Ensure that the DEM is projected in WGS84 (EPSG:4326) before extraction.
-#' The output column will always be "elevation".
+#' The output column will always be "ele".
 #'
 #' @param data A data frame containing location coordinates. Must include columns specified by 'lon_col' and 'lat_col'.
 #' @param dem_file Full path to the Digital Elevation Model (DEM) raster file.
@@ -38,7 +38,7 @@ extract_elevation <- function(data, dem_file) {
   }
   is_same_crs <- terra::same.crs(dem_raster, target_crs)
   if (!is_same_crs) {
-    message(paste("Reproyectando DEM a", target_crs, "para estandarización."))
+    message(paste("Transforming DEM projection to ", target_crs))
     dem_raster <- terra::project(dem_raster, target_crs)
   }
   coords <- data[, c("lon", "lat")]

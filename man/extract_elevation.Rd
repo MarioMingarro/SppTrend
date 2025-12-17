@@ -4,30 +4,18 @@
 \alias{extract_elevation}
 \title{Extract elevation from DEM}
 \usage{
-extract_elevation(
-  data,
-  dem_file,
-  lon_col = "lon",
-  lat_col = "lat",
-  output_col = "elevation"
-)
+extract_elevation(data, dem_file)
 }
 \arguments{
 \item{data}{A data frame containing location coordinates. Must include columns specified by 'lon_col' and 'lat_col'.}
 
 \item{dem_file}{Full path to the Digital Elevation Model (DEM) raster file.}
-
-\item{lon_col}{Name of the longitude column in 'data' (default: "lon").}
-
-\item{lat_col}{Name of the latitude column in 'data' (default: "lat").}
-
-\item{output_col}{Name for the new elevation column (default: "elevation").}
 }
 \value{
-The input data frame 'data' with a new column containing the extracted
-elevation values.
+The input data frame 'data' with a new column containing the extracted elevation values.
 }
 \description{
 This function extracts elevation values from a Digital Elevation Model (DEM) raster file for given longitude and latitude coordinates.
-It ensures that point coordinates are correctly transformed to the DEM's Coordinate Reference System (CRS) before extraction.
+Ensure that the DEM is projected in WGS84 (EPSG:4326) before extraction.
+The output column will always be "ele".
 }

@@ -1,5 +1,16 @@
 utils::globalVariables(
-  c("species", "hemisphere", "n", "Spatial_lat_Poleward",
-    "Spatial_lon", "Spatial_ele", "Thermal_tmx", "Thermal_tmn",
-    "Thermal_tme")
+  c("species",
+    "hemisphere",
+    "n",
+    "Spatial_lat_Poleward",
+    "Spatial_lon",
+    "Spatial_ele",
+    "Thermal_tmx",
+    "Thermal_tmn",
+    "Thermal_tme",
+    "responses",
+    "pvalue",
+    "dif_pvalue",
+    "trend"
+  )
 )

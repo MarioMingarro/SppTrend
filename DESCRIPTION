@@ -1,6 +1,6 @@
 Package: SppTrend
 Title: Analyzing Linear Trends in Species Occurrence Data
-Version: 0.95
+Version: 0.1
 Authors@R: c(
     person(given = "Mario", 
             family = "Mingarro", 
@@ -10,6 +10,10 @@ Authors@R: c(
     person(given = "Jorge M.", 
             family = "Lobo", 
             comment = c(ORCID = "0000-0002-3152-4769"),
+            role = "aut"),
+    person(given = "Emilio", 
+            family = "García-Roselló", 
+            comment = c(ORCID = "0000-0003-0305-770X"),
             role = "aut"))
 Description: Provides functions to analyze trends in time series of species abundance or occurrence data, particularly focusing on the impact of environmental factors like temperature.
 License: MIT + file LICENSE
@@ -19,5 +23,5 @@ RoxygenNote: 7.3.2
 Suggests: 
     testthat (>= 3.0.0)
 Imports:
-    dplyr, tidyr, terra, stats, stringr
+    dplyr, tidyr, terra, stats, stringr, tidyselect
 Config/testthat/edition: 3
