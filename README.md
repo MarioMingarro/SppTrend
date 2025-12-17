@@ -2,7 +2,9 @@
 
 [![CRAN Status](https://www.r-pkg.org/badges/version/SppTrend)](https://cran.r-project.org/package=SppTrend)
 
-![Estrategias](man/figures/title.png)
+<div align="center">
+  <img src="man/figures/img_1.png" width="40%" alt="Descripción de la imagen">
+</div>
 
 The R package `SppTrend` provides a methodology to analyze how species occurrence changes over time, particularly in relation to environmental factors like temperature. 
 It helps researchers develop explanatory hypotheses about the impact of environmental shifts on species assemblages by analyzing historical presence data that includes temporal and geographic information.
@@ -14,7 +16,9 @@ You can install the released version of SppTrend from CRAN:
 ```{r}
 install.packages("SppTrend")
 ```
+
 Alternatively, you can install the development version from GitHub:
+
 ```{r}
 install.packages("devtools")
 library(devtools)
