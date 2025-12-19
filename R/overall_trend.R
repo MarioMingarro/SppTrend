@@ -42,6 +42,18 @@
 #' @export
 #'
 overall_trend <- function(data, predictor, responses) {
+  col_names <- names(data)
+  if (!all(responses %in% col_names)) {
+    missing_in_call <- responses[!responses %in% col_names]
+    stop(paste0("Critical Error: Response(s) '", paste(missing_in_call, collapse = ", "), "' not found in dataset."))
+  }
+  if (!predictor %in% col_names) stop(paste0("Critical Error: Predictor '", predictor, "' not found."))
+  expected_responses <- c("tme", "ele", "tmx", "tmn")
+  missing_vars <- expected_responses[!tolower(expected_responses) %in% tolower(col_names)]
+  if (length(missing_vars) > 0) {
+    warning(paste("Recommended variables missing from the dataset:", paste(missing_vars, collapse = ", ")))
+  }
+
   data$hemisphere <- ifelse(data$lat >= 0, "North", "South")
   groups_to_analyze <- list(
     Global = data,

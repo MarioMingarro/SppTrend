@@ -69,7 +69,21 @@
 #'
 #' @export
 #'
+#' @title Individual trend analysis
+#' @export
+#'
 spp_trend <- function(data, spp, predictor, responses, n_min = 50) {
+  col_names <- names(data)
+  if (!all(responses %in% col_names)) {
+    missing_in_call <- responses[!responses %in% col_names]
+    stop(paste0("Critical Error: Response(s) '", paste(missing_in_call, collapse = ", "), "' not found in dataset."))
+  }
+  if (!predictor %in% col_names) stop(paste0("Critical Error: Predictor '", predictor, "' not found."))
+  expected_responses <- c("tme", "ele", "tmx", "tmn")
+  missing_vars <- expected_responses[!tolower(expected_responses) %in% tolower(col_names)]
+  if (length(missing_vars) > 0) {
+    warning(paste("Recommended variables missing from the dataset:", paste(missing_vars, collapse = ", ")))
+  }
   data$hemisphere <- ifelse(data$lat >= 0, "North", "South")
   results_list <- list()
   for (n in 1:length(spp)) {
@@ -114,11 +128,16 @@ spp_trend <- function(data, spp, predictor, responses, n_min = 50) {
                 hemisphere = h,
                 stringsAsFactors = FALSE
               )
+            } else {
+              message(paste0("WARNING: Specie ", spp[n], " response (", responses[i], ") in ", h,
+                             " hemisphere has insufficient variation in predictor (", predictor, ")."))
             }
           }, error = function(e) {
             message(paste("Error en", spp[n], "-", responses[i], "(", h, "):", e$message))
           })
         }
+      } else {
+        message(paste0("WARNING: Specie ", spp[n], " has insufficient data (n = ", nrow(ind_hemisphere), " < ",  n_min, ") in ", h, " hemisphere."))
       }
     }
     if (all(c("North", "South") %in% hemispheres_present)) {
@@ -156,14 +175,23 @@ spp_trend <- function(data, spp, predictor, responses, n_min = 50) {
                 hemisphere = "Both",
                 stringsAsFactors = FALSE
               )
+            } else {
+              message(paste0("WARNING: Specie ", spp[n], " response (", responses[i], ") in Both hemisphere (Global) has insufficient variation in predictor (", predictor, ")."))
             }
           }, error = function(e) {
             message(paste("Error global en", spp[n], "-", responses[i], ":", e$message))
           })
         }
+      } else {
+        message(paste0("WARNING: Specie ", spp[n], " has insufficient data (n = ", nrow(ind), " < ",  n_min, ") globally."))
       }
     }
   }
-  if (length(results_list) > 0) return(do.call(rbind, results_list))
-  else return(data.frame())
+  if (length(results_list) > 0) {
+    final_res <- do.call(rbind, results_list)
+    rownames(final_res) <- NULL
+    return(final_res)
+  } else {
+    return(data.frame())
+  }
 }
