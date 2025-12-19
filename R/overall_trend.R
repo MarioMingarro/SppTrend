@@ -42,56 +42,50 @@
 #' @export
 #'
 overall_trend <- function(data, predictor, responses) {
-
   data$hemisphere <- ifelse(data$lat >= 0, "North", "South")
-
   groups_to_analyze <- list(
     Global = data,
     North = data[data$hemisphere == "North", ],
     South = data[data$hemisphere == "South", ]
   )
-
   results_list <- list()
   for (var in responses) {
     for (h_name in names(groups_to_analyze)) {
       data_set <- groups_to_analyze[[h_name]]
-      current_var <- var
-
-      if (var == "lon") {
-        data_set$lon_transformed <- (data_set$lon + 180) %% 360
-        current_var <- "lon_transformed"
-      }
       if (nrow(data_set) > 0 && length(unique(data_set[[predictor]])) > 1) {
-        formula_str <- paste(current_var, "~", paste(predictor, collapse = "+"))
-
         tryCatch({
-          model_g <- lm(as.formula(formula_str), data = data_set)
-          if (length(coef(model_g)) > 1) {
-            summary_model <- summary(model_g)
-
-            if (nrow(summary_model$coefficients) >= 2 && !is.na(summary_model$coefficients[2, 3])) {
-              trend_value <- coef(model_g)[2]
-              conf_int <- confint(model_g, level = 0.95)
-
-              results_list[[length(results_list) + 1]] <- data.frame(
-                responses = var,
-                trend = trend_value,
-                t = summary_model$coefficients[2, 3],
-                pvalue = summary_model$coefficients[2, 4],
-                ci_95_max = conf_int[predictor, 2],
-                ci_95_min = conf_int[predictor, 1],
-                n = nrow(data_set),
-                hemisphere = h_name,
-                stringsAsFactors = FALSE
-              )
-            }
+          current_resp <- var
+          target_var <- var
+          if (var == "lon") {
+            data_set$lon_transformed <- (data_set$lon + 180) %% 360
+            target_var <- "lon_transformed"
+          }
+          formula_str <- as.formula(paste(target_var, "~", predictor))
+          model_g <- lm(formula_str, data = data_set)
+          sum_g <- summary(model_g)$coefficients
+          if (nrow(sum_g) >= 2) {
+            trend_value <- coef(model_g)[2]
+            t_value <- sum_g[2, 3]
+            p_value <- sum_g[2, 4]
+            conf_int <- confint(model_g, predictor, level = 0.95)
+            results_list[[length(results_list) + 1]] <- data.frame(
+              responses = var,
+              trend = trend_value,
+              t = t_value,
+              pvalue = p_value,
+              ci_95_max = conf_int[1, 2],
+              ci_95_min = conf_int[1, 1],
+              n = nrow(data_set),
+              hemisphere = h_name,
+              stringsAsFactors = FALSE
+            )
           }
         }, error = function(e) {
-          warning(paste("Error fitting model for response", var, "in", h_name, ":", conditionMessage(e)))
+          message(paste("ERROR in overall analysis for response", var, "in", h_name, ":", e$message))
         })
       } else {
         if (h_name != "Global") {
-          warning(paste("Insufficient data or predictor variation for response", var, "in", h_name, "hemisphere."))
+          message(paste("WARNING: Insufficient data or predictor variation for", var, "in", h_name))
         }
       }
     }
@@ -108,9 +102,9 @@ overall_trend <- function(data, predictor, responses) {
       ci_95_max = numeric(),
       ci_95_min = numeric(),
       n = integer(),
-      hemisphere = character()
+      hemisphere = character(),
+      stringsAsFactors = FALSE
     )
   }
-
   return(overall_trend_result)
 }

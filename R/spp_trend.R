@@ -76,250 +76,94 @@ spp_trend <- function(data, spp, predictor, responses, n_min = 50) {
     ind <- data[data$species == spp[n], ]
     hemispheres_present <- unique(ind$hemisphere)
     ind_list <- split(ind, f = ind$hemisphere)
-
     for (h in names(ind_list)) {
       ind_hemisphere <- ind_list[[h]]
       data_hemisphere <- data[data$hemisphere == h, ]
       if (nrow(ind_hemisphere) > n_min) {
         for (i in 1:length(responses)) {
           tryCatch({
-            if (nrow(ind_hemisphere) > 0 && nrow(data_hemisphere) > 0) {
-              if (length(unique(ind_hemisphere[[predictor]])) > 1) {
-                ind_hemisphere$group <- "i"
-                data_hemisphere$group <- "g"
-                dat <- rbind(data_hemisphere, ind_hemisphere)
-                if (responses[i] == "lon") {
-                  ind_hemisphere$lon_transformed <- (ind_hemisphere$lon + 180) %% 360
-                  dat$lon_transformed <- (dat$lon + 180) %% 360
-                  model_i <- lm(formula(paste(
-                    "lon_transformed",
-                    paste(predictor, collapse = "+"),
-                    sep = " ~ "
-                  )), data = ind_hemisphere)
-                  model_int <- lm(formula(paste(
-                    "lon_transformed",
-                    paste(predictor, "*group", collapse = "+"),
-                    sep = " ~ "
-                  )), data = dat)
-                } else {
-                  model_i <- lm(formula(paste(
-                    responses[i],
-                    paste(predictor, collapse = "+"),
-                    sep = " ~ "
-                  )), data = ind_hemisphere)
-                  model_int <- lm(formula(paste(
-                    responses[i],
-                    paste(predictor, "*group", collapse = "+"),
-                    sep = " ~ "
-                  )), data = dat)
-                }
-                trend <- coef(model_i)[2]
-                t_value <- summary(model_i)$coefficients[2, 3]
-                p_value <- summary(model_i)$coefficients[2, 4]
-                ci <- confint(model_i, predictor, level = .95)[, ]
-                interaction_term <- paste0(predictor, ":groupi")
-                dif_t <- if (interaction_term %in% rownames(summary(model_int)$coefficients)) {
-                  summary(model_int)$coefficients[interaction_term, 3]
-                } else {
-                  NA
-                }
-                dif_p <- if (interaction_term %in% rownames(summary(model_int)$coefficients)) {
-                  summary(model_int)$coefficients[interaction_term, 4]
-                } else {
-                  NA
-                }
-                if (responses[i] == "lat" && h == "South") {
-                  trend <- trend
-                }
-                results_list[[length(results_list) + 1]] <- data.frame(
-                  species = spp[n],
-                  responses = responses[i],
-                  trend = trend,
-                  t = t_value,
-                  pvalue = p_value,
-                  ci_95_max = ci[2],
-                  ci_95_min = ci[1],
-                  dif_t = dif_t,
-                  dif_pvalue = dif_p,
-                  n = nrow(ind_hemisphere),
-                  hemisphere = h
-                )
-              } else {
-                cat(
-                  paste0(
-                    "WARNING: Specie ",
-                    spp[n],
-                    " response (",
-                    responses[i],
-                    ") in ",
-                    h,
-                    " hemisphere has insufficient variation in predictor (",
-                    predictor,
-                    ").\n"
-                  )
-                )
-              }
+            current_resp <- responses[i]
+            if (current_resp == "lon") {
+              val_ind <- (ind_hemisphere$lon + 180) %% 360
+              val_gen <- (data_hemisphere$lon + 180) %% 360
             } else {
-              cat(
-                paste0(
-                  "WARNING: Specie ",
-                  spp[n],
-                  " response (",
-                  responses[i],
-                  ") has insufficient data (",
-                  nrow(ind_hemisphere),
-                  ") in ",
-                  h,
-                  " hemisphere.\n"
-                )
+              val_ind <- ind_hemisphere[[current_resp]]
+              val_gen <- data_hemisphere[[current_resp]]
+            }
+            if (length(unique(ind_hemisphere[[predictor]])) > 1) {
+              df_ind <- data.frame(y = val_ind, time = ind_hemisphere[[predictor]], group = "i")
+              df_gen <- data.frame(y = val_gen, time = data_hemisphere[[predictor]], group = "g")
+              dat_model <- rbind(df_ind, df_gen)
+              model_i <- lm(y ~ time, data = df_ind)
+              model_int <- lm(y ~ time * group, data = dat_model)
+              sum_i <- summary(model_i)$coefficients
+              sum_int <- summary(model_int)$coefficients
+              ci <- confint(model_i, "time", level = .95)
+              int_term <- "time:groupi"
+              results_list[[length(results_list) + 1]] <- data.frame(
+                species = spp[n],
+                responses = current_resp,
+                trend = coef(model_i)[2],
+                t = sum_i[2, 3],
+                pvalue = sum_i[2, 4],
+                ci_95_max = ci[1, 2],
+                ci_95_min = ci[1, 1],
+                dif_t = if (int_term %in% rownames(sum_int)) sum_int[int_term, 3] else NA,
+                dif_pvalue = if (int_term %in% rownames(sum_int)) sum_int[int_term, 4] else NA,
+                n = nrow(ind_hemisphere),
+                hemisphere = h,
+                stringsAsFactors = FALSE
               )
             }
           }, error = function(e) {
-            cat(
-              paste0(
-                "WARNING: Specie ",
-                if (nrow(ind_hemisphere) > 0)
-                  ind_hemisphere[1, 1]
-                else
-                  spp[n],
-                " responses (",
-                responses[i],
-                ") in ",
-                h,
-                " hemisphere has error: ",
-                conditionMessage(e),
-                "\n"
-              )
-            )
+            message(paste("Error en", spp[n], "-", responses[i], "(", h, "):", e$message))
           })
         }
-      } else {
-        print(paste0(
-          "WARNING: Specie ",
-          spp[n],
-          " has few data (",
-          nrow(ind_hemisphere),
-          ") in ",
-          h,
-          " hemisphere"
-        ))
       }
     }
-
     if (all(c("North", "South") %in% hemispheres_present)) {
-      for (i in 1:length(responses)) {
-        tryCatch({
-          if (nrow(ind) > n_min) {
+      if (nrow(ind) > n_min) {
+        for (i in 1:length(responses)) {
+          tryCatch({
+            current_resp <- responses[i]
             if (length(unique(ind[[predictor]])) > 1) {
-              data$group_global <- "g"
-              ind$group_global <- "i"
-              dat_global <- rbind(data, ind)
-
-              if (responses[i] == "lon") {
-                ind$lon_transformed <- (ind$lon + 180) %% 360
-                dat_global$lon_transformed <- (dat_global$lon + 180) %% 360
-                model_i_global <- lm(formula(paste(
-                  "lon_transformed",
-                  paste(predictor, collapse = "+"),
-                  sep = " ~ "
-                )), data = ind)
-                model_int_global <- lm(formula(paste(
-                  "lon_transformed",
-                  paste(predictor, "*group_global", collapse = "+"),
-                  sep = " ~ "
-                )), data = dat_global)
+              if (current_resp == "lon") {
+                val_ind_g <- (ind$lon + 180) %% 360
+                val_gen_g <- (data$lon + 180) %% 360
               } else {
-                model_i_global <- lm(formula(paste(
-                  responses[i],
-                  paste(predictor, collapse = "+"),
-                  sep = " ~ "
-                )), data = ind)
-                model_int_global <- lm(formula(paste(
-                  responses[i],
-                  paste(predictor, "*group_global", collapse = "+"),
-                  sep = " ~ "
-                )), data = dat_global)
+                val_ind_g <- ind[[current_resp]]
+                val_gen_g <- data[[current_resp]]
               }
-
-              trend_global <- coef(model_i_global)[2]
-              t_value_global <- summary(model_i_global)$coefficients[2, 3]
-              p_value_global <- summary(model_i_global)$coefficients[2, 4]
-              ci_global <- confint(model_i_global, predictor, level = .95)[, ]
-              interaction_term_global <- paste0(predictor, ":group_globali")
-              dif_t_global <- if (interaction_term_global %in% rownames(summary(model_int_global)$coefficients)) {
-                summary(model_int_global)$coefficients[interaction_term_global, 3]
-              } else {
-                NA
-              }
-              dif_p_global <- if (interaction_term_global %in% rownames(summary(model_int_global)$coefficients)) {
-                summary(model_int_global)$coefficients[interaction_term_global, 4]
-              } else {
-                NA
-              }
-
+              df_ind_g <- data.frame(y = val_ind_g, time = ind[[predictor]], group = "i")
+              df_gen_g <- data.frame(y = val_gen_g, time = data[[predictor]], group = "g")
+              dat_global <- rbind(df_ind_g, df_gen_g)
+              model_i_g <- lm(y ~ time, data = df_ind_g)
+              model_int_g <- lm(y ~ time * group, data = dat_global)
+              sum_i_g <- summary(model_i_g)$coefficients
+              sum_int_g <- summary(model_int_g)$coefficients
+              ci_g <- confint(model_i_g, "time", level = .95)
               results_list[[length(results_list) + 1]] <- data.frame(
                 species = spp[n],
-                responses = responses[i],
-                trend = trend_global,
-                t = t_value_global,
-                pvalue = p_value_global,
-                ci_95_max = ci_global[2],
-                ci_95_min = ci_global[1],
-                dif_t = dif_t_global,
-                dif_pvalue = dif_p_global,
+                responses = current_resp,
+                trend = coef(model_i_g)[2],
+                t = sum_i_g[2, 3],
+                pvalue = sum_i_g[2, 4],
+                ci_95_max = ci_g[1, 2],
+                ci_95_min = ci_g[1, 1],
+                dif_t = if ("time:groupi" %in% rownames(sum_int_g)) sum_int_g["time:groupi", 3] else NA,
+                dif_pvalue = if ("time:groupi" %in% rownames(sum_int_g)) sum_int_g["time:groupi", 4] else NA,
                 n = nrow(ind),
-                hemisphere = "Both"
-              )
-            } else {
-              cat(
-                paste0(
-                  "WARNING: Specie ",
-                  spp[n],
-                  " response (",
-                  responses[i],
-                  ") has insufficient variation in predictor (",
-                  predictor,
-                  ") for global analysis.\n"
-                )
+                hemisphere = "Both",
+                stringsAsFactors = FALSE
               )
             }
-          } else {
-            cat(
-              paste0(
-                "WARNING: Specie ",
-                spp[n],
-                " response (",
-                responses[i],
-                ") has insufficient data (",
-                nrow(ind),
-                ") for global analysis.\n"
-              )
-            )
-          }
-        }, error = function(e) {
-          cat(
-            paste0(
-              "WARNING: Specie ",
-              if (nrow(ind) > 0)
-                ind[1, 1]
-              else
-                spp[n],
-              " responses (",
-              responses[i],
-              ") has error (global): ",
-              conditionMessage(e),
-              "\n"
-            )
-          )
-        })
+          }, error = function(e) {
+            message(paste("Error global en", spp[n], "-", responses[i], ":", e$message))
+          })
+        }
       }
     }
   }
-  if (length(results_list) > 0) {
-    spp_trend_result <- do.call(rbind, results_list)
-    rownames(spp_trend_result) <- NULL
-  } else {
-    spp_trend_result <- data.frame()
-  }
-  return(spp_trend_result)
+  if (length(results_list) > 0) return(do.call(rbind, results_list))
+  else return(data.frame())
 }
