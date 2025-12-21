@@ -1,41 +1,34 @@
 #' @title Individual trend analysis
-#' @description This function fits a linear model to analyze individual trends over time, comparing with a general data trend (`overall_trend`),
-#' and includes longitude transformation to handle the antimeridian and hemisphere detection. For species distributed across both hemispheres, it also compares their overall trend
-#' with the global data trend. The comparison with the general trend is assessed using an interaction term in the linear model.
 #'
-#' @param data A `data frame` containing the variables for the model, including 'species', 'year', 'month', 'lon', 'lat', 'tmx' and/or similar.
-#' @param predictor A `character`vector of predictor variable names representing a temporal variable (e.g., "year_month").
-#' @param responses A `character` vector of response variable names to analyze (e.g., "lat"  for spatial trends, "tmx" for thermal trends).
+#' @description Calculates species-specific temporal trends for geographic and environmental variables.
+#' It compares individual species' trajectories against the regional baseline (calculated via an interaction term)
+#' and handles hemispheric subsets and antimeridian longitudinal transformations.
+#'
+#' @param data A `data frame` containing the variables for the model, including `species`, `year`, `month`, `lon`, `lat`, `tmx` and/or `tmn`.
+#' @param predictor A `character`vector of predictor variable names representing a temporal variable (`year_month`).
+#' @param responses A `character` vector of response variable names to analyze.
 #' @param spp A `character` vector of unique species names.
 #' @param n_min Minimum `numeric` number of presences required for a species in each hemisphere (or globally for species in both hemispheres) to perform the analysis.
 #'
 #' @return A data frame with trend statistics, including:
-#'    - `species`: Species name.
-#'    - `responses`: The name of the variable analyzed.
-#'    - `trend`: The slope of the linear model, indicating the direction and magnitude of the trend.
-#'    - `t`: The t-statistic of the model, used to assess the significance of the trend.
-#'    - `pvalue`: The p-value of the trend, indicating the probability of observing such a trend if there was no actual trend.
-#'    - `ci_95_max`: Upper bound of the 95% confidence interval for the trend.
-#'    - `ci_95_min`: Lower bound of the 95% confidence interval for the trend.
-#'    - `dif_t`: Difference in t-statistic values (comparison of species trend to general trend).
-#'    - `dif_pvalue`: Difference in p-values (comparison of species trend to general trend). A low p-value here suggests the species trend is significantly different from the general trend.
-#'    - `n`: Number of datapoints used for the specific species/hemisphere trend.
-#'    - `hemisphere`: Detected hemisphere ("North", "South", or "Both" for global comparison).
+#'    - `species`: Name of the analyzed species.
+#'    - `responses`: Name of the variable analyzed.
+#'    - `trend`: Slope of the linear model (rate of change over time).
+#'    - `t`: t-statistic for the species-specific trend.
+#'    - `pvalue`: Statistical significance of the species trend.
+#'    - `ci_95_max`, `ci_95_min`: 95\% confidence interval bounds for the slope.
+#'    - `dif_t`: t-statistic of the interaction term (species vs. baseline).
+#'    - `dif_pvalue`: p-values of the interaction term. A low value indicates a significant deviation from the general trend.
+#'    - `n`: Sample size for the specific species/hemisphere subset
+#'    - `hemisphere`: Geographic context (`North`, `South`, or `Both` for global comparison).
 #'
-#' @details The function analyzes trends for each species in the provided data,
-#'    considering different response variables and a specified temporal predictor.
-#'    It accounts for the antimeridian issue when analyzing longitude trends by
-#'    transforming longitude values. The analysis is performed separately
-#'    for each hemisphere to capture potential differences in ecological responses.
-#'    The function compares the trend of each species within a hemisphere with a
-#'    general trend calculated from the entire hemisphere's data. For species
-#'    found in both the Northern and Southern Hemispheres, it additionally compares
-#'    the trend of the species (using all occurrences) with the trend of the entire
-#'    dataset (all hemispheres combined), providing a global perspective on the
-#'    species' trend. Warnings are generated if a species has insufficient data
-#'    (below `n_min`) in a given hemisphere or globally, or if errors occur during
-#'    the linear model fitting process. This function typically follows the
-#'    calculation of an overall trend using a function like `overall_trend()`.
+#' @details
+#' The function fits linear models for each species and compares them to the general trend of the
+#' corresponding hemisphere (or global data) using an interaction model (`y ~ time * group`).
+#' Separate analyses are performed for Northern and Southern Hemispheres to account for divergent
+#' ecological responses. For species spanning both hemispheres, a "Both" category provides a global
+#' comparison. Longitude values are transformed to a 0-360 range to ensure statistical consistency
+#' near the antimeridian.
 #'
 #' @importFrom stats as.formula confint formula lm coef
 #' @importFrom dplyr %>% mutate filter

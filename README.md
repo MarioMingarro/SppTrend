@@ -46,18 +46,17 @@ The methodology assumes that the observed species occurrences reflect a temporal
 
 ### Data Requirements
 
-To utilize the package effectively, your dataset must, at a minimum, include the following information for each occurrence:
+To utilize the package effectively, your dataset must include the following information for each occurrence:
 
-* Species identification (e.g., 'species').
-* Geographic coordinates: Latitude (e.g., 'lat') and Longitude (e.g., 'lon'). The package assumes the use of the **WGS84 (World Geodetic System 1984)** coordinate reference system for global applicability.
-* Temporal information: Year (e.g., 'year') is required. Including Month (e.g., 'month') is highly recommended for more detailed analysis.
-
+* Species identification (e.g., `species`).
+* Geographic coordinates: Latitude (`lat`) and Longitude (`lon`). **Note: Data must be in the EPSG:4326 (WGS84) geographic coordinate system. This is the most widely used system for biodiversity occurrence records.**
+* Temporal information: Year (`year`) is required. Including Month (`month`) is highly recommended for more detailed analysis.
 
 **Important** 
 
-Ensure that the column names in your input dataset match the default names expected by the `SppTrend` functions. These default names are:
+**Ensure that the column names in your input dataset match the default names expected by the `SppTrend` functions. These default names are:**
 
-- **Species Name**: 'species'
+- **Species Name**: `species`
 - **Year**: `year`
 - **Month**: `month`
 - **Longitude**: `lon`
@@ -115,7 +114,8 @@ print(data$tme)
 `extract_elevation()`: This function can be used to retrieve Digital Elevation Model (DEM) data for the species occurrences, providing information about the elevation at which the species were recorded.
 For obtaining elevation data for species occurrences, this example utilizes the WorldClim dataset ([WorldClim](https://www.worldclim.org/data/worldclim21.html)). However, users are encouraged to consider other Digital Elevation Models (DEMs) based on the specific resolution requirements of their analysis. For instance, the [EU-DEM dataset](https://dataspace.copernicus.eu/explore-data/data-collections/copernicus-contributing-missions/collections-description/COP-DEM) provides high-resolution elevation data for Europe.
 
-*Notes: DEM data must be in `.tif` format.*
+*Technical notes:*
+*- Format: DEM data must be in `.tif` format.*
 
 ```{r}
 dem_file <- "path/to/your/dem.tif"

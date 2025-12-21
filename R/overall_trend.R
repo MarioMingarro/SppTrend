@@ -1,21 +1,24 @@
 #' @title Overall trend analysis
-#' @description This function fits a linear model to stimate trends over time to get a general data trend,
-#' and includes longitude transformation to handle the antimeridian and hemisphere detection. For species distributed across both hemispheres, it generates their overall trend
-#' for each hemisphere and for the global data trend. The comparison with the general trend is assessed using an interaction term in the linear model.
 #'
-#' @param data A `data frame` containing the variables for the model, including 'species', 'year', 'month', 'lon', 'lat', 'tmx' and/or 'tmn'.
-#' @param predictor A `character`vector of predictor variable names representing a temporal variable (e.g., "year_month").
-#' @param responses A `character` vector of response variable names to analyze (e.g., "lat"  for spatial trends, "tmx" for thermal trends).
+#' @description Calculates baseline temporal trends for geographic and environmental variables using linear regression.
+#'
+#' @param data A `data frame` containing the variables for the model, including `species`, `year`, `month`, `lon`, `lat`, `tmx` and/or `tmn`.
+#' @param predictor A `character`vector of predictor variable names representing a temporal variable (`year_month`).
+#' @param responses A `character` vector of response variable names to analyze.
 #'
 #'@return A data frame with trend statistics, including:
 #' - `responses`: The name of the variable analyzed.
-#' - `trend`: The slope of the linear model.
-#' - `t`: The t-statistic of the model.
-#' - `pvalue`: The p-value of the trend.
-#' - `ci_95_max`: Upper bound of the 95% confidence interval.
-#' - `ci_95_min`: Lower bound of the 95% confidence interval.
-#' - `n`: Number of datapoints used for the specific hemisphere trend.
-#' - `hemisphere`: The geographical context of the trend ("Global", "North", or "South").
+#' - `trend`: Slope of the linear model (rate of change over time).
+#' - `t`: t-statistic of the model.
+#' - `pvalue`: Statistical significance of the overall trend.
+#' - `ci_95_max`, `ci_95_min`: 95\% confidence interval bounds for the slope.
+#' - `n`: Sample size for the specific species/hemisphere subset
+#' - `hemisphere`: Geographic context (`North`, `South`, or `Both` for global comparison).
+#'
+#' @details
+#' To ensure global consistency, the function identifies the hemisphere for each record based on latitude.
+#' Longitude values are transformed to a 0-360 range to ensure statistical consistency near the antimeridian.
+#' This overall analysis serves as the baseline for subsequent species-specific comparisons in `spp_trend`.
 #'
 #' @importFrom stats as.formula confint formula lm coef
 #'

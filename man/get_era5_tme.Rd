@@ -7,13 +7,13 @@
 get_era5_tme(data, nc_file)
 }
 \arguments{
-\item{data}{A data frame containing points of interest. Must include 'lon', 'lat', 'year', and 'month' columns.}
+\item{data}{A data frame containing points of interest. Must include \code{lon}, \code{lat}, \code{year}, and \code{month} columns.}
 
-\item{nc_file}{Path to the NetCDF raster file containing the climate data.}
+\item{nc_file}{Path to the downloaded ERA5-Land raster (\code{.nc}) file.}
 }
 \value{
-The input data frame \code{data} with a new column named (\code{tempetarure}), containing the climate values.
+The input data frame \code{data} with a new column named (\code{tme}), containing the temperature values.
 }
 \description{
-This function extracts climate variable values from an ERA5 NetCDF file (or similar structure) based on location (lon/lat) and time (year/month) for a set of data points.
+This function extracts climate variable values from an ERA5 NetCDF file based on location (\code{lon/lat}) and time (\code{year/month}).
 }

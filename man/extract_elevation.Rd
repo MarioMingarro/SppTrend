@@ -9,13 +9,11 @@ extract_elevation(data, dem_file)
 \arguments{
 \item{data}{A data frame containing location coordinates. Must include columns specified by 'lon_col' and 'lat_col'.}
 
-\item{dem_file}{Full path to the Digital Elevation Model (DEM) raster file.}
+\item{dem_file}{Full path to the downloaded DEM raster file.}
 }
 \value{
-The input data frame 'data' with a new column containing the extracted elevation values.
+The input data frame \code{data} with a new column  (\code{ele}) containing the extracted elevation values.
 }
 \description{
-This function extracts elevation values from a Digital Elevation Model (DEM) raster file for given longitude and latitude coordinates.
-Ensure that the DEM is projected in WGS84 (EPSG:4326) before extraction.
-The output column will always be "ele".
+This function extracts elevation values from a Digital Elevation Model (DEM) based on location (\code{lon/lat}).
 }

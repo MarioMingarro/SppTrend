@@ -1,13 +1,11 @@
 #' @title Extract elevation from DEM
 #'
-#' @description This function extracts elevation values from a Digital Elevation Model (DEM) raster file for given longitude and latitude coordinates.
-#' Ensure that the DEM is projected in WGS84 (EPSG:4326) before extraction.
-#' The output column will always be "ele".
+#' @description This function extracts elevation values from a Digital Elevation Model (DEM) based on location (`lon/lat`).
 #'
 #' @param data A data frame containing location coordinates. Must include columns specified by 'lon_col' and 'lat_col'.
-#' @param dem_file Full path to the Digital Elevation Model (DEM) raster file.
+#' @param dem_file Full path to the downloaded DEM raster file.
 #'
-#' @return The input data frame 'data' with a new column containing the extracted elevation values.
+#' @return The input data frame `data` with a new column  (`ele`) containing the extracted elevation values.
 #'
 #' @importFrom terra rast extract
 #' @importFrom stringr str_extract
