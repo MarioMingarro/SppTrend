@@ -1,9 +1,9 @@
-# SppTrend: Analyzing Linear Trends in Species Occurrence Data
+# SppTrend: Analyzing linear trends in species occurrence data
 
 [![CRAN Status](https://www.r-pkg.org/badges/version/SppTrend)](https://cran.r-project.org/package=SppTrend)
 
 <div align="center">
-  <img src="man/figures/img_1.png" width="40%" alt="Descripción de la imagen">
+  <img src="man/figures/img_1.png" width="40%">
 </div>
 
 The R package `SppTrend` provides a methodology to analyze how species occurrence changes over time, particularly in relation to environmental factors like temperature. 
@@ -25,7 +25,7 @@ library(devtools)
 devtools::install_github("MarioMingarro/SppTrend")
 ```
 
-## Overview of Key Features
+## Overview of key features
 
 `SppTrend` helps understand species responses to environmental change by analyzing historical occurrence data that includes:
 
@@ -40,11 +40,11 @@ The methodology assumes that the observed species occurrences reflect a temporal
 `SppTrend` provides a structured workflow for analyzing these trends:
 
 1.  **Environmental Data Integration (Optional)**:  Enhance your occurrence records with environmental context using functions like `get_era5_tme()` for temperature data or `extract_elevation()` for elevation.
-2.  **Overall Trend Estimation**: Calculate the average temporal trend of selected response variables across all species using `overall_trend()`. This provides a general baseline to compare with individual specie trend.
+2.  **Overall Trend Estimation**: Calculate the average temporal trend of selected response variables across all species using `overall_trend()`. This provides a general baseline to compare with individual species trend.
 3.  **Individual Trend Analysis**: Determine the specific temporal trends for each species and response variable using `spp_trend()`. This allows comparison of individual species' responses to the overall trend.
 4.  **Ecological Strategy Classification**: Categorize species into distinct ecological strategies based on the significance and direction of their individual trends relative to the overall trend using `spp_strategy()`.
 
-### Data Requirements
+### Data requirements
 
 To utilize the package effectively, your dataset must include the following information for each occurrence:
 
@@ -93,7 +93,7 @@ You can explore the **ERA5-Land monthly averaged data from 1950 to present** dat
 
 The `SppTrend` package provides the following function to incorporate ERA5-Land monthly data:
 
-`extract_era5_data()`: Allows users to obtain average temperature data (mean temperature of the environment) for species occurrences using latitude, longitude and date (year and month). 
+`get_era5_tme()`: Allows users to obtain average temperature data (mean temperature of the environment) for species occurrences using latitude, longitude and date (year and month). 
 
 *Technical notes:*
 
@@ -106,7 +106,7 @@ The `SppTrend` package provides the following function to incorporate ERA5-Land 
 
 ```{r}
 nc_file <- "path/to/your/era5_data.nc"
-data <- extract_era5_data(data, nc_file)
+data <- get_era5_tme(data, nc_file)
 print(data$tme)
 ```
 #### Digital Elevation Model (DEM) data
@@ -130,7 +130,7 @@ This trend serves as a neutral reference to evaluate individual species' respons
 ```{r}
 predictor <- "year"
 responses <- c("lat", "lon", "ele", "tme")
-overall_trend_result <- overall_trend(data, responses, predictor)
+overall_trend_result <- overall_trend(data, predictor, responses)
 print(overall_trend_result)
 ```
 
@@ -187,7 +187,7 @@ In essence, while SA and SD describe the 'what' (change in presence) and SP/SE a
 these spatial responses should be considered together with the thermal responses (TT, TA) to understand if both point towards a consistent overall direction of a species' 
 response to environmental change.
 
-### Applications and Limitations
+### Applications and limitations
 `SppTrend` offers a valuable methodology for researchers investigating how environmental change impacts biodiversity by analyzing trends in species occurrence data.
 However, it's crucial to interpret results cautiously, as species occurrence data can be subject to various biases (e.g., sampling effort, observer expertise). 
 While the overall trend provides a useful community-level reference, remember that it represents an average across all species and might mask how diverse species respond differently to drivers such as warming. 
@@ -197,7 +197,11 @@ For more detailed information and examples, please refer to the package document
 
 ```{r}
 help(package = SppTrend)
-# Or for a specific function:
+```
+
+Or for a specific function:
+
+```{r}
 help(spp_trend)
 ```
 ## References

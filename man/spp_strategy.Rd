@@ -20,13 +20,10 @@ spp_strategy(spp_trend_result, sig_level = 0.05, responses = responses)
 \item \code{hemisphere}: Hemisphere information ("North", "South", "Both").
 }}
 
-\item{sig_level}{The significance level (alpha) to use for classifying trends as
-significant. Defaults to 0.05.}
+\item{sig_level}{The significance level (alpha) to use for classifying trends as significant. Defaults to 0.05.}
 
-\item{responses}{A vector of response variable names to analyze (e.g.,
-\code{c("lat", "lon", "tmx", "tmn", "tme")}). The function will only create
-classification columns for responses present in this vector and in the
-'responses' column of \code{spp_trend_result}.}
+\item{responses}{A vector of response variable names to analyze (\code{c("lat", "lon", "tmx", "tmn", "tme")}).
+The function will only create classification columns for responses present in this vector and in the \code{responses} column of \code{spp_trend_result}.}
 }
 \value{
 A \verb{data frame} summarizing the ecological strategy of each species for each

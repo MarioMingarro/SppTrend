@@ -1,6 +1,6 @@
 Package: SppTrend
 Title: Analyzing Linear Trends in Species Occurrence Data
-Version: 0.1
+Version: 0.2
 Authors@R: c(
     person(given = "Mario", 
             family = "Mingarro", 
