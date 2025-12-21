@@ -92,11 +92,14 @@ The `SppTrend` package offers functions to enhance your species occurrence data 
 ERA5 is the fifth generation European Centre for Medium-Range Weather Forecasts (ECMWF) reanalysis dataset for the global climate and weather. It provides comprehensive atmospheric, land, and ocean climate data from 1940 to the present, with high spatial and temporal resolution. This makes it a valuable resource for studying the impact of climate on species distributions.
 You can explore the **ERA5-Land monthly averaged data from 1950 to present** dataset on the Copernicus Climate Change Service (C3S) Climate Data Store (CDS) at: [ERA5 Land monthly](https://cds.climate.copernicus.eu/datasets/reanalysis-era5-land-monthly-means). For more detailed information about the ERA5 dataset, please visit the [ECMWF website](https://confluence.ecmwf.int/display/CKB/The+family+of+ERA5+datasets).
 
-The `SppTrend` package provides the following function to incorporate ERA5-Land monthly  data:
+The `SppTrend` package provides the following function to incorporate ERA5-Land monthly data:
 
 `extract_era5_data()`: Allows users to obtain average temperature data (mean temperature of the environment) for species occurrences using latitude, longitude and date (year and month). 
 
-*Notes: ERA5 data is available from 1950 onwards. The data must be in `.netcdf` format.*
+*Technical notes:*
+*- Temporal coverage: ERA5 data is available from 1950 to the present.*
+*- Source: Download data from [ERA5 Land monthly](https://cds.climate.copernicus.eu/datasets/reanalysis-era5-land-monthly-means).*
+*- Format: Files must be in .nc (NetCDF) format.*
 
 ```{r}
 nc_file <- "path/to/your/era5_data.nc"
