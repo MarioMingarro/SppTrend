@@ -97,9 +97,13 @@ The `SppTrend` package provides the following function to incorporate ERA5-Land 
 `extract_era5_data()`: Allows users to obtain average temperature data (mean temperature of the environment) for species occurrences using latitude, longitude and date (year and month). 
 
 *Technical notes:*
+
 *- Temporal coverage: ERA5 data is available from 1950 to the present.*
+
 *- Source: Download data from [ERA5 Land monthly](https://cds.climate.copernicus.eu/datasets/reanalysis-era5-land-monthly-means).*
+
 *- Format: Files must be in .nc (NetCDF) format.*
+
 
 ```{r}
 nc_file <- "path/to/your/era5_data.nc"
