@@ -54,7 +54,7 @@ overall_trend <- function(data, predictor, responses) {
   expected_responses <- c("tme", "ele", "tmx", "tmn")
   missing_vars <- expected_responses[!tolower(expected_responses) %in% tolower(col_names)]
   if (length(missing_vars) > 0) {
-    warning(paste("Recommended variables missing from the dataset:", paste(missing_vars, collapse = ", ")))
+    message(paste("Recommended variables missing from the dataset:", paste(missing_vars, collapse = ", ")))
   }
 
   data$hemisphere <- ifelse(data$lat >= 0, "North", "South")

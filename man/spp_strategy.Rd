@@ -20,7 +20,7 @@ spp_strategy(spp_trend_result, sig_level = 0.05, responses = responses)
 \item \code{hemisphere}: Geographic context (\code{North}, \code{South}, or \code{Both} for global comparison).
 }}
 
-\item{sig_level}{The \code{numeric} significance level (alpha) to use for classifying trends as significant. Defaults to 0.05.}
+\item{sig_level}{The \code{numeric} significance level to use for classifying trends as significant. Defaults to \code{0.05}.}
 
 \item{responses}{A \verb{character vector} of response variable names to analyze (\code{c("lat", "lon", "tmx", "tmn", "tme")}).
 The function will only create classification columns for responses present in this vector and in the \code{responses} column of \code{spp_trend_result}.}
@@ -50,10 +50,8 @@ latitude based on hemisphere information. It compares individual species trends 
 ecological strategies as defined in the \code{SppTrend} methodology.
 }
 \details{
-This function takes the trend analysis results from \code{spp_trend} and
-classifies each species' response based on the significance of its trend and
-how it differs from the general trend. The classification identifying three possible spatial responses and three thermal
-responses:
+This function takes the trend analysis results from \code{spp_trend} and classifies each species' response based on the
+significance of its trend and how it differs from the general trend. The classification identifying three possible spatial responses and three thermal responses:
 \itemize{
 \item \strong{Spatial Responses:}
 \itemize{

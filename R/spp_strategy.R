@@ -14,7 +14,7 @@
 #'    - `n`: Sample size for the specific species/hemisphere subset
 #'    - `hemisphere`: Geographic context (`North`, `South`, or `Both` for global comparison).
 #'
-#' @param sig_level The `numeric` significance level (alpha) to use for classifying trends as significant. Defaults to 0.05.
+#' @param sig_level The `numeric` significance level to use for classifying trends as significant. Defaults to `0.05`.
 #' @param responses A `character vector` of response variable names to analyze (`c("lat", "lon", "tmx", "tmn", "tme")`).
 #' The function will only create classification columns for responses present in this vector and in the `responses` column of `spp_trend_result`.
 #'
@@ -32,10 +32,8 @@
 #'   Other spatial responses (`lon`, `ele`) are classified as `Spatial_lon` and `Spatial_ele`
 #'   Thermal responses (`tmx`, `tmn`, `tme`) are classified as `Thermal_tmx`, `Thermal_tmn`, and `Thermal_tme`.
 #'
-#' @details This function takes the trend analysis results from `spp_trend` and
-#'   classifies each species' response based on the significance of its trend and
-#'   how it differs from the general trend. The classification identifying three possible spatial responses and three thermal
-#'   responses:
+#' @details This function takes the trend analysis results from `spp_trend` and classifies each species' response based on the
+#' significance of its trend and how it differs from the general trend. The classification identifying three possible spatial responses and three thermal responses:
 #'   \itemize{
 #'     \item \strong{Spatial Responses:}
 #'       \itemize{
