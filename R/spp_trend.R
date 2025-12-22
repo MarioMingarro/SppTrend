@@ -1,11 +1,10 @@
 #' @title Individual trend analysis
 #'
 #' @description Calculates species-specific temporal trends for geographic and environmental variables.
-#' It compares individual species' trajectories against the regional baseline (calculated via an interaction term)
-#' and handles hemispheric subsets and antimeridian longitudinal transformations.
+#' It compares individual species' trajectories against the regional baseline (calculated via an interaction term).
 #'
 #' @param data A `data frame` containing the variables for the model, including `species`, `year`, `month`, `lon`, `lat`, `tmx` and/or `tmn`.
-#' @param predictor A `character`vector of predictor variable names representing a temporal variable (`year_month`).
+#' @param predictor A `character` vector of predictor variable names representing a temporal variable (`year_month`).
 #' @param responses A `character` vector of response variable names to analyze.
 #' @param spp A `character` vector of unique species names.
 #' @param n_min Minimum `numeric` number of presences required for a species in each hemisphere (or globally for species in both hemispheres) to perform the analysis.
@@ -16,7 +15,7 @@
 #'    - `trend`: Slope of the linear model (rate of change over time).
 #'    - `t`: t-statistic for the species-specific trend.
 #'    - `pvalue`: Statistical significance of the species trend.
-#'    - `ci_95_max`, `ci_95_min`: 95\% confidence interval bounds for the slope.
+#'    - `ci_95_max`, `ci_95_min`: 95% confidence interval bounds for the slope.
 #'    - `dif_t`: t-statistic of the interaction term (species vs. baseline).
 #'    - `dif_pvalue`: p-values of the interaction term. A low value indicates a significant deviation from the general trend.
 #'    - `n`: Sample size for the specific species/hemisphere subset
@@ -24,7 +23,7 @@
 #'
 #' @details
 #' The function fits linear models for each species and compares them to the general trend of the
-#' corresponding hemisphere (or global data) using an interaction model (`y ~ time * group`).
+#' corresponding hemisphere (or global data) using an interaction model (`response ~ predictor * group`).
 #' Separate analyses are performed for Northern and Southern Hemispheres to account for divergent
 #' ecological responses. For species spanning both hemispheres, a "Both" category provides a global
 #' comparison. Longitude values are transformed to a 0-360 range to ensure statistical consistency

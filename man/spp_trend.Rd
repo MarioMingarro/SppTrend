@@ -11,7 +11,7 @@ spp_trend(data, spp, predictor, responses, n_min = 50)
 
 \item{spp}{A \code{character} vector of unique species names.}
 
-\item{predictor}{A \code{character}vector of predictor variable names representing a temporal variable (\code{year_month}).}
+\item{predictor}{A \code{character} vector of predictor variable names representing a temporal variable (\code{year_month}).}
 
 \item{responses}{A \code{character} vector of response variable names to analyze.}
 
@@ -25,7 +25,7 @@ A data frame with trend statistics, including:
 \item \code{trend}: Slope of the linear model (rate of change over time).
 \item \code{t}: t-statistic for the species-specific trend.
 \item \code{pvalue}: Statistical significance of the species trend.
-\item \code{ci_95_max}, \code{ci_95_min}: 95\\% confidence interval bounds for the slope.
+\item \code{ci_95_max}, \code{ci_95_min}: 95\% confidence interval bounds for the slope.
 \item \code{dif_t}: t-statistic of the interaction term (species vs. baseline).
 \item \code{dif_pvalue}: p-values of the interaction term. A low value indicates a significant deviation from the general trend.
 \item \code{n}: Sample size for the specific species/hemisphere subset
@@ -34,12 +34,11 @@ A data frame with trend statistics, including:
 }
 \description{
 Calculates species-specific temporal trends for geographic and environmental variables.
-It compares individual species' trajectories against the regional baseline (calculated via an interaction term)
-and handles hemispheric subsets and antimeridian longitudinal transformations.
+It compares individual species' trajectories against the regional baseline (calculated via an interaction term).
 }
 \details{
 The function fits linear models for each species and compares them to the general trend of the
-corresponding hemisphere (or global data) using an interaction model (\code{y ~ time * group}).
+corresponding hemisphere (or global data) using an interaction model (\code{response ~ predictor * group}).
 Separate analyses are performed for Northern and Southern Hemispheres to account for divergent
 ecological responses. For species spanning both hemispheres, a "Both" category provides a global
 comparison. Longitude values are transformed to a 0-360 range to ensure statistical consistency

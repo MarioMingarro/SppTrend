@@ -7,9 +7,9 @@
 extract_elevation(data, dem_file)
 }
 \arguments{
-\item{data}{A data frame containing location coordinates. Must include columns specified by 'lon_col' and 'lat_col'.}
+\item{data}{A \verb{data frame} containing location coordinates. Must include columns specified by \code{lat} and \code{lon}.}
 
-\item{dem_file}{Full path to the downloaded DEM raster file.}
+\item{dem_file}{Full \code{character} path to the downloaded DEM raster file.}
 }
 \value{
 The input data frame \code{data} with a new column  (\code{ele}) containing the extracted elevation values.

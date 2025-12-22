@@ -7,9 +7,9 @@
 get_era5_tme(data, nc_file)
 }
 \arguments{
-\item{data}{A data frame containing points of interest. Must include \code{lon}, \code{lat}, \code{year}, and \code{month} columns.}
+\item{data}{A \verb{data frame} containing points of interest. Must include \code{lon}, \code{lat}, \code{year}, and \code{month} columns.}
 
-\item{nc_file}{Path to the downloaded ERA5-Land raster (\code{.nc}) file.}
+\item{nc_file}{Full \code{character} path to the downloaded ERA5-Land raster (\code{.nc}) file.}
 }
 \value{
 The input data frame \code{data} with a new column named (\code{tme}), containing the temperature values.

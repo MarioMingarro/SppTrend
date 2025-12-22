@@ -15,34 +15,37 @@ environmental shifts on species assemblages by analyzing historical presence
 data that includes temporal and geographic information.
 }
 \details{
-\subsection{Core Methodology}{
+\subsection{Methodology}{
 
 \code{SppTrend} assumes that observed species occurrences reflect a temporal sequence of changes in response to environmental drivers.
+
 The analysis uses:
-\strong{Predictors}: Sampling date (e.g., year or year-month decimals).
-\strong{Responses}: Geographic location (latitude and longitude) and environmental factors (elevation and temperature).
+\itemize{
+\item \strong{Predictors}: Sampling date (e.g., year or year-month decimals).
+\item \strong{Responses}: Geographic location (latitude and longitude) and environmental factors (elevation and temperature).
+}
 }
 
 \subsection{Workflow}{
 
-The package provides a structured workflow for analyzing these trends:
+\code{SppTrend} provides a structured workflow for analyzing these trends:
 \enumerate{
-\item \strong{Environmental Data Integration (Optional)}: Enhance occurrence records
-with environmental context using functions like \code{get_era5_tme()} (temperature)
-or \code{extract_elevation()} (elevation).
-\item \strong{Overall Trend Estimation}: Calculate the average temporal trend of
+\item \strong{Environmental data integration (optional)}: Enhance occurrence records
+with environmental context using functions like \code{\link{get_era5_tme}} (temperature)
+or \code{\link{extract_elevation}} (elevation).
+\item \strong{Overall trend estimation}: Calculate the average temporal trend of
 selected response variables across the entire dataset using \code{\link{overall_trend}}.
 This establishes a baseline for comparison.
-\item \strong{Individual Trend Analysis}: Determine specific temporal trends for each
+\item \strong{Individual trend analysis}: Determine specific temporal trends for each
 species and response variable using \code{\link{spp_trend}}. This compares
 individual species' responses to the overall trend via interaction models.
-\item \strong{Ecological Strategy Classification}: Categorize species into distinct
+\item \strong{Ecological strategy classification}: Categorize species into distinct
 ecological strategies based on the significance and direction of their
 trends relative to the baseline using \code{\link{spp_strategy}}.
 }
 }
 
-\subsection{More Details}{
+\subsection{More details}{
 
 Project home and source code: \url{https://github.com/MarioMingarro/SppTrend}
 }
