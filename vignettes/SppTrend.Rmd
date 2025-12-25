@@ -1,0 +1,253 @@
+---
+title: "Vignette SppTrend"
+author: "SppTrend"
+date: "2025-12-25"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction to SppTrend}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  warning = FALSE,
+  message = FALSE
+)
+```
+
+# Introduction
+
+The `SppTrend` package provides a statistical framework to analyze temporal shifts in species occurrences in relation to environmental drivers. By comparing individual species' trajectories against an aggregate overall trend, the package classifies biological responses into spatial and thermal strategies.
+
+# Workflow implementation
+
+## 1. Installation and dependencies
+
+```{r}
+# Install the development version from GitHub
+#devtools::install_github("MarioMingarro/SppTrend")
+library(SppTrend)
+library(readr)
+library(tictoc)
+library(knitr)
+library(DT)
+```
+
+## 2. Data acquisition and pre-processing
+
+The package requires a data frame with species names, coordinates (WGS84), and temporal markers (Year/Month).
+
+```{r}
+ranidae <- read_csv2("C:/GITHUB/SppTrend/inst/extdata/example_ranidae.CSV", 
+                    col_types = cols(year = col_double(),
+                                     month = col_double(),
+                                     lon = col_double(),
+                                     lat = col_double()))
+```
+
+```{r}
+# Construct a continuous temporal predictor combining year and month
+ranidae$year_month <- ranidae$year + (ranidae$month * 0.075)
+```
+
+```{r, echo = FALSE}
+DT::datatable(ranidae, caption = "Table 1: Initial dataset structure.", options = list(scrollX = TRUE)) 
+```
+
+## 3. Environmental Data Extraction
+
+`SppTrend` facilitates the integration of geospatial data (temperature and elevation).
+Temperature (ERA5-Land): Uses get_era5_tme() to extract mean monthly temperatures (`tme`) from a ERA5-Land (`.nc`) file.
+
+
+```{r, eval = FALSE}
+ranidae <- get_era5_tme(data = ranidae,
+                               nc_file = "C:/A_TRABAJO/A_JORGE/SPP_VIRTUALES/ERA5_land/era5_land.nc")
+```
+
+Elevation (DEM): Uses extract_elevation() to derive altitude (`ele`) from a Digital Elevation Model (`.tif`) file.
+
+```{r, eval = FALSE}
+ranidae <- extract_elevation(data = ranidae,
+                                    dem_file = "C:/A_TRABAJO/A_JORGE/SPP_VIRTUALES/DEM/dem_wc21_30s.tif")
+```
+```{r, include = FALSE}
+ranidae <- read_csv2("C:/GITHUB/SppTrend/inst/extdata/example_ranidae_tme_ele.csv", 
+                    col_types = cols(year = col_double(),
+                                     month = col_double(),
+                                     lon = col_double(),
+                                     lat = col_double(),
+                                     tme = col_double(),
+                                     ele = col_double()))
+```
+```{r, echo = FALSE}
+DT::datatable(ranidae, caption = "Table 2: Data with environmental variables.", options = list(scrollX = TRUE))
+```
+
+## 4. Trend analysis
+
+The analysis is performed in two stages: estimating the aggregate community baseline and then calculating species-specific deviations.
+
+```{r}
+predictor <- "year_month"
+
+responses <- c("lat", "lon", "ele", "tme")
+
+species_list <- unique(ranidae$species)
+
+ranidae <- na.omit(ranidae)
+```
+
+### 4.1 Overall trend (OT)
+
+The OT serves as a neutral reference, representing the average temporal change across all observations.
+
+
+```{r}
+tic("Overall Trend Calculation")
+overall_res <- overall_trend(ranidae, predictor = predictor, responses = responses)
+toc()
+```
+
+```{r, echo = FALSE}
+DT::datatable(overall_res, caption = "Table 3: Aggregate trends for all observations.", options = list(scrollX = TRUE))
+```
+
+### 4.2. Species-specific trends
+
+Calculates individual slopes for each species, applying a minimum record threshold (`n_min`) to ensure model stability.
+
+```{r}
+tic("Species-Specific Trend")
+spp_res <- spp_trend(ranidae, species_list, 
+                     predictor = predictor, 
+                     responses = responses, 
+                     n_min = 5)
+toc()
+```
+
+## 5. Biological strategy classification
+
+The spp_strategy() function categorizes species based on the significance and direction of their trends relative to the OT.
+
+Spatial Responses:
+
+- Spatial Adaptation (SA): Shift toward higher latitudes (Poleward).
+
+- Spatial Discordance (SD): Shift toward lower latitudes (Equatorward).
+
+- Spatial Conformity (SC): No significant deviation from the overall trend.
+
+Thermal Responses:
+
+- Thermal Tolerance (TT): Positive response to temperature over time.
+
+- Thermal Adjustment (TA): Negative response (avoidance) to temperature.
+
+- Thermal Conformity (TC): No significant deviation from the overall trend.
+
+
+```{r}
+tic("Strategy Classification")
+strategy_res <- spp_strategy(spp_res, 
+                             sig_level = 0.05, 
+                             responses = c("lat", "lon", "tme", "ele"))
+toc()
+```
+```{r, echo = FALSE}
+DT::datatable(strategy_res, caption = "Table 4: Classification of biological strategies.", options = list(scrollX = TRUE))
+```
+
+## 6. Visualization
+
+Visualizing the relationship between occurrence records and environmental shifts is essential for hypothesis generation.
+
+### 6.1. Spatial distribution
+
+```{r, fig.width=12, fig.height=8, out.width="100%"}
+library(ggplot2)
+library(rnaturalearth)
+library(sf)
+
+# Retrieve base map data
+world_map <- ne_countries(scale = "medium", returnclass = "sf")
+
+# Select an example species for visualization
+example_spp <- "Lithobates sylvaticus"
+viz_data <- ranidae[ranidae$species == example_spp, ]
+
+ggplot() +
+  geom_sf(data = world_map, fill = "#f9f9f9", color = "grey80") +
+  geom_point(data = viz_data, aes(x = lon, y = lat, col = year), alpha = 0.6, size = 2) +
+  scale_colour_viridis_c(option = "viridis", name = "Year") +
+  labs(title = paste("Distribution of", example_spp),
+       subtitle = paste("Total records:", nrow(viz_data)),
+       x = "Longitude", y = "Latitude") +
+  theme_minimal() +
+  theme(axis.text = element_text(size = 8),
+        legend.position = "bottom")
+```
+
+### Latitudinal trend plots
+
+Species-specific slopes (red) are compared against the community-wide OT (dashed black).
+
+
+```{r, fig.width=12, fig.height=8, out.width="100%"}
+ggplot() +
+  geom_point(data = ranidae, aes(x = year_month, y = lat), color = "grey80", alpha = 0.3) + 
+  geom_smooth(data = ranidae, aes(x = year_month, y = lat), 
+              method = "lm", color = "black", linetype = "dashed", se = FALSE) +
+  geom_smooth(data = viz_data, aes(x = year_month, y = lat), 
+              method = "lm", color = "red", fill = "red", alpha = 0.2) +
+  labs(title = paste("Latitudinal trend:", example_spp),
+       subtitle = "SE",
+       x = "Year", y = "Latitude") +
+  theme_minimal()
+```
+
+### Temperature trend plot
+
+Species-specific slopes (red) are compared against the community-wide OT (dashed black).
+
+```{r, fig.width=12, fig.height=8, out.width="100%"}
+example_spp <- "Pelophylax nigromaculatus"
+viz_data <- ranidae[ranidae$species == example_spp, ]
+ggplot() +
+  geom_point(data = ranidae, aes(x = year_month, y = tme), color = "grey80", alpha = 0.3) + 
+  geom_smooth(data = ranidae, aes(x = year_month, y = tme), 
+              method = "lm", color = "black", linetype = "dashed", se = FALSE) +
+  geom_smooth(data = viz_data, aes(x = year_month, y = tme), 
+              method = "lm", color = "red", fill = "red", alpha = 0.2) +
+  labs(title = paste("Temperature trend:", example_spp),
+       subtitle = "TT",
+       x = "Year", y = "Temperature") +
+  theme_minimal()
+```
+
+### Elevation trend plot
+
+Species-specific slopes (red) are compared against the community-wide OT (dashed black).
+
+```{r, fig.width=12, fig.height=8, out.width="100%"}
+example_spp <- "Lithobates pipiens"
+viz_data <- ranidae[ranidae$species == example_spp, ]
+ggplot() +
+  geom_point(data = ranidae, aes(x = year_month, y = tme), color = "grey80", alpha = 0.3) + 
+  geom_smooth(data = ranidae, aes(x = year_month, y = tme), 
+              method = "lm", color = "black", linetype = "dashed", se = FALSE) +
+  geom_smooth(data = viz_data, aes(x = year_month, y = tme), 
+              method = "lm", color = "red", fill = "red", alpha = 0.2) +
+  labs(title = paste("Elevation trend:", example_spp),
+       subtitle = "SD",
+       x = "Year", y = "Elevation") +
+  theme_minimal()
+```
+
+## Conclusions
+
+`SppTrend` allows for a nuanced understanding of biodiversity responses by moving beyond simple distribution maps to formalized strategy classification. Researchers should remain mindful of sampling biases inherent in historical occurrence data when interpreting these trends.
+
