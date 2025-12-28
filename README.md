@@ -199,13 +199,20 @@ For more detailed information and examples, please refer to the package document
 help(package = SppTrend)
 ```
 ### Example with real data
-For a more complete explanation with practical examples, please refer to the real-data example 
+Detailed examples and case studies are available in the PDF guide included with the package.
 
-`inst/extdata/SppTrend_example.pdf`.
+```{r}
+SppTrend_guide()
+```
 
-The data used in the example are also available in 
+The data used in the example are also available in: 
 
-`inst/extdata/example_ranidae.csv`.
+`inst/extdata/example_ranidae.csv`
+
+```{r}
+path <- system.file("extdata", "example_ranidae.csv", package = "SppTrend")
+ranidae <- read_csv(path)
+```
 
 ## References
 This package is based on the methodology described in:

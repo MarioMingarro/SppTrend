@@ -40,7 +40,7 @@
 #'    trends relative to the baseline using \code{\link{spp_strategy}}.
 #'
 #' ## More details
-#' Detailed examples and case studies are available in the example provided in the package (\code{system.file("extdata", "SppTrend_example.pdf", package = "SppTrend")})
+#' Detailed examples and case studies are available in the example provided in the package using \code{\link{SppTrend_guide}}
 #' Source code: \url{https://github.com/MarioMingarro/SppTrend}
 #'
 #' @name SppTrend-package
