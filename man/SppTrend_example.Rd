@@ -4,13 +4,10 @@
 \alias{SppTrend_example}
 \title{Open the SppTrend example}
 \usage{
-SppTrend_example(format = "html")
-}
-\arguments{
-\item{format}{A \code{character} string, either "pdf" or "html" (default).}
+SppTrend_example()
 }
 \value{
-Opens the PDF or html in the default system viewer.
+Opens the PDF in the default system viewer.
 }
 \description{
 This function locates and opens the PDF example included in the package.

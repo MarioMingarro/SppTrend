@@ -146,7 +146,7 @@ spp_trend_result <- spp_trend(data, spp, predictor, responses, n_min = 50)
 print(spp_trend_result)
 ```
 
-### Phase 4: Analysis of Specific Species Responses
+### Phase 4: Analysis of specific species responses
 
 The `spp_strategy()` function analyzes the results from `spp_trend()` to classify species into different ecological strategies based on the significance and direction of their trends relative to the overall trend. 
 This function incorporates logic for poleward shifts in latitude based on hemisphere and can also classify trends in elevation.
@@ -203,7 +203,7 @@ help(package = SppTrend)
 Detailed examples and case studies are available in the PDF guide included with the package (`inst/extdata/`).
 
 ```{r}
-SppTrend_example(format = "html")
+SppTrend_example()
 ```
 
 The data used in the example are also available in: 
