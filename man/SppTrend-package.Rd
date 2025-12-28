@@ -47,7 +47,8 @@ trends relative to the baseline using \code{\link{spp_strategy}}.
 
 \subsection{More details}{
 
-Project home and source code: \url{https://github.com/MarioMingarro/SppTrend}
+Detailed examples and case studies are available in the example provided in the package (\code{system.file("extdata", "SppTrend_example.pdf", package = "SppTrend")})
+Source code: \url{https://github.com/MarioMingarro/SppTrend}
 }
 }
 \author{

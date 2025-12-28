@@ -198,13 +198,15 @@ For more detailed information and examples, please refer to the package document
 ```{r}
 help(package = SppTrend)
 ```
+### Example with real data
+For a more complete explanation with practical examples, please refer to the real-data example 
 
-For a more complete explanation with practical examples, please refer to the package vignette.
-The data used in the vignette are available in `inst/extdata/example_ranidae.csv`.
+`inst/extdata/SppTrend_example.pdf`.
 
-```{r}
-vignette("spp_trend")
-```
+The data used in the example are also available in 
+
+`inst/extdata/example_ranidae.csv`.
+
 ## References
 This package is based on the methodology described in:
 
