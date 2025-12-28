@@ -1,5 +1,5 @@
 ---
-title: "Vignette SppTrend"
+title: "Introduction to SppTrend"
 date: "2025-12"
 output: rmarkdown::html_vignette
 vignette: >
