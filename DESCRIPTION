@@ -15,7 +15,7 @@ Authors@R: c(
             family = "García-Roselló", 
             comment = c(ORCID = "0000-0003-0305-770X"),
             role = "aut"))
-Description: Provides functions to analyze trends in time series of species abundance or occurrence data, particularly focusing on the impact of environmental factors like temperature.
+Description: Provides functions to analyze trends in time series of species occurrence data.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
@@ -25,13 +25,7 @@ Suggests:
     testthat (>= 3.0.0),
     knitr,
     rmarkdown,
-    DT,
-    ggplot2,
-    sf,
-    rnaturalearth,
-    readr,
-    devtools,
-    rnaturalearthdata
+    devtools
 Imports: 
     dplyr, 
     tidyr, 

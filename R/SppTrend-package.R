@@ -5,9 +5,9 @@
 #' @title SppTrend: Analyzing linear trends in species occurrence data
 #' @description
 #' The `SppTrend` package provides a methodology to analyze how species occurrences
-#' change over time, particularly in relation to geographic and environmental factors.
+#' change over time, particularly in relation to spatial and thermal factors.
 #' It facilitates the development of explanatory hypotheses about the impact of
-#' environmental shifts on species assemblages by analyzing historical presence
+#' environmental shifts on species by analyzing historical presence
 #' data that includes temporal and geographic information.
 #'
 #' @details

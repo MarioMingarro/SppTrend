@@ -199,10 +199,11 @@ For more detailed information and examples, please refer to the package document
 help(package = SppTrend)
 ```
 
-Or for a specific function:
+For a more complete explanation with practical examples, please refer to the package vignette.
+The data used in the vignette are available in `inst/extdata/example_ranidae.csv`.
 
 ```{r}
-help(spp_trend)
+vignette("spp_trend")
 ```
 ## References
 This package is based on the methodology described in:
