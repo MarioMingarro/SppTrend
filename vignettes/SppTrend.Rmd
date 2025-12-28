@@ -1,9 +1,10 @@
 ---
 title: "Introduction to SppTrend"
-output: rmarkdown::pdf_document
+output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Introduction to SppTrend}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
+```{r, echo = FALSE, results = "asis"}

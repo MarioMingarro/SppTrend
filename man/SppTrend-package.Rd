@@ -6,12 +6,12 @@
 \alias{SppTrend}
 \title{SppTrend: Analyzing linear trends in species occurrence data}
 \description{
-Provides functions to analyze trends in time series of species abundance or occurrence data, particularly focusing on the impact of environmental factors like temperature.
+Provides functions to analyze trends in time series of species occurrence data.
 
 The \code{SppTrend} package provides a methodology to analyze how species occurrences
-change over time, particularly in relation to geographic and environmental factors.
+change over time, particularly in relation to spatial and thermal factors.
 It facilitates the development of explanatory hypotheses about the impact of
-environmental shifts on species assemblages by analyzing historical presence
+environmental shifts on species by analyzing historical presence
 data that includes temporal and geographic information.
 }
 \details{
