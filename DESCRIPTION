@@ -25,9 +25,13 @@ Suggests:
     testthat (>= 3.0.0),
     knitr,
     rmarkdown,
+    DT,
+    ggplot2,
+    sf,
+    rnaturalearth,
     readr,
-    tictoc,
-    devtools
+    devtools,
+    rnaturalearthdata
 Imports: 
     dplyr, 
     tidyr, 

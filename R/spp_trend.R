@@ -52,12 +52,7 @@
 #'
 #' spp_trend_result <- spp_trend(data, spp, predictor, responses, n_min = 50)
 #'
-#' print(head(spp_trend_result))
-#'
-#' # Example interpretation: A positive 'trend' for 'lat' might indicate a
-#' # northward shift in the Northern Hemisphere. A low 'pvalue' (e.g., < 0.05)
-#' # suggests this trend is statistically significant. A low 'dif_pvalue'
-#' # might indicate this trend is significantly different from the general trend.
+#' print(spp_trend_result)
 #'
 #' @export
 #'

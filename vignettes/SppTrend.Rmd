@@ -47,7 +47,7 @@ The package requires a `data frame` with species names, coordinates (WGS84), and
 
 *Note:*
 
-*Ensure that the column names in your input dataset match the default names expected by the SppTrend functions.* 
+Ensure that the column names in your input dataset match the default names expected by the `SppTrend` functions. 
 
 These default names are:
 
@@ -152,7 +152,6 @@ ranidae <- na.omit(ranidae)
 ### 4.1 Overall trend (OT)
 
 The OT serves as a neutral reference, representing the average temporal change across all observations.
-
 
 ```{r}
 overall_res <- overall_trend(ranidae, predictor = predictor, responses = responses)

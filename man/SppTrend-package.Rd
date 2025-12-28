@@ -4,7 +4,7 @@
 \name{SppTrend-package}
 \alias{SppTrend-package}
 \alias{SppTrend}
-\title{SppTrend: Analyzing Linear Trends in Species Occurrence Data}
+\title{SppTrend: Analyzing linear trends in species occurrence data}
 \description{
 Provides functions to analyze trends in time series of species abundance or occurrence data, particularly focusing on the impact of environmental factors like temperature.
 
