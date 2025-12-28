@@ -199,7 +199,8 @@ For more detailed information and examples, please refer to the package document
 help(package = SppTrend)
 ```
 ### Example with real data
-Detailed examples and case studies are available in the PDF guide included with the package.
+
+Detailed examples and case studies are available in the PDF guide included with the package (`inst/extdata/`).
 
 ```{r}
 SppTrend_guide()
