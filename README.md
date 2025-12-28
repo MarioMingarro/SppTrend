@@ -203,7 +203,7 @@ help(package = SppTrend)
 Detailed examples and case studies are available in the PDF guide included with the package (`inst/extdata/`).
 
 ```{r}
-SppTrend_guide()
+SppTrend_example(format = "html")
 ```
 
 The data used in the example are also available in: 
@@ -218,7 +218,7 @@ ranidae <- read_csv(path)
 ## References
 This package is based on the methodology described in:
 
-Jorge M. Lobo, Mario Mingarro, Martin Godefroid, Emilio García-Roselló 2023. Taking advantage of opportunistically collected historical occurrence data to detect responses to climate change: The case of temperature and Iberian dung beetles. *Ecology and evolution*, 13(12) e10674. https://doi.org/10.1002/ece3.10674 
+Lobo, JM, Mingarro, M, Godefroid, M & García-Roselló, E 2023. Taking advantage of opportunistically collected historical occurrence data to detect responses to climate change: The case of temperature and Iberian dung beetles. *Ecology and evolution*, 13(12) e10674. https://doi.org/10.1002/ece3.10674 
 
 ## Contact
 For any questions or issues, please feel free to contact:
