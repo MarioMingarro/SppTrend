@@ -3,7 +3,7 @@
 #' @description Calculates species-specific temporal trends for geographic and environmental variables.
 #' It compares individual species' trajectories against the regional baseline (calculated via an interaction term).
 #'
-#' @param data A `data frame` containing the variables for the model, including `species`, `year`, `month`, `lon`, `lat`, `tmx` and/or `tmn`.
+#' @param data A `data frame` containing the variables for the model, including `species`, `year`, `month`, `lon`, `lat`, `tme` and/or `ele`.
 #' @param predictor A `character` vector of predictor variable names representing a temporal variable (`year_month`).
 #' @param responses A `character` vector of response variable names to analyze.
 #' @param spp A `character` vector of unique species names.
@@ -56,21 +56,14 @@
 #'
 #' @export
 #'
-#' @title Individual trend analysis
-#' @export
-#'
 spp_trend <- function(data, spp, predictor, responses, n_min = 50) {
+  data <- na.omit(data)
   col_names <- names(data)
   if (!all(responses %in% col_names)) {
     missing_in_call <- responses[!responses %in% col_names]
     stop(paste0("Critical Error: Response(s) '", paste(missing_in_call, collapse = ", "), "' not found in dataset."))
   }
   if (!predictor %in% col_names) stop(paste0("Critical Error: Predictor '", predictor, "' not found."))
-  expected_responses <- c("tme", "ele", "tmx", "tmn")
-  missing_vars <- expected_responses[!tolower(expected_responses) %in% tolower(col_names)]
-  if (length(missing_vars) > 0) {
-    message(paste("Recommended variables missing from the dataset:", paste(missing_vars, collapse = ", ")))
-  }
   data$hemisphere <- ifelse(data$lat >= 0, "North", "South")
   results_list <- list()
   for (n in 1:length(spp)) {
@@ -104,13 +97,13 @@ spp_trend <- function(data, spp, predictor, responses, n_min = 50) {
               results_list[[length(results_list) + 1]] <- data.frame(
                 species = spp[n],
                 responses = current_resp,
-                trend = coef(model_i)[2],
-                t = sum_i[2, 3],
-                pvalue = sum_i[2, 4],
-                ci_95_max = ci[1, 2],
-                ci_95_min = ci[1, 1],
-                dif_t = if (int_term %in% rownames(sum_int)) sum_int[int_term, 3] else NA,
-                dif_pvalue = if (int_term %in% rownames(sum_int)) sum_int[int_term, 4] else NA,
+                trend      = round(coef(model_i)[2], 3),
+                t          = round(sum_i[2, 3], 3),
+                pvalue     = round(sum_i[2, 4], 6),
+                ci_95_max  = round(ci[1, 2], 3),
+                ci_95_min  = round(ci[1, 1], 3),
+                dif_t = if (int_term %in% rownames(sum_int)) round(sum_int[int_term, 3], 3) else NA,
+                dif_pvalue = if (int_term %in% rownames(sum_int)) round(sum_int[int_term, 4], 6) else NA,
                 n = nrow(ind_hemisphere),
                 hemisphere = h,
                 stringsAsFactors = FALSE
@@ -124,16 +117,21 @@ spp_trend <- function(data, spp, predictor, responses, n_min = 50) {
           })
         }
       } else {
-        message(paste0("WARNING: Specie ", spp[n], " has insufficient data (n = ", nrow(ind_hemisphere), " < ",  n_min, ") in ", h, " hemisphere."))
+        message(paste0("WARNING: Specie ", spp[n], " has insufficient data (n = ", nrow(ind_hemisphere), " and < n_min = ",  n_min, ") in ", h, " hemisphere."))
       }
     }
-    if (all(c("North", "South") %in% hemispheres_present)) {
-      if (nrow(ind) > n_min) {
+    if (all(c("North", "South") %in% hemispheres_present)){
+      n_north <- sum(ind$hemisphere == "North")
+      n_south <- sum(ind$hemisphere == "South")
+      if (n_north > n_min && n_south > n_min) {
         for (i in 1:length(responses)) {
           tryCatch({
             current_resp <- responses[i]
             if (length(unique(ind[[predictor]])) > 1) {
-              if (current_resp == "lon") {
+              if (current_resp == "lat") {
+                val_ind_g <- abs(ind$lat)
+                val_gen_g <- abs(data$lat)
+              } else if (current_resp == "lon") {
                 val_ind_g <- (ind$lon + 180) %% 360
                 val_gen_g <- (data$lon + 180) %% 360
               } else {
@@ -151,26 +149,26 @@ spp_trend <- function(data, spp, predictor, responses, n_min = 50) {
               results_list[[length(results_list) + 1]] <- data.frame(
                 species = spp[n],
                 responses = current_resp,
-                trend = coef(model_i_g)[2],
-                t = sum_i_g[2, 3],
-                pvalue = sum_i_g[2, 4],
-                ci_95_max = ci_g[1, 2],
-                ci_95_min = ci_g[1, 1],
-                dif_t = if ("time:groupi" %in% rownames(sum_int_g)) sum_int_g["time:groupi", 3] else NA,
-                dif_pvalue = if ("time:groupi" %in% rownames(sum_int_g)) sum_int_g["time:groupi", 4] else NA,
-                n = nrow(ind),
-                hemisphere = "Both",
+                trend      = round(coef(model_i_g)[2], 3),
+                t          = round(sum_i_g[2, 3], 3),
+                pvalue     = round(sum_i_g[2, 4], 6),
+                ci_95_max  = round(ci_g[1, 2], 3),
+                ci_95_min  = round(ci_g[1, 1], 3),
+                dif_t      = if ("time:groupi" %in% rownames(sum_int_g)) round(sum_int_g["time:groupi", 3], 3) else NA,
+                dif_pvalue = if ("time:groupi" %in% rownames(sum_int_g)) round(sum_int_g["time:groupi", 4], 6) else NA,
+                n          = nrow(ind),
+                hemisphere = "Global",
                 stringsAsFactors = FALSE
               )
             } else {
-              message(paste0("WARNING: Specie ", spp[n], " response (", responses[i], ") in Both hemisphere (Global) has insufficient variation in predictor (", predictor, ")."))
+              message(paste0("WARNING: Specie ", spp[n], " response (", responses[i], ") in both hemisphere (Global) has insufficient variation in predictor (", predictor, ")."))
             }
           }, error = function(e) {
-            message(paste("Error global en", spp[n], "-", responses[i], ":", e$message))
+            message(paste("Error in", spp[n], "-", responses[i], ":", e$message))
           })
         }
       } else {
-        message(paste0("WARNING: Specie ", spp[n], " has insufficient data (n = ", nrow(ind), " < ",  n_min, ") globally."))
+        message(paste0("WARNING: Specie ", spp[n], " has insufficient data in some hemisphere"))
       }
     }
   }

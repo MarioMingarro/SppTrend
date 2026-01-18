@@ -2,7 +2,7 @@
 #'
 #' @description Calculates baseline temporal trends for geographic and environmental variables using linear regression.
 #'
-#' @param data A `data frame` containing the variables for the model, including `species`, `year`, `month`, `lon`, `lat`, `tmx` and/or `tmn`.
+#' @param data A `data frame` containing the variables for the model, including `species`, `year`, `month`, `lon`, `lat`, `tme` and `ele`.
 #' @param predictor A `character`vector of predictor variable names representing a temporal variable (`year_month`).
 #' @param responses A `character` vector of response variable names to analyze.
 #'
@@ -36,7 +36,7 @@
 #' data$year_month <- data$year + data$month * 0.075
 #'
 #' predictor <- "year_month"
-#' responses <- c("lat", "lon", "tme")
+#' responses <- c("lat", "lon", "tme", "ele")
 #'
 #' overall_trend_result <- overall_trend(data, predictor, responses)
 #'
@@ -45,32 +45,45 @@
 #' @export
 #'
 overall_trend <- function(data, predictor, responses) {
+  data <- na.omit(data)
   col_names <- names(data)
   if (!all(responses %in% col_names)) {
     missing_in_call <- responses[!responses %in% col_names]
     stop(paste0("Critical Error: Response(s) '", paste(missing_in_call, collapse = ", "), "' not found in dataset."))
   }
   if (!predictor %in% col_names) stop(paste0("Critical Error: Predictor '", predictor, "' not found."))
-  expected_responses <- c("tme", "ele", "tmx", "tmn")
-  missing_vars <- expected_responses[!tolower(expected_responses) %in% tolower(col_names)]
-  if (length(missing_vars) > 0) {
-    message(paste("Recommended variables missing from the dataset:", paste(missing_vars, collapse = ", ")))
-  }
-
   data$hemisphere <- ifelse(data$lat >= 0, "North", "South")
-  groups_to_analyze <- list(
-    Global = data,
-    North = data[data$hemisphere == "North", ],
-    South = data[data$hemisphere == "South", ]
-  )
+  unique_hemispheres <- unique(data$hemisphere)
+  groups_to_analyze <- list()
+  if (length(unique_hemispheres) > 1) {
+    groups_to_analyze$Global <- data
+    groups_to_analyze$North  <- data[data$hemisphere == "North", ]
+    groups_to_analyze$South  <- data[data$hemisphere == "South", ]
+  } else {
+    if ("North" %in% unique_hemispheres) {
+      groups_to_analyze$North <- data[data$hemisphere == "North", ]
+    }
+    if ("South" %in% unique_hemispheres) {
+      groups_to_analyze$South <- data[data$hemisphere == "South", ]
+    }
+  }
   results_list <- list()
   for (var in responses) {
     for (h_name in names(groups_to_analyze)) {
       data_set <- groups_to_analyze[[h_name]]
+
       if (nrow(data_set) > 0 && length(unique(data_set[[predictor]])) > 1) {
         tryCatch({
           current_resp <- var
           target_var <- var
+          if (var == "lat") {
+            if (h_name == "Global") {
+              data_set$lat_abs <- abs(data_set$lat)
+              target_var <- "lat_abs"
+            } else {
+              target_var <- "lat"
+            }
+          }
           if (var == "lon") {
             data_set$lon_transformed <- (data_set$lon + 180) %% 360
             target_var <- "lon_transformed"
@@ -85,11 +98,11 @@ overall_trend <- function(data, predictor, responses) {
             conf_int <- confint(model_g, predictor, level = 0.95)
             results_list[[length(results_list) + 1]] <- data.frame(
               responses = var,
-              trend = trend_value,
-              t = t_value,
-              pvalue = p_value,
-              ci_95_max = conf_int[1, 2],
-              ci_95_min = conf_int[1, 1],
+              trend      = round(trend_value, 3),
+              t          = round(t_value, 3),
+              pvalue     = round(p_value, 6),
+              ci_95_max  = round(conf_int[1, 2], 3),
+              ci_95_min  = round(conf_int[1, 1], 3),
               n = nrow(data_set),
               hemisphere = h_name,
               stringsAsFactors = FALSE
@@ -108,18 +121,8 @@ overall_trend <- function(data, predictor, responses) {
   if (length(results_list) > 0) {
     overall_trend_result <- do.call(rbind, results_list)
     rownames(overall_trend_result) <- NULL
+    return(overall_trend_result)
   } else {
-    overall_trend_result <- data.frame(
-      responses = character(),
-      trend = numeric(),
-      t = numeric(),
-      pvalue = numeric(),
-      ci_95_max = numeric(),
-      ci_95_min = numeric(),
-      n = integer(),
-      hemisphere = character(),
-      stringsAsFactors = FALSE
-    )
+    return(data.frame())
   }
-  return(overall_trend_result)
 }

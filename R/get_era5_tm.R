@@ -24,9 +24,9 @@ get_era5_tme <- function(data, nc_file) {
   date_info <- terra::time(era5_raster)
   if (!any(is.na(date_info)))
   {
-    layer=data.frame(dates=as.Date(date_info))
+    layer <- data.frame(dates=as.Date(date_info))
   }else{
-    layer=data.frame(dates=as.numeric(str_extract(names(era5_raster), "-?\\d+$")))
+    layer <- data.frame(dates=as.numeric(str_extract(names(era5_raster), "-?\\d+$")))
     layer$dates <- as.POSIXct( layer$dates, origin = "1970-01-01 00:00:00", tz = "UTC")
   }
   layer$years <-as.numeric(format(layer$dates, "%Y"))
@@ -57,13 +57,13 @@ get_era5_tme <- function(data, nc_file) {
   coords_spatvector <- terra::vect(data, geom = c("lon", "lat"), crs = "EPSG:4326")
   terra::crs(coords_spatvector) <- raster_crs
   unique_year_month_combinations <- unique(data[c("year", "month")])
-  unique_year_month_combinations=na.omit(unique_year_month_combinations)
-  unique_year_month_combinations=unique_year_month_combinations[order(unique_year_month_combinations$year,
+  unique_year_month_combinations_ <- na.omit(unique_year_month_combinations)
+  unique_year_month_combinations <- unique_year_month_combinations[order(unique_year_month_combinations$year,
                                                                       unique_year_month_combinations$month),]
   for(year_month_index in 1:nrow(unique_year_month_combinations))
   {
-    year_month=unique_year_month_combinations[year_month_index,]
-    selected_row_indexes=which(data$year==year_month$year & data$month==year_month$month)
+    year_month <- unique_year_month_combinations[year_month_index,]
+    selected_row_indexes <- which(data$year==year_month$year & data$month==year_month$month)
     layer_index <- which(year_month$year==layer$years & year_month$month==layer$months)
     if (length(layer_index)==0)
     {
@@ -74,11 +74,11 @@ get_era5_tme <- function(data, nc_file) {
     }
     else{
       layer_index <- floor(mean(layer_index))
-      temperatures=terra::extract(era5_raster[[layer_index]],
+      temperatures <- terra::extract(era5_raster[[layer_index]],
                                   coords_spatvector[selected_row_indexes],
                                   ID=F)
-      data[selected_row_indexes,"tme"]=temperatures - 273.15
-      null_temps=sapply(data[selected_row_indexes,"tme" ], is.null)
+      data[selected_row_indexes,"tme"] = temperatures - 273.15
+      null_temps <- sapply(data[selected_row_indexes,"tme" ], is.null)
       if (any(null_temps))
       {
         warning(paste(
@@ -94,5 +94,7 @@ get_era5_tme <- function(data, nc_file) {
     }
   }
   data$lon <- original_lon
+  data$tme <- round(data$tme, 3)
+  data <- na.omit(data)
   return(data)
 }

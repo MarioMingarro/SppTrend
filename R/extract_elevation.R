@@ -49,5 +49,7 @@ extract_elevation <- function(data, dem_file) {
       "points. Points may be outside DEM extent."
     ))
   }
+  data$ele <- round(data$ele, 3)
+  data <- na.omit(data)
   return(data)
 }

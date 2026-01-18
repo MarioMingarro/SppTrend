@@ -15,22 +15,21 @@
 #'    - `hemisphere`: Geographic context (`North`, `South`, or `Both` for global comparison).
 #'
 #' @param sig_level The `numeric` significance level to use for classifying trends as significant. Defaults to `0.05`.
-#' @param responses A `character vector` of response variable names to analyze (`c("lat", "lon", "tmx", "tmn", "tme")`).
-#' The function will only create classification columns for responses present in this vector and in the `responses` column of `spp_trend_result`.
+#' @param responses A `character vector` of response variable names to analyze (`c("lat", "lon", "tme", "ele")`).
+#' The function will create classification columns for responses present in this vector and in the `responses` column of `spp_trend_result`.
 #'
-#' @return A `data frame` summarizing the ecological strategy of each species for each
-#'   analyzed response variable.
+#' @return A `data frame` summarizing the ecological strategy of each species for each analyzed response variable.
 #'   The table includes:
 #'    - Species name
 #'    - Hemisphere
 #'    - Sample size
 #'    - Classification columns for:
 #'        - Spatial (latitude, longitude and elevation if present) responses. Spatial Adaptation `SA`, Spatial Discordance `SD`, Spatial Conformity `SC`
-#'        - Thermal (tmx, tmn, tme if present) responses. Thermal Tolerance `TT`, Thermal Adjustment `TA`, Thermal Conformity `TC`
+#'        - Thermal (temperature if present) responses. Thermal Tolerance `TT`, Thermal Adjustment `TA`, Thermal Conformity `TC`
 #'
 #'   Classification for latitude (`lat`) is `Spatial_lat_Poleward` and indicates poleward (SP) or equatorward (SE) shifts based on hemisphere.
 #'   Other spatial responses (`lon`, `ele`) are classified as `Spatial_lon` and `Spatial_ele`
-#'   Thermal responses (`tmx`, `tmn`, `tme`) are classified as `Thermal_tmx`, `Thermal_tmn`, and `Thermal_tme`.
+#'   Thermal responses (`tme`) are classified as `Thermal_tme`.
 #'
 #' @details This function takes the trend analysis results from `spp_trend` and classifies each species' response based on the
 #' significance of its trend and how it differs from the general trend. The classification identifying three possible spatial responses and three thermal responses:
@@ -192,14 +191,6 @@ spp_strategy <- function(spp_trend_result,
         .data$responses == "ele" ~ classify_spatial_standard(.data$pvalue, .data$dif_pvalue, .data$trend),
         TRUE ~ NA_character_
       ),
-      Thermal_tmx = dplyr::case_when(
-        .data$responses == "tmx" ~ classify_thermal(.data$pvalue, .data$dif_pvalue, .data$trend),
-        TRUE ~ NA_character_
-      ),
-      Thermal_tmn = dplyr::case_when(
-        .data$responses == "tmn" ~ classify_thermal(.data$pvalue, .data$dif_pvalue, .data$trend),
-        TRUE ~ NA_character_
-      ),
       Thermal_tme = dplyr::case_when(
         .data$responses == "tme" ~ classify_thermal(.data$pvalue, .data$dif_pvalue, .data$trend),
         TRUE ~ NA_character_
@@ -216,16 +207,6 @@ spp_strategy <- function(spp_trend_result,
         },
       Spatial_ele = if ("ele" %in% unique(responses)){
         dplyr::first(Spatial_ele[!is.na(Spatial_ele)])
-      }else{
-        NA_character_
-        },
-      Thermal_tmx = if ("tmx" %in% unique(responses)){
-        dplyr::first(Thermal_tmx[!is.na(Thermal_tmx)])
-      }else{
-        NA_character_
-        },
-      Thermal_tmn = if ("tmn" %in% unique(responses)){
-        dplyr::first(Thermal_tmn[!is.na(Thermal_tmn)])
       }else{
         NA_character_
         },
