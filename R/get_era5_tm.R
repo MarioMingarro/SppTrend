@@ -38,10 +38,10 @@ get_era5_tme <- function(data, nc_file) {
   }
   print(paste("Raster coverage: From ", min(layer$dates), " to ", max(layer$dates)))
   data_years <- unique(data$year)
-  not_found_years=setdiff(data_years,layer$years)
+  not_found_years <- setdiff(data_years,layer$years)
   if (!is.null(not_found_years) & length(not_found_years)>0)
   {
-    if (length(data_years)== length(not_found_years))
+    if (length(data_years) == length(not_found_years))
     {
       stop("Error: no data found for any year of the ocurrences")
     }
@@ -80,8 +80,7 @@ get_era5_tme <- function(data, nc_file) {
       data[selected_row_indexes,"tme"] = temperatures - 273.15
       null_temps <- sapply(data[selected_row_indexes,"tme" ], is.null)
       if (any(null_temps))
-      {
-        warning(paste(
+      {warning(paste(
           "No data found for year", year_month$year, "month", year_month$month,
           "at coords",
           sapply(data[selected_row_indexes,c("lon", "lat")][null_temps, ],
