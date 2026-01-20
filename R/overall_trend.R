@@ -36,7 +36,7 @@
 #' data$year_month <- data$year + data$month * 0.075
 #'
 #' predictor <- "year_month"
-#' responses <- c("lat", "lon", "tme", "ele")
+#' responses <- c("lat", "lon", "tme")
 #'
 #' overall_trend_result <- overall_trend(data, predictor, responses)
 #'
@@ -49,9 +49,14 @@ overall_trend <- function(data, predictor, responses) {
   col_names <- names(data)
   if (!all(responses %in% col_names)) {
     missing_in_call <- responses[!responses %in% col_names]
-    stop(paste0("Critical Error: Response(s) '", paste(missing_in_call, collapse = ", "), "' not found in dataset."))
+    stop(paste0(
+      "Critical Error: Response(s) '",
+      paste(missing_in_call, collapse = ", "),
+      "' not found in dataset."
+    ))
   }
-  if (!predictor %in% col_names) stop(paste0("Critical Error: Predictor '", predictor, "' not found."))
+  if (!predictor %in% col_names)
+    stop(paste0("Critical Error: Predictor '", predictor, "' not found."))
   data$hemisphere <- ifelse(data$lat >= 0, "North", "South")
   unique_hemispheres <- unique(data$hemisphere)
   groups_to_analyze <- list()
@@ -72,7 +77,8 @@ overall_trend <- function(data, predictor, responses) {
     for (h_name in names(groups_to_analyze)) {
       data_set <- groups_to_analyze[[h_name]]
 
-      if (nrow(data_set) > 0 && length(unique(data_set[[predictor]])) > 1) {
+      if (nrow(data_set) > 0 &&
+          length(unique(data_set[[predictor]])) > 1) {
         tryCatch({
           current_resp <- var
           target_var <- var
@@ -109,11 +115,27 @@ overall_trend <- function(data, predictor, responses) {
             )
           }
         }, error = function(e) {
-          message(paste("ERROR in overall analysis for response", var, "in", h_name, ":", e$message))
+          message(
+            paste(
+              "ERROR in overall analysis for response",
+              var,
+              "in",
+              h_name,
+              ":",
+              e$message
+            )
+          )
         })
       } else {
         if (h_name != "Global") {
-          message(paste("WARNING: Insufficient data or predictor variation for", var, "in", h_name))
+          message(
+            paste(
+              "WARNING: Insufficient data or predictor variation for",
+              var,
+              "in",
+              h_name
+            )
+          )
         }
       }
     }

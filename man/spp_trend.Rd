@@ -7,7 +7,7 @@
 spp_trend(data, spp, predictor, responses, n_min = 50)
 }
 \arguments{
-\item{data}{A \verb{data frame} containing the variables for the model, including \code{species}, \code{year}, \code{month}, \code{lon}, \code{lat}, \code{tmx} and/or \code{tmn}.}
+\item{data}{A \verb{data frame} containing the variables for the model, including \code{species}, \code{year}, \code{month}, \code{lon}, \code{lat}, \code{tme} and/or \code{ele}.}
 
 \item{spp}{A \code{character} vector of unique species names.}
 

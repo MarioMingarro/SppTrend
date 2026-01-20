@@ -39,7 +39,7 @@ The methodology assumes that the observed species occurrences reflect a temporal
 
 `SppTrend` provides a structured workflow for analyzing these trends:
 
-1.  **Environmental Data Integration (Optional)**:  Enhance your occurrence records with environmental context using functions like `get_era5_tme()` for temperature data or `extract_elevation()` for elevation.
+1.  **Environmental Data Integration (Optional)**:  Enhance your occurrence records with environmental context using functions like `get_era5_tme()` for temperature data or `get_elevation()` for elevation.
 2.  **Overall Trend Estimation**: Calculate the average temporal trend of selected response variables across all species using `overall_trend()`. This provides a general baseline to compare with individual species trend.
 3.  **Individual Trend Analysis**: Determine the specific temporal trends for each species and response variable using `spp_trend()`. This allows comparison of individual species' responses to the overall trend.
 4.  **Ecological Strategy Classification**: Categorize species into distinct ecological strategies based on the significance and direction of their individual trends relative to the overall trend using `spp_strategy()`.
@@ -64,8 +64,6 @@ To utilize the package effectively, your dataset must include the following info
 - **Environmental Response Variables** (if applicable): 
   - **Elevation**: `ele`
   - **Temperature**: `tme`
-  - **Maximum temperature**: `tmx`
-  - **Minimum temperature**: `tmn`
 
 The following is an example illustrating the structure of a data frame containing 500 randomly generated presence records for 10 distinct species:
 
@@ -111,7 +109,7 @@ print(data$tme)
 ```
 #### Digital Elevation Model (DEM) data
 
-`extract_elevation()`: This function can be used to retrieve Digital Elevation Model (DEM) data for the species occurrences, providing information about the elevation at which the species were recorded.
+`get_elevation()`: This function can be used to retrieve Digital Elevation Model (DEM) data for the species occurrences, providing information about the elevation at which the species were recorded.
 For obtaining elevation data for species occurrences, this example utilizes the WorldClim dataset ([WorldClim](https://www.worldclim.org/data/worldclim21.html)). However, users are encouraged to consider other Digital Elevation Models (DEMs) based on the specific resolution requirements of their analysis. For instance, the [EU-DEM dataset](https://dataspace.copernicus.eu/explore-data/data-collections/copernicus-contributing-missions/collections-description/COP-DEM) provides high-resolution elevation data for Europe.
 
 *Technical notes:*
@@ -119,7 +117,7 @@ For obtaining elevation data for species occurrences, this example utilizes the 
 
 ```{r}
 dem_file <- "path/to/your/dem.tif"
-data <- extract_elevation(data, dem_file)
+data <- get_elevation(data, dem_file)
 print(data$ele)
 ```
 ### Phase 2: Estimation of the overall trend of responses

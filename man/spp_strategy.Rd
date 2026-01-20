@@ -17,17 +17,16 @@ spp_strategy(spp_trend_result, sig_level = 0.05, responses = responses)
 \item \code{dif_t}: t-statistic of the interaction term (species vs. baseline).
 \item \code{dif_pvalue}: p-values of the interaction term. A low value indicates a significant deviation from the general trend.
 \item \code{n}: Sample size for the specific species/hemisphere subset
-\item \code{hemisphere}: Geographic context (\code{North}, \code{South}, or \code{Both} for global comparison).
+\item \code{hemisphere}: Geographic context (\code{North}, \code{South}, or \code{Global}).
 }}
 
 \item{sig_level}{The \code{numeric} significance level to use for classifying trends as significant. Defaults to \code{0.05}.}
 
-\item{responses}{A \verb{character vector} of response variable names to analyze (\code{c("lat", "lon", "tmx", "tmn", "tme")}).
-The function will only create classification columns for responses present in this vector and in the \code{responses} column of \code{spp_trend_result}.}
+\item{responses}{A \verb{character vector} of response variable names to analyze (\code{c("lat", "lon", "tme", "ele")}).
+The function will create classification columns for responses present in this vector and in the \code{responses} column of \code{spp_trend_result}.}
 }
 \value{
-A \verb{data frame} summarizing the ecological strategy of each species for each
-analyzed response variable.
+A \verb{data frame} summarizing the ecological strategy of each species for each analyzed response variable.
 The table includes:
 \itemize{
 \item Species name
@@ -36,13 +35,13 @@ The table includes:
 \item Classification columns for:
 \itemize{
 \item Spatial (latitude, longitude and elevation if present) responses. Spatial Adaptation \code{SA}, Spatial Discordance \code{SD}, Spatial Conformity \code{SC}
-\item Thermal (tmx, tmn, tme if present) responses. Thermal Tolerance \code{TT}, Thermal Adjustment \code{TA}, Thermal Conformity \code{TC}
+\item Thermal (temperature if present) responses. Thermal Tolerance \code{TT}, Thermal Adjustment \code{TA}, Thermal Conformity \code{TC}
 }
 }
 
 Classification for latitude (\code{lat}) is \code{Spatial_lat_Poleward} and indicates poleward (SP) or equatorward (SE) shifts based on hemisphere.
 Other spatial responses (\code{lon}, \code{ele}) are classified as \code{Spatial_lon} and \code{Spatial_ele}
-Thermal responses (\code{tmx}, \code{tmn}, \code{tme}) are classified as \code{Thermal_tmx}, \code{Thermal_tmn}, and \code{Thermal_tme}.
+Thermal responses (\code{tme}) are classified as \code{Thermal_tme}.
 }
 \description{
 Creates a summary table classifying species based on their significant spatial and thermal trends, potentially incorporating poleward shift logic for
@@ -98,7 +97,7 @@ spp_trends_results <- data.frame(
   dif_t = runif(30, -1, 1.5),
   dif_pvalue = runif(30, 0.001, 0.9),
   n = round(runif(30, 40, 60)),
-  hemisphere = sample(c("North", "South", "Both"), 30, replace = TRUE)
+  hemisphere = sample(c("North", "South", "Global"), 30, replace = TRUE)
 )
 
 spp <- unique(spp_trends_results$species)

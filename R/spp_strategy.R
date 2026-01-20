@@ -12,7 +12,7 @@
 #'    - `dif_t`: t-statistic of the interaction term (species vs. baseline).
 #'    - `dif_pvalue`: p-values of the interaction term. A low value indicates a significant deviation from the general trend.
 #'    - `n`: Sample size for the specific species/hemisphere subset
-#'    - `hemisphere`: Geographic context (`North`, `South`, or `Both` for global comparison).
+#'    - `hemisphere`: Geographic context (`North`, `South`, or `Global`).
 #'
 #' @param sig_level The `numeric` significance level to use for classifying trends as significant. Defaults to `0.05`.
 #' @param responses A `character vector` of response variable names to analyze (`c("lat", "lon", "tme", "ele")`).
@@ -83,7 +83,7 @@
 #'   dif_t = runif(30, -1, 1.5),
 #'   dif_pvalue = runif(30, 0.001, 0.9),
 #'   n = round(runif(30, 40, 60)),
-#'   hemisphere = sample(c("North", "South", "Both"), 30, replace = TRUE)
+#'   hemisphere = sample(c("North", "South", "Global"), 30, replace = TRUE)
 #' )
 #'
 #' spp <- unique(spp_trends_results$species)
@@ -127,10 +127,10 @@ spp_strategy <- function(spp_trend_result,
         trend < 0 & hemisphere == "South" ~ "SP",
       pvalue <= sig_level &
         dif_pvalue <= sig_level &
-        trend > 0 & hemisphere == "Both" ~ "SA",
+        trend > 0 & hemisphere == "Global" ~ "SA",
       pvalue <= sig_level &
         dif_pvalue <= sig_level &
-        trend < 0 & hemisphere == "Both" ~ "SD",
+        trend < 0 & hemisphere == "Global" ~ "SD",
       TRUE ~ "SC"
     )
   }

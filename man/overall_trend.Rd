@@ -7,7 +7,7 @@
 overall_trend(data, predictor, responses)
 }
 \arguments{
-\item{data}{A \verb{data frame} containing the variables for the model, including \code{species}, \code{year}, \code{month}, \code{lon}, \code{lat}, \code{tmx} and/or \code{tmn}.}
+\item{data}{A \verb{data frame} containing the variables for the model, including \code{species}, \code{year}, \code{month}, \code{lon}, \code{lat}, \code{tme} and \code{ele}.}
 
 \item{predictor}{A \code{character}vector of predictor variable names representing a temporal variable (\code{year_month}).}
 

@@ -32,7 +32,7 @@ The analysis uses:
 \enumerate{
 \item \strong{Environmental data integration (optional)}: Enhance occurrence records
 with environmental context using functions like \code{\link{get_era5_tme}} (temperature)
-or \code{\link{extract_elevation}} (elevation).
+or \code{\link{get_elevation}} (elevation).
 \item \strong{Overall trend estimation}: Calculate the average temporal trend of
 selected response variables across the entire dataset using \code{\link{overall_trend}}.
 This establishes a baseline for comparison.
