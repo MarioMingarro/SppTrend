@@ -40,9 +40,10 @@ The methodology assumes that the observed species occurrences reflect a temporal
 `SppTrend` provides a structured workflow for analyzing these trends:
 
 1.  **Environmental Data Integration (Optional)**:  Enhance your occurrence records with environmental context using functions like `get_era5_tme()` for temperature data or `get_elevation()` for elevation.
-2.  **Overall Trend Estimation**: Calculate the average temporal trend of selected response variables across all species using `overall_trend()`. This provides a general baseline to compare with individual species trend.
-3.  **Individual Trend Analysis**: Determine the specific temporal trends for each species and response variable using `spp_trend()`. This allows comparison of individual species' responses to the overall trend.
-4.  **Ecological Strategy Classification**: Categorize species into distinct ecological strategies based on the significance and direction of their individual trends relative to the overall trend using `spp_strategy()`.
+2.  **Exploratory Diagnostic**: Quickly visualize occurrence distribution and temperature trends in the precences area from NetCDF files with `get_fast_info()`.
+3.  **Overall Trend Estimation**: Calculate the average temporal trend of selected response variables across all species using `overall_trend()`. This provides a general baseline to compare with individual species trend.
+4.  **Individual Trend Analysis**: Determine the specific temporal trends for each species and response variable using `spp_trend()`. This allows comparison of individual species' responses to the overall trend.
+5.  **Ecological Strategy Classification**: Categorize species into distinct ecological strategies based on the significance and direction of their individual trends relative to the overall trend using `spp_strategy()`.
 
 ### Data requirements
 
@@ -113,6 +114,7 @@ print(data$tme)
 For obtaining elevation data for species occurrences, this example utilizes the WorldClim dataset ([WorldClim](https://www.worldclim.org/data/worldclim21.html)). However, users are encouraged to consider other Digital Elevation Models (DEMs) based on the specific resolution requirements of their analysis. For instance, the [EU-DEM dataset](https://dataspace.copernicus.eu/explore-data/data-collections/copernicus-contributing-missions/collections-description/COP-DEM) provides high-resolution elevation data for Europe.
 
 *Technical notes:*
+
 *- Format: DEM data must be in `.tif` format.*
 
 ```{r}
@@ -120,7 +122,22 @@ dem_file <- "path/to/your/dem.tif"
 data <- get_elevation(data, dem_file)
 print(data$ele)
 ```
-### Phase 2: Estimation of the overall trend of responses
+### Phase 2: Fast diagnostic and visual summary
+
+`get_fast_info()` function provides a quick visual diagnostic of your data. It generates a distribution map of records alongside a time-series plot from a NetCDF file, including a linear trend analysis (slope and p-value). 
+It uses the geographic coordinates of your occurrence records to extract the complete climate time-series (from the beginning to the end of records period) for those specific locations.
+The function then aggregates all temperature data from all occupied cells to calculate and plot the overall environmental trend (slope and p-value). 
+This allows you to visualize the climate trajectory of the specific regions where your species have been recorded.
+
+*Technical notes:*
+*- See `get_era5_tme()`*
+
+```{r}
+nc_file <- "path/to/your/era5_data.nc"
+temp_data <- get_fast_info(data, nc_file)
+```
+
+### Phase 3: Estimation of the overall trend of responses
 
 The `overall_trend()` function calculates the overall temporal trend (OT) for specified response variables across the entire dataset. 
 This trend serves as a neutral reference to evaluate individual species' responses.
@@ -132,7 +149,7 @@ overall_trend_result <- overall_trend(data, predictor, responses)
 print(overall_trend_result)
 ```
 
-### Phase 3: Estimation of individual trends of responses
+### Phase 4: Estimation of individual trends of responses
 
 The `spp_trend()` function estimates the individual temporal trend for each species and response variable, comparing it to the overall temporal trend observed in the data. It also handles longitude transformations and considers hemisphere-specific trends.
 
@@ -144,7 +161,7 @@ spp_trend_result <- spp_trend(data, spp, predictor, responses, n_min = 50)
 print(spp_trend_result)
 ```
 
-### Phase 4: Analysis of specific species responses
+### Phase 5: Analysis of specific species responses
 
 The `spp_strategy()` function analyzes the results from `spp_trend()` to classify species into different ecological strategies based on the significance and direction of their trends relative to the overall trend. 
 This function incorporates logic for poleward shifts in latitude based on hemisphere and can also classify trends in elevation.

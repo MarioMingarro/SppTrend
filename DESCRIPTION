@@ -29,5 +29,7 @@ Imports:
     terra, 
     stats, 
     stringr, 
-    tidyselect
+    tidyselect,
+    ggplot2,
+    patchwork
 Config/testthat/edition: 3

@@ -30,7 +30,6 @@
 #' near the antimeridian.
 #'
 #' @importFrom stats as.formula confint formula lm coef
-#' @importFrom dplyr %>% mutate filter
 #'
 #' @examples
 #'
