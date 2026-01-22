@@ -74,7 +74,6 @@ get_fast_info <- function(data, nc_file) {
     ggplot2::scale_color_viridis_c(
       option = "viridis",
       name = "Year",
-      breaks = function(x) seq(floor(min(x)), ceiling(max(x)), by = 1)
     )+
     ggplot2::coord_sf(xlim = range(point_map$lon, na.rm = TRUE) + c(-1, 1),
                       ylim = range(point_map$lat, na.rm = TRUE) + c(-1, 1), expand = FALSE)+
@@ -96,7 +95,6 @@ get_fast_info <- function(data, nc_file) {
     ggplot2::scale_y_continuous(
       sec.axis = ggplot2::sec_axis(~., breaks = y_min - 0.5, labels = "n")
     ) +
-    ggplot2::scale_x_continuous(breaks = seq(floor(year_range[1]), ceiling(year_range[2]), by = 1)) +
     ggplot2::scale_color_viridis_c(option = "mako", name = "n") +
     ggplot2::guides(
       size = "none",
