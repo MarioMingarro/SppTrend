@@ -16,7 +16,7 @@
 #' @importFrom dplyr %>% distinct mutate filter group_by summarise count
 #' @importFrom patchwork plot_layout
 #' @importFrom stats na.omit
-#' @importFrom sf read_sf
+#' @importFrom sf read_sf st_as_sf
 #' @export
 get_fast_info <- function(data, nc_file) {
   lon <- lat <- year <- lon_adj <- idx_lyr <- val <- ID <- temp_c <- temp_era <- n <- mean_temp <- NULL
@@ -66,6 +66,7 @@ get_fast_info <- function(data, nc_file) {
   )
 
   world <- sf::read_sf(system.file("extdata", "ne_land.shp", package = "SppTrend"))
+  world <- sf::st_as_sf(world)
   p_map <- ggplot2::ggplot() +
     ggplot2::geom_sf(data = world, fill = "#f9f9f9", color = "grey80") +
     ggplot2::geom_point(data = point_map, ggplot2::aes(x = lon, y = lat, color = year), alpha = 0.4) +
