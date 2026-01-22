@@ -54,8 +54,8 @@ get_elevation <- function(data, dem_file) {
     warning(
       paste(
         "Missing elevation data (NA) for",
-        sum(is.na(data[["elevation"]])),
-        "points. Points may be outside DEM extent."
+        sum(is.na(data[["ele"]])),
+        "points. Removing records"
       )
     )
   }

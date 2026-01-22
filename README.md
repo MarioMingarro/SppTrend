@@ -39,8 +39,8 @@ The methodology assumes that the observed species occurrences reflect a temporal
 
 `SppTrend` provides a structured workflow for analyzing these trends:
 
-1.  **Environmental Data Integration (Optional)**:  Enhance your occurrence records with environmental context using functions like `get_era5_tme()` for temperature data or `get_elevation()` for elevation.
-2.  **Exploratory Diagnostic**: Quickly visualize occurrence distribution and temperature trends in the precences area from NetCDF files with `get_fast_info()`.
+1.  **Exploratory Diagnostic**: Quickly visualize occurrence distribution and temperature trends in the precences area from NetCDF files with `get_fast_info()`.
+2.  **Environmental Data Integration (Optional)**:  Enhance your occurrence records with environmental context using functions like `get_era5_tme()` for temperature data or `get_elevation()` for elevation.
 3.  **Overall Trend Estimation**: Calculate the average temporal trend of selected response variables across all species using `overall_trend()`. This provides a general baseline to compare with individual species trend.
 4.  **Individual Trend Analysis**: Determine the specific temporal trends for each species and response variable using `spp_trend()`. This allows comparison of individual species' responses to the overall trend.
 5.  **Ecological Strategy Classification**: Categorize species into distinct ecological strategies based on the significance and direction of their individual trends relative to the overall trend using `spp_strategy()`.
@@ -81,7 +81,22 @@ data$year_month  = data$year + data$month * 0.075
 ```
 ### Detailed steps
 
-### Phase 1: Environmental data generation
+### Phase 1: Fast diagnostic and visual summary
+
+`get_fast_info()` function provides a quick visual diagnostic of your data. It generates a distribution map of records alongside a time-series plot from a NetCDF file, including a linear trend analysis (slope and p-value). 
+It uses the geographic coordinates of your occurrence records to extract the complete climate time-series (from the beginning to the end of records period) for those specific locations.
+The function then aggregates all temperature data from all occupied cells to calculate and plot the overall environmental trend (slope and p-value). 
+This allows you to visualize the climate trajectory of the specific regions where your species have been recorded.
+
+*Technical notes:*
+*- See `get_era5_tme()`*
+
+```{r}
+nc_file <- "path/to/your/era5_data.nc"
+temp_data <- get_fast_info(data, nc_file)
+```
+
+### Phase 2: Environmental data generation
 
 The `SppTrend` package offers functions to enhance your species occurrence data with relevant environmental information. Currently, it supports the integration of monthly temperature and elevation data.
 
@@ -121,20 +136,6 @@ For obtaining elevation data for species occurrences, this example utilizes the 
 dem_file <- "path/to/your/dem.tif"
 data <- get_elevation(data, dem_file)
 print(data$ele)
-```
-### Phase 2: Fast diagnostic and visual summary
-
-`get_fast_info()` function provides a quick visual diagnostic of your data. It generates a distribution map of records alongside a time-series plot from a NetCDF file, including a linear trend analysis (slope and p-value). 
-It uses the geographic coordinates of your occurrence records to extract the complete climate time-series (from the beginning to the end of records period) for those specific locations.
-The function then aggregates all temperature data from all occupied cells to calculate and plot the overall environmental trend (slope and p-value). 
-This allows you to visualize the climate trajectory of the specific regions where your species have been recorded.
-
-*Technical notes:*
-*- See `get_era5_tme()`*
-
-```{r}
-nc_file <- "path/to/your/era5_data.nc"
-temp_data <- get_fast_info(data, nc_file)
 ```
 
 ### Phase 3: Estimation of the overall trend of responses

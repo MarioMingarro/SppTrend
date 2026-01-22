@@ -30,15 +30,15 @@ The analysis uses:
 
 \code{SppTrend} provides a structured workflow for analyzing these trends:
 \enumerate{
-\item \strong{Environmental data integration (optional)}: Enhance occurrence records
-with environmental context using functions like \code{\link{get_era5_tme}} (temperature)
-or \code{\link{get_elevation}} (elevation).
 \item \strong{Rapid diagnostic and visual summary}: Perform a preliminary analysis
 using \code{\link{get_fast_info}}. This function links occurrence coordinates
 with climate NetCDF data to visualize distribution maps and regional
 temperature trajectories. It extracts the complete climate time-series
 for all locations with records, allowing to visualize the climate
 trajectory of the specific regions where species have been recorded.
+\item \strong{Environmental data integration (optional)}: Enhance occurrence records
+with environmental context using functions like \code{\link{get_era5_tme}} (temperature)
+or \code{\link{get_elevation}} (elevation).
 \item \strong{Overall trend estimation}: Calculate the average temporal trend of
 selected response variables across the entire dataset using \code{\link{overall_trend}}.
 This establishes a baseline for comparison.

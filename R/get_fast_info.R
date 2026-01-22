@@ -78,7 +78,8 @@ get_fast_info <- function(data, nc_file) {
     ggplot2::coord_sf(xlim = range(point_map$lon, na.rm = TRUE) + c(-1, 1),
                       ylim = range(point_map$lat, na.rm = TRUE) + c(-1, 1), expand = FALSE)+
     ggplot2::theme_minimal() +
-    ggplot2::theme(axis.title = ggplot2::element_blank())
+    ggplot2::theme(axis.title = ggplot2::element_blank(),
+                   legend.text = ggplot2::element_text(size = 6))
 
   n_anual <- data %>% dplyr::count(year)
   y_min <- min(df_era_anual$temp_era, na.rm = TRUE)
@@ -106,7 +107,8 @@ get_fast_info <- function(data, nc_file) {
     )+
     ggplot2::labs(y = "Tme (C)") +
     ggplot2::theme_minimal()+
-    ggplot2::theme(axis.title.x = ggplot2::element_blank())
+    ggplot2::theme(axis.title.x = ggplot2::element_blank(),
+                   legend.text = ggplot2::element_text(size = 6))
 
   final_plot <- (p_map | p_trend) +
     patchwork::plot_layout(guides = "collect") &

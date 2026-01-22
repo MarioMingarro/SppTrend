@@ -119,6 +119,15 @@ get_era5_tme <- function(data, nc_file) {
   }
   data$lon <- original_lon
   data$tme <- round(data$tme, 3)
+  if (any(is.na(data[["tme"]])))
+  {warning(
+      paste(
+        "Missing temperature data (NA) for",
+        sum(is.na(data[["tme"]])),
+        "points. Removing records."
+      )
+    )
+  }
   data <- na.omit(data)
   return(data)
 }
