@@ -40,10 +40,10 @@ get_fast_info <- function(data, nc_file) {
   pts_vect <- terra::vect(data_coords_ext, geom = c("lon_adj", "lat"), crs = terra::crs(r_stack))
   vals_cells <- terra::extract(r_stack[[lyr_f$lyr_idx]], pts_vect, ID = TRUE)
   df_long <- stats::reshape(vals_cells,
-                     direction = "long",
-                     varying = list(2:ncol(vals_cells)),
-                     v.names = "val",
-                     timevar = "idx_lyr")
+                            direction = "long",
+                            varying = list(2:ncol(vals_cells)),
+                            v.names = "val",
+                            timevar = "idx_lyr")
 
   df_era_anual <- df_long %>%
     dplyr::mutate(
@@ -61,8 +61,9 @@ get_fast_info <- function(data, nc_file) {
   s_fit <- summary(fit)
 
   stats_label <- paste0(
-    "tme trend: ", round(coef(fit)[2], 4), "C/yr\n",
-    "p-value: ", round(s_fit$coefficients[2, 4], 5)
+    "Tme trend: ", round(coef(fit)[2], 4), "C/yr\n",
+    "t(", s_fit$df[2], ") = ", round(s_fit$coefficients[2, 3], 2), "\n",
+    "p = ", ifelse(round(s_fit$coefficients[2, 4], 4) < 0.001, "< 0.001", round(s_fit$coefficients[2, 4], 4))
   )
 
   world <- sf::read_sf(system.file("extdata", "ne_land.shp", package = "SppTrend"))
@@ -70,7 +71,11 @@ get_fast_info <- function(data, nc_file) {
   p_map <- ggplot2::ggplot() +
     ggplot2::geom_sf(data = world, fill = "#f9f9f9", color = "grey80") +
     ggplot2::geom_point(data = point_map, ggplot2::aes(x = lon, y = lat, color = year), alpha = 0.4) +
-    ggplot2::scale_color_viridis_c(option = "viridis", name = "Year") +
+    ggplot2::scale_color_viridis_c(
+      option = "viridis",
+      name = "Year",
+      breaks = function(x) seq(floor(min(x)), ceiling(max(x)), by = 1)
+    )+
     ggplot2::coord_sf(xlim = range(point_map$lon, na.rm = TRUE) + c(-1, 1),
                       ylim = range(point_map$lat, na.rm = TRUE) + c(-1, 1), expand = FALSE)+
     ggplot2::theme_minimal() +
@@ -85,11 +90,25 @@ get_fast_info <- function(data, nc_file) {
     ggplot2::geom_point(data = n_anual,
                         ggplot2::aes(x = year, y = y_min - 0.5, size = n, color = n),
                         shape = 15, alpha = 0.7) +
-    ggplot2::annotate("label", x = year_range[1], y = max(df_era_anual$temp_era),
-                      label = stats_label, hjust = 0, size = 3) +
-    ggplot2::scale_color_viridis_c(option = "mako", name = "Count (n)") +
-    ggplot2::labs(y = "Temperature (C)", x = "Year") +
-    ggplot2::theme_minimal()
+    ggplot2::annotate("label", x = year_range[1], y = max(df_era_anual$temp_era, na.rm = TRUE),
+                      label = stats_label, hjust = 0, size = 3,
+                      fill = "white", color = "black", alpha = 0.1)+
+    ggplot2::scale_y_continuous(
+      sec.axis = ggplot2::sec_axis(~., breaks = y_min - 0.5, labels = "n")
+    ) +
+    ggplot2::scale_x_continuous(breaks = seq(floor(year_range[1]), ceiling(year_range[2]), by = 1)) +
+    ggplot2::scale_color_viridis_c(option = "mako", name = "n") +
+    ggplot2::guides(
+      size = "none",
+      color = ggplot2::guide_colorbar(
+        direction = "horizontal",
+        title.position = "right",
+        label.position = "top"
+      )
+    )+
+    ggplot2::labs(y = "Tme (C)") +
+    ggplot2::theme_minimal()+
+    ggplot2::theme(axis.title.x = ggplot2::element_blank())
 
   final_plot <- (p_map | p_trend) +
     patchwork::plot_layout(guides = "collect") &
