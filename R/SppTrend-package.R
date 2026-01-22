@@ -27,15 +27,22 @@
 #'    with environmental context using functions like \code{\link{get_era5_tme}} (temperature)
 #'    or \code{\link{get_elevation}} (elevation).
 #'
-#' 2. **Overall trend estimation**: Calculate the average temporal trend of
+#' 2. **Rapid diagnostic and visual summary**: Perform a preliminary analysis
+#'    using \code{\link{get_fast_info}}. This function links occurrence coordinates
+#'    with climate NetCDF data to visualize distribution maps and regional
+#'    temperature trajectories. It extracts the complete climate time-series
+#'    for all locations with records, allowing to visualize the climate
+#'    trajectory of the specific regions where species have been recorded.
+#'
+#' 3. **Overall trend estimation**: Calculate the average temporal trend of
 #'    selected response variables across the entire dataset using \code{\link{overall_trend}}.
 #'    This establishes a baseline for comparison.
 #'
-#' 3. **Individual trend analysis**: Determine specific temporal trends for each
+#' 4. **Individual trend analysis**: Determine specific temporal trends for each
 #'    species and response variable using \code{\link{spp_trend}}. This compares
 #'    individual species' responses to the overall trend via interaction models.
 #'
-#' 4. **Ecological strategy classification**: Categorize species into distinct
+#' 5. **Ecological strategy classification**: Categorize species into distinct
 #'    ecological strategies based on the significance and direction of their
 #'    trends relative to the baseline using \code{\link{spp_strategy}}.
 #'

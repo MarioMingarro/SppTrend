@@ -5,8 +5,8 @@
 #' It extracts the complete climate time-series for all occupied locations,
 #' generating a spatial distribution map and a temporal trend analysis.
 #'
-#' @param data_with_spp A data frame containing at least `lon`, `lat`, and `year` columns.
-#' @param nc_path Character. Path to the .nc (NetCDF) file containing climate data.
+#' @param data A data frame containing at least `lon`, `lat`, and `year` columns.
+#' @param nc_file Character. Path to the .nc (NetCDF) file containing climate data.
 #'
 #' @return Invisibly returns a data frame with annual temperature values per point.
 #' Displays a composite plot showing the geographic distribution and the thermal trend with its corresponding global slope and p-value.
@@ -16,14 +16,15 @@
 #' @importFrom dplyr %>% distinct mutate filter group_by summarise count
 #' @importFrom patchwork plot_layout
 #' @importFrom stats na.omit
+#' @importFrom sf read_sf
 #' @export
-get_fast_info <- function(data_with_spp, nc_path) {
+get_fast_info <- function(data, nc_file) {
   lon <- lat <- year <- lon_adj <- idx_lyr <- val <- ID <- temp_c <- temp_era <- n <- mean_temp <- NULL
-  point_map <- data_with_spp %>%
+  point_map <- data %>%
     dplyr::distinct(lon, lat, .keep_all = TRUE)
   data_coords_ext <- point_map %>%
     dplyr::mutate(lon_adj = ifelse(lon < 0, lon + 360, lon))
-  r_stack <- terra::rast(nc_path)
+  r_stack <- terra::rast(nc_file)
   date_nc <- terra::time(r_stack)
 
   if(all(is.na(date_nc))) {
@@ -33,7 +34,7 @@ get_fast_info <- function(data_with_spp, nc_path) {
     lyr_idx = 1:terra::nlyr(r_stack),
     year = as.numeric(format(as.Date(date_nc), "%Y"))
   )
-  year_range <- range(data_with_spp$year, na.rm = TRUE)
+  year_range <- range(data$year, na.rm = TRUE)
   lyr_f <- df_tiempos %>%
     dplyr::filter(year >= year_range[1] & year <= year_range[2])
   pts_vect <- terra::vect(data_coords_ext, geom = c("lon_adj", "lat"), crs = terra::crs(r_stack))
@@ -64,18 +65,17 @@ get_fast_info <- function(data_with_spp, nc_path) {
     "p-value: ", round(s_fit$coefficients[2, 4], 5)
   )
 
-  world <- terra::vect(system.file("extdata", "ne_land.shp", package = "SppTrend"))
-
+  world <- sf::read_sf(system.file("extdata", "ne_land.shp", package = "SppTrend"))
   p_map <- ggplot2::ggplot() +
     ggplot2::geom_sf(data = world, fill = "#f9f9f9", color = "grey80") +
     ggplot2::geom_point(data = point_map, ggplot2::aes(x = lon, y = lat, color = year), alpha = 0.4) +
     ggplot2::scale_color_viridis_c(option = "viridis", name = "Year") +
-    ggplot2::coord_sf(xlim = range(point_map$lon) + c(-1, 1),
-                      ylim = range(point_map$lat) + c(-1, 1), expand = FALSE) +
+    ggplot2::coord_sf(xlim = range(point_map$lon, na.rm = TRUE) + c(-1, 1),
+                      ylim = range(point_map$lat, na.rm = TRUE) + c(-1, 1), expand = FALSE)+
     ggplot2::theme_minimal() +
     ggplot2::theme(axis.title = ggplot2::element_blank())
 
-  n_anual <- data_with_spp %>% dplyr::count(year)
+  n_anual <- data %>% dplyr::count(year)
   y_min <- min(df_era_anual$temp_era, na.rm = TRUE)
 
   p_trend <- ggplot2::ggplot(df_era_anual, ggplot2::aes(x = year, y = temp_era)) +
@@ -94,5 +94,5 @@ get_fast_info <- function(data_with_spp, nc_path) {
     patchwork::plot_layout(guides = "collect") &
     ggplot2::theme(legend.position = "bottom")
   print(final_plot)
-  return(invisible(df_era_anual))
+  return(invisible(final_plot))
 }

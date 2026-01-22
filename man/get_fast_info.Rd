@@ -4,12 +4,12 @@
 \alias{get_fast_info}
 \title{Quick summary of climate trends and species occurrences}
 \usage{
-get_fast_info(data_with_spp, nc_path)
+get_fast_info(data, nc_file)
 }
 \arguments{
-\item{data_with_spp}{A data frame containing at least \code{lon}, \code{lat}, and \code{year} columns.}
+\item{data}{A data frame containing at least \code{lon}, \code{lat}, and \code{year} columns.}
 
-\item{nc_path}{Character. Path to the .nc (NetCDF) file containing climate data.}
+\item{nc_file}{Character. Path to the .nc (NetCDF) file containing climate data.}
 }
 \value{
 Invisibly returns a data frame with annual temperature values per point.
