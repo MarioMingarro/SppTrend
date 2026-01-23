@@ -19,7 +19,7 @@
 #'    - `dif_t`: t-statistic of the interaction term (species vs. baseline).
 #'    - `dif_pvalue`: p-values of the interaction term. A low value indicates a significant deviation from the general trend.
 #'    - `n`: Sample size for the specific species/hemisphere subset
-#'    - `hemisphere`: Geographic context (`North`, `South`, or `Both` for global comparison).
+#'    - `hemisphere`: Geographic context (`North`, `South`, or `Global` for global comparison).
 #'
 #' @details
 #' The function fits linear models for each species and compares them to the general trend of the
@@ -30,6 +30,7 @@
 #' near the antimeridian.
 #'
 #' @importFrom stats as.formula confint formula lm coef
+#' @importFrom utils head
 #'
 #' @examples
 #'
@@ -241,7 +242,7 @@ spp_trend <- function(data, spp, predictor, responses, n_min = 50) {
             {
               message(
                 paste0(
-                  "WARNING: Specie ",
+                  "Caution: Specie ",
                   spp[n],
                   " response (",
                   responses[i],
@@ -257,7 +258,7 @@ spp_trend <- function(data, spp, predictor, responses, n_min = 50) {
         }
       } else {
         message(paste0(
-          "WARNING: Specie ",
+          "caution: Specie ",
           spp[n],
           " has insufficient data in some hemisphere"
         ))
@@ -268,6 +269,7 @@ spp_trend <- function(data, spp, predictor, responses, n_min = 50) {
   {
     final_res <- do.call(rbind, results_list)
     rownames(final_res) <- NULL
+    print(utils::head(final_res, 5))
     return(final_res)
   }
   else

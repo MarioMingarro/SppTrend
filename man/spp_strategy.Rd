@@ -56,14 +56,12 @@ significance of its trend and how it differs from the general trend. The classif
 \itemize{
 \item \strong{Spatial Adaptation (SA):} The species' presence shows a
 significant positive temporal trend, significantly different from the
-overall trend. For latitude, this translates to a poleward shift (SP)
-in the Northern Hemisphere and an equatorward shift (SE) in the
-Southern Hemisphere.
+overall trend. For latitude, this translates to a positive trend in the
+Northern Hemisphere and a negative trend in the Southern Hemisphere.
 \item \strong{Spatial Discordance (SD):} The species' presence shows a
 significant negative temporal trend, significantly different from the
-overall trend. For latitude, this translates to an equatorward shift
-(SE) in the Northern Hemisphere and a poleward shift (SP) in the
-Southern Hemisphere.
+overall trend. For latitude, this translates to a negative trend in the
+Northern Hemisphere and a positive trend in the Southern Hemisphere.
 \item \strong{Spatial Conformity (SC):} The species' presence follows a
 temporal trend that is not significantly different from the overall
 trend.
@@ -101,7 +99,7 @@ spp_trends_results <- data.frame(
 )
 
 spp <- unique(spp_trends_results$species)
-sig_level <- 0.05 / length(spp) # Bonferroni
+sig_level <- 0.05 / length(spp) # Bonferroni correction
 responses_to_analyze <- c("lat", "lon", "tme")
 
 spp_strategy_results <- spp_strategy(spp_trends_results,

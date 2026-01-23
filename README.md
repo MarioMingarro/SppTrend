@@ -93,7 +93,7 @@ This allows you to visualize the climate trajectory of the specific regions wher
 
 ```{r}
 nc_file <- "path/to/your/era5_data.nc"
-temp_data <- get_fast_info(data, nc_file)
+info <- get_fast_info(data, nc_file)
 ```
 
 ### Phase 2: Environmental data generation
@@ -147,7 +147,6 @@ This trend serves as a neutral reference to evaluate individual species' respons
 predictor <- "year"
 responses <- c("lat", "lon", "ele", "tme")
 overall_trend_result <- overall_trend(data, predictor, responses)
-print(overall_trend_result)
 ```
 
 ### Phase 4: Estimation of individual trends of responses
@@ -159,7 +158,6 @@ predictor <- "year"
 responses <- c("lat", "lon", "ele", "tme")
 spp <- unique(data$species)
 spp_trend_result <- spp_trend(data, spp, predictor, responses, n_min = 50)
-print(spp_trend_result)
 ```
 
 ### Phase 5: Analysis of specific species responses
@@ -169,7 +167,6 @@ This function incorporates logic for poleward shifts in latitude based on hemisp
 
 ```{r}
 spp_strategy_result <- spp_strategy(spp_trend_result, sig_level = 0.05, responses = c("lat", "lon", "ele", "tme"))
-print(spp_strategy_results)
 ```
 
 ## Ecological strategies

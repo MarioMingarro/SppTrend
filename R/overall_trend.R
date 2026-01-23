@@ -143,6 +143,7 @@ overall_trend <- function(data, predictor, responses) {
   if (length(results_list) > 0) {
     overall_trend_result <- do.call(rbind, results_list)
     rownames(overall_trend_result) <- NULL
+    print(overall_trend_result)
     return(overall_trend_result)
   } else {
     return(data.frame())

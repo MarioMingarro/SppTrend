@@ -38,14 +38,12 @@
 #'       \itemize{
 #'         \item \strong{Spatial Adaptation (SA):} The species' presence shows a
 #'           significant positive temporal trend, significantly different from the
-#'           overall trend. For latitude, this translates to a poleward shift (SP)
-#'           in the Northern Hemisphere and an equatorward shift (SE) in the
-#'           Southern Hemisphere.
+#'           overall trend. For latitude, this translates to a positive trend in the
+#'           Northern Hemisphere and a negative trend in the Southern Hemisphere.
 #'         \item \strong{Spatial Discordance (SD):} The species' presence shows a
 #'           significant negative temporal trend, significantly different from the
-#'           overall trend. For latitude, this translates to an equatorward shift
-#'           (SE) in the Northern Hemisphere and a poleward shift (SP) in the
-#'           Southern Hemisphere.
+#'           overall trend. For latitude, this translates to a negative trend in the
+#'           Northern Hemisphere and a positive trend in the Southern Hemisphere.
 #'         \item \strong{Spatial Conformity (SC):} The species' presence follows a
 #'           temporal trend that is not significantly different from the overall
 #'           trend.
@@ -69,6 +67,7 @@
 #' @importFrom dplyr select mutate case_when all_of lead group_by summarise if_else ungroup relocate
 #' @importFrom tidyr pivot_wider
 #' @importFrom tidyselect starts_with
+#' @importFrom utils head
 #'
 #' @examples
 #'
@@ -87,7 +86,7 @@
 #' )
 #'
 #' spp <- unique(spp_trends_results$species)
-#' sig_level <- 0.05 / length(spp) # Bonferroni
+#' sig_level <- 0.05 / length(spp) # Bonferroni correction
 #' responses_to_analyze <- c("lat", "lon", "tme")
 #'
 #' spp_strategy_results <- spp_strategy(spp_trends_results,
@@ -115,22 +114,22 @@ spp_strategy <- function(spp_trend_result,
       pvalue > sig_level ~ "SC",
       pvalue <= sig_level &
         dif_pvalue <= sig_level &
-        trend > 0 & hemisphere == "North" ~ "SP",
+        trend > 0 & hemisphere == "North" ~ "SA", #SP
       pvalue <= sig_level &
         dif_pvalue <= sig_level &
-        trend < 0 & hemisphere == "North" ~ "SE",
+        trend < 0 & hemisphere == "North" ~ "SD", #SE
       pvalue <= sig_level &
         dif_pvalue <= sig_level &
-        trend > 0 & hemisphere == "South" ~ "SE",
+        trend > 0 & hemisphere == "South" ~ "SD", #SE
       pvalue <= sig_level &
         dif_pvalue <= sig_level &
-        trend < 0 & hemisphere == "South" ~ "SP",
+        trend < 0 & hemisphere == "South" ~ "SA", #SP
       pvalue <= sig_level &
         dif_pvalue <= sig_level &
-        trend > 0 & hemisphere == "Global" ~ "SA",
+        trend > 0 & hemisphere == "Global" ~ "SA", #SA
       pvalue <= sig_level &
         dif_pvalue <= sig_level &
-        trend < 0 & hemisphere == "Global" ~ "SD",
+        trend < 0 & hemisphere == "Global" ~ "SD", #SD
       TRUE ~ "SC"
     )
   }
@@ -168,7 +167,6 @@ spp_strategy <- function(spp_trend_result,
       )
     )
   }
-
   strategies <- spp_trend_result %>%
     dplyr::select(dplyr::all_of(intersect(
       required_cols, names(spp_trend_result)
@@ -224,4 +222,5 @@ spp_strategy <- function(spp_trend_result,
     ) %>%
     dplyr::ungroup() %>%
     dplyr::relocate(tidyselect::starts_with("Spatial_lat_"), .after = Spatial_lon)
+  return(utils::head(strategies, 5))
 }

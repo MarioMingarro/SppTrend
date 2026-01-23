@@ -31,5 +31,6 @@ Imports:
     stringr, 
     tidyselect,
     ggplot2,
-    patchwork
+    patchwork,
+    sf
 Config/testthat/edition: 3

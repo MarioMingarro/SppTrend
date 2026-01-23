@@ -29,7 +29,7 @@ A data frame with trend statistics, including:
 \item \code{dif_t}: t-statistic of the interaction term (species vs. baseline).
 \item \code{dif_pvalue}: p-values of the interaction term. A low value indicates a significant deviation from the general trend.
 \item \code{n}: Sample size for the specific species/hemisphere subset
-\item \code{hemisphere}: Geographic context (\code{North}, \code{South}, or \code{Both} for global comparison).
+\item \code{hemisphere}: Geographic context (\code{North}, \code{South}, or \code{Global} for global comparison).
 }
 }
 \description{
