@@ -6,8 +6,8 @@
   <img src="man/figures/img_1.png" width="40%">
 </div>
 
-The R package `SppTrend` provides a methodology to analyze how species occurrence changes over time, particularly in relation to environmental factors like temperature. 
-It helps researchers develop explanatory hypotheses about the impact of environmental shifts on species assemblages by analyzing historical presence data that includes temporal and geographic information.
+The R package `SppTrend` provides a methodological framework to analyse temporal changes in species occurrence patterns in relation to spatial variables (longitude, latitude, and elevation) and temperature.
+It is designed to support the development of explanatory hypotheses on the effects of environmental change on species assemblages by analysing opportunistically collected occurrence data that include temporal and geographic information.
 
 ## Installation
 
@@ -23,35 +23,36 @@ Alternatively, you can install the development version from GitHub:
 install.packages("devtools")
 library(devtools)
 devtools::install_github("MarioMingarro/SppTrend")
+library(SppTrend)
 ```
 
 ## Overview of key features
 
-`SppTrend` helps understand species responses to environmental change by analyzing historical occurrence data that includes:
+`SppTrend` helps to characterise species responses to environmental change by analysing historical occurrence data that include:
 
   - **Predictors** - Sampling date (year, preferably month and year)
 
-  - **Responses** - Geographic location (latitude and longitude) and environmental factors (elevation and temperature).
+  - **Responses** - Geographic coordinates (latitude and longitude) and environmental variables (elevation and temperature).
 
-The methodology assumes that the observed species occurrences reflect a temporal sequence of changes in response to these factors.
+The methodology assumes that observed species occurrences represent a temporal sequence of spatial and thermal responses to environmental change.
 
 ## Workflow
 
 `SppTrend` provides a structured workflow for analyzing these trends:
 
-1.  **Exploratory Diagnostic**: Quickly visualize occurrence distribution and temperature trends in the precences area from NetCDF files with `get_fast_info()`.
-2.  **Environmental Data Integration (Optional)**:  Enhance your occurrence records with environmental context using functions like `get_era5_tme()` for temperature data or `get_elevation()` for elevation.
-3.  **Overall Trend Estimation**: Calculate the average temporal trend of selected response variables across all species using `overall_trend()`. This provides a general baseline to compare with individual species trend.
-4.  **Individual Trend Analysis**: Determine the specific temporal trends for each species and response variable using `spp_trend()`. This allows comparison of individual species' responses to the overall trend.
-5.  **Ecological Strategy Classification**: Categorize species into distinct ecological strategies based on the significance and direction of their individual trends relative to the overall trend using `spp_strategy()`.
+1.  **Exploratory Diagnostic**: Quickly visualize the spatial distribution of occurrences and temporal temperature trends within the area of presence using `get_fast_info()`, based on NetCDF environmental data.
+2.  **Environmental Data Integration (Optional)**:  Enhance the occurrence records with environmental informatio using functions like `get_era5_tme()` for temperature data or `get_elevation()` for elevation.
+3.  **Overall Trend Estimation**: Estimate the average temporal trend of selected response variables across all species using `overall_trend()`. This trend serves as a  baseline against which individual species' trends are compared.
+4.  **Individual Trend Analysis**: Estimate specific-specific temporal trends for each response variable using `spp_trend()`, enabling direct comparison between individual species responses and the overall trend.
+5.  **Ecological Strategy Classification**: Classify species into distinct spatial or thermal response categories based on the direction and statistical significance of their species-specific trends relative to the overall trend using `spp_strategy()`.
 
-### Data requirements
+### Data requirements and real data example
 
-To utilize the package effectively, your dataset must include the following information for each occurrence:
+To utilize the package effectively, the input dataset must include the following information for each record:
 
 * Species identification (e.g., `species`).
-* Geographic coordinates: Latitude (`lat`) and Longitude (`lon`). **Note: Data must be in the EPSG:4326 (WGS84) geographic coordinate system. This is the most widely used system for biodiversity occurrence records.**
-* Temporal information: Year (`year`) is required. Including Month (`month`) is highly recommended for more detailed analysis.
+* Geographic coordinates: Latitude (`lat`) and Longitude (`lon`). **Note: Coordinates must be in the EPSG:4326 (WGS84) geographic coordinate reference system, which is the standard for biodiversity occurrence data.**
+* Temporal information: Year of observation (`year`) is required. Including month (`month`) is strongly recommended to allow more detailed temporal analyses.
 
 **Important** 
 
@@ -66,48 +67,65 @@ To utilize the package effectively, your dataset must include the following info
   - **Elevation**: `ele`
   - **Temperature**: `tme`
 
-The following is an example illustrating the structure of a data frame containing 500 randomly generated presence records for 10 distinct species:
 
-```r
-data <- data.frame(
-  species = sample(paste0("spp_", 1:10), 500, replace = TRUE),
-  year = sample(1950:2020, 500, replace = TRUE),
-  month = sample(1:12, 500, replace = TRUE),
-  lon = runif(500, -10, 20),
-  lat = runif(500, 30, 70)
-)
+The following is an example using ranidae example from GBIF and selected in the exted (lon:  -10 >= record <= 10 & lat: -40 >= record <= 40) and in dates (year >= 1950).
+a total of 13 KKK
 
-data$year_month  = data$year + data$month * 0.075
+```{r}
+ranidae <- readr::read_csv2(system.file("extdata", "example_ranidae.csv", package = "SppTrend"), 
+                    col_types = cols(year = col_double(),
+                                     month = col_double(),
+                                     lon = col_double(),
+                                     lat = col_double()))
 ```
+
+Generate a continuous temporal predictor combining year and month to use a detailed predictor KKKKKK
+
+```{r}
+ranidae$year_month <- ranidae$year + (ranidae$month * 0.075)
+
+print(head(ranidae))
+```
+<div align="left">
+  <img src="man/figures/E1.png" width="80%">
+</div>
+
 ### Detailed steps
 
 ### Phase 1: Fast diagnostic and visual summary
 
-`get_fast_info()` function provides a quick visual diagnostic of your data. It generates a distribution map of records alongside a time-series plot from a NetCDF file, including a linear trend analysis (slope and p-value). 
-It uses the geographic coordinates of your occurrence records to extract the complete climate time-series (from the beginning to the end of records period) for those specific locations.
-The function then aggregates all temperature data from all occupied cells to calculate and plot the overall environmental trend (slope and p-value). 
-This allows you to visualize the climate trajectory of the specific regions where your species have been recorded.
+The `get_fast_info()` function provides a quick visual diagnostic of the input data. 
+It generates a map showing the spatial distribution of occurrence records together with a time-series plot derived from a NetCDF environmental dataste, including a linear trend analysis (slope and associated p-value). 
+Using the geographic coordinates of the occurrence records, the function extracts the complete climate time-series (from the earliest to the latest year represented in the data) for the corresponding grid cells. 
+All temperature values from occupied cells are then aggregated to estimate and visualise the overall environmental trend across the sampled area (including slope and associated p-value). 
+This diagnostic step allows users to quickly asses the climate trajectory of the regions where the species have been recorded and to evaluate whether sufficient temporal and environmental variation is present for subsequent analyses.
 
 *Technical notes:*
 *- See `get_era5_tme()`*
 
 ```{r}
 nc_file <- "path/to/your/era5_data.nc"
-info <- get_fast_info(data, nc_file)
+
+info <- get_fast_info(ranidae, nc_file)
 ```
+<div align="center">
+  <img src="man/figures/E2.png" width="80%">
+</div>
 
 ### Phase 2: Environmental data generation
 
-The `SppTrend` package offers functions to enhance your species occurrence data with relevant environmental information. Currently, it supports the integration of monthly temperature and elevation data.
+The `SppTrend` package provides functions to enhance species occurrence records with relevant environmental information. 
+At present, it supports the integration of monthly temperature data and elevation data associated with each occurrence.
 
 #### ERA5 temperature data
 
-ERA5 is the fifth generation European Centre for Medium-Range Weather Forecasts (ECMWF) reanalysis dataset for the global climate and weather. It provides comprehensive atmospheric, land, and ocean climate data from 1940 to the present, with high spatial and temporal resolution. This makes it a valuable resource for studying the impact of climate on species distributions.
-You can explore the **ERA5-Land monthly averaged data from 1950 to present** dataset on the Copernicus Climate Change Service (C3S) Climate Data Store (CDS) at: [ERA5 Land monthly](https://cds.climate.copernicus.eu/datasets/reanalysis-era5-land-monthly-means). For more detailed information about the ERA5 dataset, please visit the [ECMWF website](https://confluence.ecmwf.int/display/CKB/The+family+of+ERA5+datasets).
+ERA5 is the fifth-generation reanalysis dataset produced by the European Centre for Medium-Range Weather Forecasts (ECMWF), providing a globally consistent representation of atmospheric, land, and ocean conditions. 
+If offers high spatial and temporal resolution climate data from 1940 to the present, making it a valuable and widely used resource for assessing the influence of climate on species distributions.
+Explore the **ERA5-Land monthly averaged data from 1950 to present** dataset on the Copernicus Climate Change Service (C3S) Climate Data Store (CDS) at: [ERA5 Land monthly](https://cds.climate.copernicus.eu/datasets/reanalysis-era5-land-monthly-means). 
+For detailed information about the ERA5 dataset, please visit the [ECMWF website](https://confluence.ecmwf.int/display/CKB/The+family+of+ERA5+datasets).
 
-The `SppTrend` package provides the following function to incorporate ERA5-Land monthly data:
-
-`get_era5_tme()`: Allows users to obtain average temperature data (mean temperature of the environment) for species occurrences using latitude, longitude and date (year and month). 
+The `SppTrend` package provides the function `get_era5_tme()` to incorporate ERA5-Land monthly climate data. 
+This function retrieves mean monthly air temperature values associated with species occurrence records based on their geographic coordinates (latitude and longitude) and sampling date (year and month). 
 
 *Technical notes:*
 
@@ -117,16 +135,22 @@ The `SppTrend` package provides the following function to incorporate ERA5-Land 
 
 *- Format: Files must be in .nc (NetCDF) format.*
 
-
 ```{r}
 nc_file <- "path/to/your/era5_data.nc"
-data <- get_era5_tme(data, nc_file)
-print(data$tme)
+ranidae <- get_era5_tme(ranidae, nc_file)
+print(head(ranidae)
 ```
+
+<div align="left">
+  <img src="man/figures/E3.png" width="80%">
+</div>
+
 #### Digital Elevation Model (DEM) data
 
-`get_elevation()`: This function can be used to retrieve Digital Elevation Model (DEM) data for the species occurrences, providing information about the elevation at which the species were recorded.
-For obtaining elevation data for species occurrences, this example utilizes the WorldClim dataset ([WorldClim](https://www.worldclim.org/data/worldclim21.html)). However, users are encouraged to consider other Digital Elevation Models (DEMs) based on the specific resolution requirements of their analysis. For instance, the [EU-DEM dataset](https://dataspace.copernicus.eu/explore-data/data-collections/copernicus-contributing-missions/collections-description/COP-DEM) provides high-resolution elevation data for Europe.
+The `get_elevation()` function retrieves Digital Elevation Model (DEM) values associated with species occurrence records, providing information ont the elevation at which each species was observed.
+For obtaining elevation data for species occurrences, this example utilizes the WorldClim dataset ([WorldClim](https://www.worldclim.org/data/worldclim21.html)). 
+However, users are encouraged to select alternative DEM sources depending on the spatial resolution and geographic scope required for their analysis. 
+For instance, the [EU-DEM dataset](https://dataspace.copernicus.eu/explore-data/data-collections/copernicus-contributing-missions/collections-description/COP-DEM) offers high-resolution elevation data for Europe.
 
 *Technical notes:*
 
@@ -138,10 +162,10 @@ data <- get_elevation(data, dem_file)
 print(data$ele)
 ```
 
-### Phase 3: Estimation of the overall trend of responses
+### Phase 3: Estimation of overall response trends
 
-The `overall_trend()` function calculates the overall temporal trend (OT) for specified response variables across the entire dataset. 
-This trend serves as a neutral reference to evaluate individual species' responses.
+The `overall_trend()` function calculates the overall temporal trend (OT) of selected response variables across the entire dataset. 
+This trend integrates both environmental change and the cumulative effects of sampling bias, and serves as a neutral reference against which species-specific temporal trends are evaluated.
 
 ```{r}
 predictor <- "year"
@@ -149,9 +173,10 @@ responses <- c("lat", "lon", "ele", "tme")
 overall_trend_result <- overall_trend(data, predictor, responses)
 ```
 
-### Phase 4: Estimation of individual trends of responses
+### Phase 4: Estimation of species-specific response trends
 
-The `spp_trend()` function estimates the individual temporal trend for each species and response variable, comparing it to the overall temporal trend observed in the data. It also handles longitude transformations and considers hemisphere-specific trends.
+The `spp_trend()` function estimates the species-specific temporal trends for each selected response variable and statistically compares them with the overall temporal trend derived from the complete dataset. 
+The function also manages longitude transformations and accounts for hemisphere-specific trends to ensure consistent estimation across geographic domains.
 
 ```{r}
 predictor <- "year"
@@ -162,8 +187,10 @@ spp_trend_result <- spp_trend(data, spp, predictor, responses, n_min = 50)
 
 ### Phase 5: Analysis of specific species responses
 
-The `spp_strategy()` function analyzes the results from `spp_trend()` to classify species into different ecological strategies based on the significance and direction of their trends relative to the overall trend. 
-This function incorporates logic for poleward shifts in latitude based on hemisphere and can also classify trends in elevation.
+The `spp_strategy()` function analyses the outputs of `spp_trend()` to classify species into distinct spatial or thermal response categories based on the direction and statistical significance of their species-specific trends relative to the overall trend. 
+The function incorporates hemisphere-specific logic to correctly interpret poleward shifts in latitude and can also be applied to classify elevational trends.
+
+BONFERRONI
 
 ```{r}
 spp_strategy_result <- spp_strategy(spp_trend_result, sig_level = 0.05, responses = c("lat", "lon", "ele", "tme"))
@@ -171,7 +198,7 @@ spp_strategy_result <- spp_strategy(spp_trend_result, sig_level = 0.05, response
 
 ## Ecological strategies
 
-The `SppTrend` package identifies several Spatial and Thermal response strategies:
+The `SppTrend` package identifies several Spatial and Thermal response strategies based on species-specific temporal trends relative to the overall background trend:
 
 <div align="center">
   <img src="man/figures/strategies.png" width="50%">
@@ -179,38 +206,43 @@ The `SppTrend` package identifies several Spatial and Thermal response strategie
 
 **Spatial Responses**
 
-  - **Spatial Adaptation (SA)**: A positive trend in presence, which in the context of climate change in the Northern Hemisphere, might often be associated with a Spatial Poleward (SP) shift as the species expands into newly suitable, higher-latitude areas. 
-  In the Southern Hemisphere, this adaptation might involve a Spatial Equatorward (SE) shift (towards higher latitude values).
+  - **Spatial Adaptation (SA)**: A significant positive temporal trend in the spatial position of species occurrences. 
+  In the context of climate change, this pattern is commonly associated with a poleward shift, corresponding to a northward displacement (towards higher latitude values) in the Northern Hemisphere and southward displacement (towards lower latitude values) in the Southern Hemisphere, as species expand into newly suitable areas.
  
-  - **Spatial Discordance (SD)**: A negative trend in presence, which in the context of climate change in the Northern Hemisphere, might often be associated with a Spatial Equatorward (SE) shift as the species retreats from less suitable, lower-latitude areas. 
-  In the Southern Hemisphere, this discordance might involve a Spatial Poleward (SP) shift (towards lower latitude values).
+  - **Spatial Discordance (SD)**: A significant negative temporal trend in the spatial position of species occurrences. 
+  In the context of climate change, this pattern is often associated with an equatorward shift and may arise when other ecological and anthropogenic factors influence species distributions independently of, or in opposition to, climate-driven range shifts. 
 
-  - **Spatial Conformity (SC)**: The species' presence trend follows the overall trend, suggesting less directional pressure in terms of range shift at this level of analysis.
-  
+  - **Spatial Conformity (SC)**: A spatial response pattern in which the species-specific temporal trend does not differ significantly from the overall trend. 
+  Species showing spatial conformance share the same bias structure as the complete dataset, preventing the inference of a distinct, species-specific response to climate change at the scale of analysis.
 
 **Thermal Responses**
 
-  - **Thermal Tolerance (TT)**: The species shows a positive response to temperature over time, significantly different from the OT.
-
-  - **Thermal Conformity (TC)**: The species follows a thermal trend similar to the OT. 
-
-  - **Thermal Adjustment (TA)**: The species shows a negative response to temperature over time, significantly different from the OT. 
+  - **Thermal Tolerance (TT)**: A thermal response pattern characterised by a significant positive temporal trend in the temperature conditions under which species are observed, relative to the overall trend. 
+  This pattern suggest an increased likelihood of occurrence under warmer conditions and an apparent capacity to tolerate rising temperatures through physiological, behavioural, and evolutionary mechanisms.
+  
+- **Thermal Adjustment (TA)**: A thermal response characterised by a significant negative temporal trend in the temperature conditions associated with species occurrences, relative to the overall trend. 
+  This indicates and increasing association with cooler temperature conditions over time, potentially reflecting microevolutionary change or phenotypic adjustment.
+  
+  - **Thermal Conformity (TC)**: A thermal response pattern in which species-specific temperature trends do not differ significantly from the overall trend. 
+  Species showing thermal conformance share the same background thermal signal as the complete dataset, preventing the formulation of specific hypotheses regarding climate-driven thermal responses.
 
 In essence, while SA and SD describe the 'what' (change in presence) and SP/SE a potential 'how' (direction of geographic shift along the latitudinal gradient), 
 these spatial responses should be considered together with the thermal responses (TT, TA) to understand if both point towards a consistent overall direction of a species' 
 response to environmental change.
 
 ### Applications and limitations
-`SppTrend` offers a valuable methodology for researchers investigating how environmental change impacts biodiversity by analyzing trends in species occurrence data.
-However, it's crucial to interpret results cautiously, as species occurrence data can be subject to various biases (e.g., sampling effort, observer expertise). 
-While the overall trend provides a useful community-level reference, remember that it represents an average across all species and might mask how diverse species respond differently to drivers such as warming. 
-Therefore, focusing on individual species trends and their classification into ecological strategies provides a more nuanced understanding of biodiversity responses.
+
+`SppTrend` provides a useful methodological framework for investigating how environmental change affects biodiversity through the analysis of temporal trends in species occurrence data. 
+However, results should be interpreted with caution, as opportunistic occurrence data are inherently subject to multiple sources of bias, including uneven sampling effort and variation in observer expertise. 
+Although the overall trend offers a valuable community-level reference, it represents an average signal across all species and may obscure contrasting species-specific responses to drivers such as climate warming. 
+Consequently, emphasis should be placed on species –level trends and their classification into ecological response strategies, which together provide a more nuanced and informative understanding of biodiversity responses to environmental change.
 
 For more detailed information and examples, please refer to the package documentation within R:
 
 ```{r}
 help(package = SppTrend)
 ```
+
 ### Example with real data
 
 Detailed examples and case studies are available in the PDF guide included with the package (`inst/extdata/`).
@@ -229,18 +261,20 @@ ranidae <- read_csv(path)
 ```
 
 ## References
+
 This package is based on the methodology described in:
 
 Lobo, JM, Mingarro, M, Godefroid, M & García-Roselló, E 2023. Taking advantage of opportunistically collected historical occurrence data to detect responses to climate change: The case of temperature and Iberian dung beetles. *Ecology and evolution*, 13(12) e10674. https://doi.org/10.1002/ece3.10674 
 
 ## Contact
+
 For any questions or issues, please feel free to contact:
 
 Mario Mingarro
 mario_mingarro@mncn.csic.es
 
 Jorge M. Lobo 
-mcnj117@mncn.csic.es
+jorge.lobo@mncn.csic.es
 
 Emilio García-Roselló 
 egrosello@esei.uvigo.es
