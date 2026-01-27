@@ -73,7 +73,7 @@ To utilize the package effectively, the input dataset must include the following
 
 
 The following is an example using ranidae example from GBIF and selected in the exted (lon:  -10 >= record <= 10 & lat: -40 >= record <= 40) and in dates (year >= 1950).
-a total of 13 KKK
+A total of 13,808 records with 15 different species.
 
 ```{r}
 ranidae <- readr::read_csv2(system.file("extdata", "example_ranidae.csv", package = "SppTrend"), 
@@ -110,7 +110,6 @@ This diagnostic step allows users to quickly asses the climate trajectory of the
 
 ```{r}
 nc_file <- "path/to/your/era5_data.nc"
-
 info <- get_fast_info(ranidae, nc_file)
 ```
 <div align="center">
@@ -122,7 +121,7 @@ info <- get_fast_info(ranidae, nc_file)
 The `SppTrend` package provides functions to enhance species occurrence records with relevant environmental information. 
 At present, it supports the integration of monthly temperature data and elevation data associated with each occurrence.
 
-#### ERA5 temperature data
+#### 2.1 ERA5 temperature data
 
 ERA5 is the fifth-generation reanalysis dataset produced by the European Centre for Medium-Range Weather Forecasts (ECMWF), providing a globally consistent representation of atmospheric, land, and ocean conditions. 
 If offers high spatial and temporal resolution climate data from 1940 to the present, making it a valuable and widely used resource for assessing the influence of climate on species distributions.
@@ -150,7 +149,7 @@ print(head(ranidae)
   <img src="man/figures/E3.png" width="100%">
 </div>
 
-#### Digital Elevation Model (DEM) data
+#### 2.2 Digital Elevation Model (DEM) data
 
 The `get_elevation()` function retrieves Digital Elevation Model (DEM) values associated with species occurrence records, providing information ont the elevation at which each species was observed.
 For obtaining elevation data for species occurrences, this example utilizes the WorldClim dataset ([WorldClim](https://www.worldclim.org/data/worldclim21.html)). 
@@ -163,9 +162,14 @@ For instance, the [EU-DEM dataset](https://dataspace.copernicus.eu/explore-data/
 
 ```{r}
 dem_file <- "path/to/your/dem.tif"
-data <- get_elevation(data, dem_file)
-print(data$ele)
+ranidae <- get_elevation(ranidae, dem_file)
+print(head(ranidae)
 ```
+<div align="left">
+  <img src="man/figures/E4.png" width="100%">
+</div>
+
+Se 13,182 datos que concuerdan con la extension espacial de ERA5 kkkkk
 
 ### Phase 3: Estimation of overall response trends
 
@@ -176,7 +180,11 @@ This trend integrates both environmental change and the cumulative effects of sa
 predictor <- "year"
 responses <- c("lat", "lon", "ele", "tme")
 overall_trend_result <- overall_trend(data, predictor, responses)
+print(head(overall_trend_result))
 ```
+<div align="left">
+  <img src="man/figures/E5.png" width="100%">
+</div>
 
 ### Phase 4: Estimation of species-specific response trends
 
@@ -188,7 +196,11 @@ predictor <- "year"
 responses <- c("lat", "lon", "ele", "tme")
 spp <- unique(data$species)
 spp_trend_result <- spp_trend(data, spp, predictor, responses, n_min = 50)
+print(head(spp_trend_result))
 ```
+<div align="left">
+  <img src="man/figures/E6.png" width="100%">
+</div>
 
 ### Phase 5: Analysis of specific species responses
 
@@ -200,6 +212,9 @@ BONFERRONI
 ```{r}
 spp_strategy_result <- spp_strategy(spp_trend_result, sig_level = 0.05, responses = c("lat", "lon", "ele", "tme"))
 ```
+<div align="left">
+  <img src="man/figures/E7.png" width="100%">
+</div>
 
 ## Ecological strategies
 
