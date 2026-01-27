@@ -87,7 +87,7 @@ ranidae$year_month <- ranidae$year + (ranidae$month * 0.075)
 print(head(ranidae))
 ```
 <div align="left">
-  <img src="man/figures/E1.png" width="80%">
+  <img src="man/figures/E1.png" width="100%">
 </div>
 
 ### Detailed steps
@@ -142,7 +142,7 @@ print(head(ranidae)
 ```
 
 <div align="left">
-  <img src="man/figures/E3.png" width="80%">
+  <img src="man/figures/E3.png" width="100%">
 </div>
 
 #### Digital Elevation Model (DEM) data
