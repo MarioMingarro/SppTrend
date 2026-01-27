@@ -41,9 +41,13 @@ The methodology assumes that observed species occurrences represent a temporal s
 `SppTrend` provides a structured workflow for analyzing these trends:
 
 1.  **Exploratory Diagnostic**: Quickly visualize the spatial distribution of occurrences and temporal temperature trends within the area of presence using `get_fast_info()`, based on NetCDF environmental data.
-2.  **Environmental Data Integration (Optional)**:  Enhance the occurrence records with environmental informatio using functions like `get_era5_tme()` for temperature data or `get_elevation()` for elevation.
+
+2.  **Environmental Data Integration (Optional)**:  Enhance the occurrence records with environmental information using functions like `get_era5_tme()` for temperature data or `get_elevation()` for elevation.
+
 3.  **Overall Trend Estimation**: Estimate the average temporal trend of selected response variables across all species using `overall_trend()`. This trend serves as a  baseline against which individual species' trends are compared.
+
 4.  **Individual Trend Analysis**: Estimate specific-specific temporal trends for each response variable using `spp_trend()`, enabling direct comparison between individual species responses and the overall trend.
+
 5.  **Ecological Strategy Classification**: Classify species into distinct spatial or thermal response categories based on the direction and statistical significance of their species-specific trends relative to the overall trend using `spp_strategy()`.
 
 ### Data requirements and real data example
@@ -101,6 +105,7 @@ All temperature values from occupied cells are then aggregated to estimate and v
 This diagnostic step allows users to quickly asses the climate trajectory of the regions where the species have been recorded and to evaluate whether sufficient temporal and environmental variation is present for subsequent analyses.
 
 *Technical notes:*
+
 *- See `get_era5_tme()`*
 
 ```{r}
