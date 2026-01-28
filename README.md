@@ -62,7 +62,7 @@ The methodology assumes that observed species occurrences represent a temporal s
 
 5.  **Ecological Strategy Classification**: Classify species into distinct spatial or thermal response categories based on the direction and statistical significance of their species-specific trends relative to the overall trend using `spp_strategy()`.
 
-### Data requirements and real data example
+### Data requirements
 
 To utilize the package effectively, the input dataset must include the following information for each record:
 
@@ -83,8 +83,20 @@ To utilize the package effectively, the input dataset must include the following
   - **Elevation**: `ele`
   - **Temperature**: `tme`
 
+#### Pre-requisites Checklist
+
+Before starting the analysis, ensure you have the following components ready:
+
+- [ ] **Occurrence Data**: A CSV file with columns: `species`, `year`, `month`, `lat`, and `lon`.
+- [ ] **Coordinates**: Ensure your data is in **WGS84 (EPSG:4326)**.
+- [ ] **Climate Data (Optional)**: A `.nc` (NetCDF) file to analyze temperature trends *See `get_era5_tme()`*.
+- [ ] **Elevation Data (Optional)**: A `.tif` (GeoTIFF) file for elevation analysis. *See `get_elevation()`*
+- [ ] **R Packages**: Install `readr`, and `SppTrend`.
+
+### Real data example
 
 The following is an example using ranidae example from GBIF and selected in the exted (lon:  -10 >= record <= 10 & lat: -40 >= record <= 40) and in dates (year >= 1950).
+
 A total of 13,808 records with 15 different species.
 
 ```{r}
@@ -105,18 +117,6 @@ print(head(ranidae))
 <div align="left">
   <img src="man/figures/E1.png" width="100%">
 </div>
-
-### Detailed steps
-
-#### Pre-requisites Checklist
-
-Before starting the analysis, ensure you have the following components ready:
-
-- [ ] **Occurrence Data**: A CSV file with columns: `species`, `year`, `month`, `lat`, and `lon`.
-- [ ] **Coordinates**: Ensure your data is in **WGS84 (EPSG:4326)**.
-- [ ] **Climate Data (Optional)**: A `.nc` (NetCDF) file from ERA5-Land if you plan to analyze temperature trends.
-- [ ] **Elevation Data (Optional)**: A `.tif` (GeoTIFF) file for elevation analysis.
-- [ ] **R Packages**: Install `readr`, `dplyr`, and `SppTrend`.
 
 ### Phase 1: Fast diagnostic and visual summary
 
