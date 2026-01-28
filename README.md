@@ -201,11 +201,13 @@ spp <- unique(data$species)
 spp_trend_result <- spp_trend(data, spp, predictor, responses, n_min = 50)
 print(head(spp_trend_result))
 ```
-WARNING: Specie Amnirana occidentalis has insufficient data (n = 4 and < n_min = 10) in North hemisphere.
-WARNING: Specie Lithobates clamitans has insufficient data (n = 1 and < n_min = 10) in North hemisphere.
-WARNING: Specie Rana draytonii has insufficient data (n = 9 and < n_min = 10) in North hemisphere.
-WARNING: Specie Rana temporaria has insufficient data (n = 1 and < n_min = 10) in North hemisphere.
-WARNING: Specie Amnirana fonensis has insufficient data (n = 2 and < n_min = 10) in North hemisphere.
+
+> *WARNING: Specie Amnirana occidentalis has insufficient data (n = 4 and < n_min = 10) in North hemisphere.*
+> *WARNING: Specie Lithobates clamitans has insufficient data (n = 1 and < n_min = 10) in North hemisphere.*
+> *WARNING: Specie Rana draytonii has insufficient data (n = 9 and < n_min = 10) in North hemisphere.*
+> *WARNING: Specie Rana temporaria has insufficient data (n = 1 and < n_min = 10) in North hemisphere.*
+> *WARNING: Specie Amnirana fonensis has insufficient data (n = 2 and < n_min = 10) in North hemisphere.*
+
 
 <div align="left">
   <img src="man/figures/E6.png" width="100%">
