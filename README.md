@@ -8,8 +8,8 @@
 </div>
 
 * [Installation](#installation)
-* [Pre-requisites Checklist](#pre-requisites-checklist)
 * [Workflow](#workflow)
+  * [Pre-requisites Checklist](#pre-requisites-checklist)
   * [Phase 1: Fast Diagnostic](#phase-1-fast-diagnostic-and-visual-summary)
   * [Phase 2: Environmental Data](#phase-2-environmental-data-generation)
   * [Phase 3: Overall Trends](#phase-3-estimation-of-overall-response-trends)
