@@ -1,8 +1,8 @@
-#' @title Extract ERA5 data from NetCDF file
+#' @title Extract temperature data from ERA5 NetCDF file
 #'
-#' @description This function extracts climate variable values from an ERA5 NetCDF file based on location (`lon/lat`) and time (`year/month`).
+#' @description This function retrieves mean monthly air temperature values associated with species occurrence records based on their geographic coordinates (`lon/lat`) and sampling date (`year/month`).
 #'
-#' @param data A `data frame` containing points of interest. Must include `lon`, `lat`, `year`, and `month` columns.
+#' @param data A `data frame` containing species records. Must include `lon`, `lat`, `year`, and `month` columns.
 #' @param nc_file Full `character` path to the downloaded ERA5-Land raster (`.nc`) file.
 #'
 #' @return The input data frame `data` with a new column named (`tme`), containing the temperature values.

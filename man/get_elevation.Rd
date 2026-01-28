@@ -7,7 +7,7 @@
 get_elevation(data, dem_file)
 }
 \arguments{
-\item{data}{A \verb{data frame} containing location coordinates. Must include columns specified by \code{lat} and \code{lon}.}
+\item{data}{A \verb{data frame} containing species records. Must include \code{lon}, \code{lat}, \code{year}, and \code{month} columns.}
 
 \item{dem_file}{Full \code{character} path to the downloaded DEM raster file.}
 }
@@ -15,5 +15,5 @@ get_elevation(data, dem_file)
 The input data frame \code{data} with a new column  (\code{ele}) containing the extracted elevation values.
 }
 \description{
-This function extracts elevation values from a Digital Elevation Model (DEM) based on location (\code{lon/lat}).
+This function retrieves elevation values from a Digital Elevation Model (DEM) based on their geographic coordinates (\code{lon/lat}).
 }

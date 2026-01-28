@@ -44,41 +44,39 @@ Other spatial responses (\code{lon}, \code{ele}) are classified as \code{Spatial
 Thermal responses (\code{tme}) are classified as \code{Thermal_tme}.
 }
 \description{
-Creates a summary table classifying species based on their significant spatial and thermal trends, potentially incorporating poleward shift logic for
-latitude based on hemisphere information. It compares individual species trends (from \code{spp_trend}) with a general trend and classifies them into different
-ecological strategies as defined in the \code{SppTrend} methodology.
+This function analyses the outputs of \code{spp_trend()} to classify species into distinct spatial or thermal response categories based on the direction and statistical
+significance of their species-specific trends relative to the overall trend.
+The function incorporates hemisphere-specific logic to correctly interpret poleward shifts in latitude and can also be applied to classify elevational trends.
 }
 \details{
 This function takes the trend analysis results from \code{spp_trend} and classifies each species' response based on the
-significance of its trend and how it differs from the general trend. The classification identifying three possible spatial responses and three thermal responses:
+significance of its trend and how it differs from the general trend.
+Applied Bonferroni correction to avoid false positives (Type I errors) due to multiple comparisons when analyzing many species.
+The classification identifying three possible spatial responses and three thermal responses:
 \itemize{
 \item \strong{Spatial Responses:}
 \itemize{
-\item \strong{Spatial Adaptation (SA):} The species' presence shows a
-significant positive temporal trend, significantly different from the
-overall trend. For latitude, this translates to a positive trend in the
-Northern Hemisphere and a negative trend in the Southern Hemisphere.
-\item \strong{Spatial Discordance (SD):} The species' presence shows a
-significant negative temporal trend, significantly different from the
-overall trend. For latitude, this translates to a negative trend in the
-Northern Hemisphere and a positive trend in the Southern Hemisphere.
-\item \strong{Spatial Conformity (SC):} The species' presence follows a
-temporal trend that is not significantly different from the overall
-trend.
+\item \strong{Spatial Adaptation (SA):} A significant positive temporal trend in the spatial position of species occurrences.
+In the context of climate change, this pattern is commonly associated with a poleward shift, corresponding to a northward
+displacement (towards higher latitude values) in the Northern Hemisphere and southward displacement (towards lower latitude values)
+in the Southern Hemisphere, as species expand into newly suitable areas.
+\item \strong{Spatial Discordance (SD):} TA significant negative temporal trend in the spatial position of species occurrences.
+In the context of climate change, this pattern is often associated with an equatorward shift and may arise when other ecological
+and anthropogenic factors influence species distributions independently of, or in opposition to, climate-driven range shifts.
+\item \strong{Spatial Conformity (SC):} A spatial response pattern in which the species-specific temporal trend does not differ significantly from the overall trend.
+Species showing spatial conformance share the same bias structure as the complete dataset, preventing the inference of a distinct, species-specific response to climate
+change at the scale of analysis.
 }
 \item \strong{Thermal Responses:}
 \itemize{
-\item \strong{Thermal Tolerance (TT):} The species shows a significant
-positive response to temperature over time, significantly different
-from the overall trend.
-\item \strong{Thermal Adjustment (TA):} The species shows a significant
-negative response to temperature over time, significantly different
-from the overall trend.
-\item \strong{Thermal Conformity (TC):} The species follows a thermal
-trend that is not significantly different from the overall trend.
+\item \strong{Thermal Tolerance (TT):} A thermal response pattern characterised by a significant positive temporal trend in the temperature conditions under which species are observed, relative to the overall trend.
+This pattern suggest an increased likelihood of occurrence under warmer conditions and an apparent capacity to tolerate rising temperatures through physiological, behavioural, and evolutionary mechanisms.
+\item \strong{Thermal Adjustment (TA):} A thermal response characterised by a significant negative temporal trend in the temperature conditions associated with species occurrences, relative to the overall trend.
+This indicates and increasing association with cooler temperature conditions over time, potentially reflecting microevolutionary change or phenotypic adjustment.
+\item \strong{Thermal Conformity (TC):} A thermal response pattern in which species-specific temperature trends do not differ significantly from the overall trend.
+Species showing thermal conformance share the same background thermal signal as the complete dataset, preventing the formulation of specific hypotheses regarding climate-driven thermal responses.
 }
 }
-The function handles latitude trends with a poleward shift logic based on the detected hemisphere.
 
 \emph{Note: The interpretation of longitude trends assumes that if transformation was applied in \code{spp_trend}, it used the Antimeridian as 0.}
 }

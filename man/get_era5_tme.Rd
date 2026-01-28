@@ -2,12 +2,12 @@
 % Please edit documentation in R/get_era5_tm.R
 \name{get_era5_tme}
 \alias{get_era5_tme}
-\title{Extract ERA5 data from NetCDF file}
+\title{Extract temperature data from ERA5 NetCDF file}
 \usage{
 get_era5_tme(data, nc_file)
 }
 \arguments{
-\item{data}{A \verb{data frame} containing points of interest. Must include \code{lon}, \code{lat}, \code{year}, and \code{month} columns.}
+\item{data}{A \verb{data frame} containing species records. Must include \code{lon}, \code{lat}, \code{year}, and \code{month} columns.}
 
 \item{nc_file}{Full \code{character} path to the downloaded ERA5-Land raster (\code{.nc}) file.}
 }
@@ -15,5 +15,5 @@ get_era5_tme(data, nc_file)
 The input data frame \code{data} with a new column named (\code{tme}), containing the temperature values.
 }
 \description{
-This function extracts climate variable values from an ERA5 NetCDF file based on location (\code{lon/lat}) and time (\code{year/month}).
+This function retrieves mean monthly air temperature values associated with species occurrence records based on their geographic coordinates (\code{lon/lat}) and sampling date (\code{year/month}).
 }

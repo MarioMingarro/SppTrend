@@ -197,11 +197,17 @@ print(head(ranidae))
 
 The `overall_trend()` function calculates the overall temporal trend (OT) of selected response variables across the entire dataset. 
 This trend integrates both environmental change and the cumulative effects of sampling bias, and serves as a neutral reference against which species-specific temporal trends are evaluated.
-A key feature of this function is its specialized handling of latitude. Because the Equator is set at $0^\circ$, latitude values in the Southern Hemisphere are negative. 
-To ensure that a poleward shift is interpreted consistently across the globe (where a negative increase in the South corresponds to a positive increase in the North), the function employs two complementary approaches:
-- Hemispheric Split: It divides the records based on their location (`lat < 0` for `South` and `lat > 0` for `North`) and performs separate analyses for each.
-- Global Absolute Analysis: It performs an analysis using the complete dataset (`Global`) by transforming all latitudes into absolute values (`abs(lat)`). 
-This allows for a unified global trend estimation.
+
+*Technical notes:*
+
+Longitude (`lon`) values are transformed to a 0-360 range to ensure statistical consistency near the antimeridian.
+
+A key feature of this function is its specialized handling of latitude. Because the Equator is set at 0, latitude values in the Southern Hemisphere are negative.
+
+To ensure that a direction shift is interpreted consistently across the globe (where a negative increase in the South corresponds to a positive increase in the North), the function employs two complementary approaches:
+- Hemispheric split: It divides the records based on their location (`lat < 0` for `South` and `lat > 0` for `North`) and performs separate analyses for each.
+- Global analysis: It performs an analysis using the complete dataset (`Global`) by transforming all latitudes into absolute values (`abs(lat)`). This allows for a unified global trend estimation.
+
 Note that this hemispheric division and absolute transformation logic is applied exclusively to the latitude (`lat`) variable.
 
 ```{r}
@@ -217,7 +223,24 @@ print(head(overall_trend_result))
 ### Phase 4: Estimation of species-specific response trends
 
 The `spp_trend()` function estimates the species-specific temporal trends for each selected response variable and statistically compares them with the overall temporal trend derived from the complete dataset. 
-The function also manages longitude transformations and accounts for hemisphere-specific trends to ensure consistent estimation across geographic domains.
+
+*Technical notes:*
+It compares individual species' trajectories against the OT using the interaction term of the `lm()`.
+
+Longitude (`lon`) values are transformed to a 0-360 range to ensure statistical consistency near the antimeridian.
+
+A key feature of this function is its specialized handling of latitude. Because the Equator is set at 0, latitude values in the Southern Hemisphere are negative.
+
+To ensure that a direction shift is interpreted consistently across the globe (where a negative increase in the South corresponds to a positive increase in the North), the function employs two complementary approaches:
+- Hemispheric split: It divides the records based on their location (`lat < 0` for `South` and `lat > 0` for `North`) and performs separate analyses for each.
+- Global analysis: It performs an analysis using the complete dataset (`Global`) by transforming all latitudes into absolute values (`abs(lat)`). This allows for a unified global trend estimation.
+
+Note that this hemispheric division and absolute transformation logic is applied exclusively to the latitude (`lat`) variable.
+
+*Technical notes:*
+
+Detailed in `overall_trend()`.
+
 
 ```{r}
 predictor <- "year_month"
@@ -254,6 +277,7 @@ The `spp_strategy()` function analyses the outputs of `spp_trend()` to classify 
 The function incorporates hemisphere-specific logic to correctly interpret poleward shifts in latitude and can also be applied to classify elevational trends.
 
 **The Bonferroni correction**
+
 To avoid false positives (Type I errors) due to multiple comparisons when analyzing many species, the Bonferroni correction sould be applied. 
 The significance level is adjusted as:
 
@@ -294,7 +318,7 @@ The `SppTrend` package identifies several Spatial and Thermal response strategie
   - **Thermal Tolerance (TT)**: A thermal response pattern characterised by a significant positive temporal trend in the temperature conditions under which species are observed, relative to the overall trend. 
   This pattern suggest an increased likelihood of occurrence under warmer conditions and an apparent capacity to tolerate rising temperatures through physiological, behavioural, and evolutionary mechanisms.
   
-- **Thermal Adjustment (TA)**: A thermal response characterised by a significant negative temporal trend in the temperature conditions associated with species occurrences, relative to the overall trend. 
+  - **Thermal Adjustment (TA)**: A thermal response characterised by a significant negative temporal trend in the temperature conditions associated with species occurrences, relative to the overall trend. 
   This indicates and increasing association with cooler temperature conditions over time, potentially reflecting microevolutionary change or phenotypic adjustment.
   
   - **Thermal Conformity (TC)**: A thermal response pattern in which species-specific temperature trends do not differ significantly from the overall trend. 

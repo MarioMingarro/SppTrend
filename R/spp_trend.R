@@ -1,7 +1,7 @@
 #' @title Individual trend analysis
 #'
-#' @description Calculates species-specific temporal trends for geographic and environmental variables.
-#' It compares individual species' trajectories against the regional baseline (calculated via an interaction term).
+#' @description Estimates the species-specific temporal trends for each selected response variable and statistically compares them with the overall temporal trend derived from the complete dataset.
+#' It compares individual species' trajectories against the OT using the interaction term of the `lm()`.
 #'
 #' @param data A `data frame` containing the variables for the model, including `species`, `year`, `month`, `lon`, `lat`, `tme` and/or `ele`.
 #' @param predictor A `character` vector of predictor variable names representing a temporal variable (`year_month`).
@@ -22,12 +22,13 @@
 #'    - `hemisphere`: Geographic context (`North`, `South`, or `Global` for global comparison).
 #'
 #' @details
-#' The function fits linear models for each species and compares them to the general trend of the
-#' corresponding hemisphere (or global data) using an interaction model (`response ~ predictor * group`).
-#' Separate analyses are performed for Northern and Southern Hemispheres to account for divergent
-#' ecological responses. For species spanning both hemispheres, a "Both" category provides a global
-#' comparison. Longitude values are transformed to a 0-360 range to ensure statistical consistency
-#' near the antimeridian.
+#' The function fits linear models for each species and compares them to the general trend using an interaction model (`response ~ predictor * group`).
+#' Longitude (`lon`) values are transformed to a 0-360 range to ensure statistical consistency near the antimeridian.
+#' A key feature of this function is its specialized handling of latitude. Because the Equator is set at 0, latitude values in the Southern Hemisphere are negative.
+#' To ensure that a direction shift is interpreted consistently across the globe (where a negative increase in the South corresponds to a positive increase in the North), the function employs two complementary approaches:
+#' Hemispheric split: It divides the records based on their location (`lat < 0` for `South` and `lat > 0` for `North`) and performs separate analyses for each.
+#' Global analysis: It performs an analysis using the complete dataset (`Global`) by transforming all latitudes into absolute values (`abs(lat)`). This allows for a unified global trend estimation.
+#' Note that this hemispheric division and absolute transformation logic is applied exclusively to the latitude (`lat`) variable.
 #'
 #' @importFrom stats as.formula confint formula lm coef
 #' @importFrom utils head

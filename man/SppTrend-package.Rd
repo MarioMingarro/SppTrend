@@ -30,30 +30,22 @@ The analysis uses:
 
 \code{SppTrend} provides a structured workflow for analyzing these trends:
 \enumerate{
-\item \strong{Rapid diagnostic and visual summary}: Perform a preliminary analysis
-using \code{\link{get_fast_info}}. This function links occurrence coordinates
-with climate NetCDF data to visualize distribution maps and regional
-temperature trajectories. It extracts the complete climate time-series
-for all locations with records, allowing to visualize the climate
-trajectory of the specific regions where species have been recorded.
+\item \strong{Rapid diagnostic and visual summary}: Perform a quick visual diagnostic of the input data
+using \code{\link{get_fast_info}}.
 \item \strong{Environmental data integration (optional)}: Enhance occurrence records
 with environmental context using functions like \code{\link{get_era5_tme}} (temperature)
 or \code{\link{get_elevation}} (elevation).
-\item \strong{Overall trend estimation}: Calculate the average temporal trend of
+\item \strong{Overall trend estimation}: Calculate the overall temporal trend (OT) of
 selected response variables across the entire dataset using \code{\link{overall_trend}}.
-This establishes a baseline for comparison.
-\item \strong{Individual trend analysis}: Determine specific temporal trends for each
-species and response variable using \code{\link{spp_trend}}. This compares
-individual species' responses to the overall trend via interaction models.
-\item \strong{Ecological strategy classification}: Categorize species into distinct
-ecological strategies based on the significance and direction of their
-trends relative to the baseline using \code{\link{spp_strategy}}.
+This serves as a neutral reference against which species-specific temporal trends are evaluated
+\item \strong{Individual trend analysis}: Estimate the species-specific temporal trends for each selected response variable
+using \code{\link{spp_trend}}. This compares individual species' responses to the overall trend via interaction models.
+\item \strong{Ecological strategy classification}: Classify species into distinct spatial or thermal response categories based on the
+direction and statistical significance of their species-specific trends relative to the overall trend using \code{\link{spp_strategy}}.
 }
 }
 
 \subsection{More details}{
-
-Detailed example is available using \code{\link{SppTrend_example}}
 
 Source code: \url{https://github.com/MarioMingarro/SppTrend}
 }
@@ -63,8 +55,8 @@ Source code: \url{https://github.com/MarioMingarro/SppTrend}
 
 Authors:
 \itemize{
-  \item Jorge M. Lobo (\href{https://orcid.org/0000-0002-3152-4769}{ORCID})
   \item Emilio García-Roselló (\href{https://orcid.org/0000-0003-0305-770X}{ORCID})
+  \item Jorge M. Lobo (\href{https://orcid.org/0000-0002-3152-4769}{ORCID})
 }
 
 }

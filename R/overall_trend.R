@@ -1,6 +1,7 @@
 #' @title Overall trend analysis
 #'
-#' @description Calculates baseline temporal trends for geographic and environmental variables using linear regression.
+#' @description Calculates the overall temporal trend (OT) of selected response variables across the entire dataset.
+#' This trend integrates both environmental change and the cumulative effects of sampling bias, and serves as a neutral reference against which species-specific temporal trends are evaluated.
 #'
 #' @param data A `data frame` containing the variables for the model, including `species`, `year`, `month`, `lon`, `lat`, `tme` and `ele`.
 #' @param predictor A `character`vector of predictor variable names representing a temporal variable (`year_month`).
@@ -16,9 +17,13 @@
 #' - `hemisphere`: Geographic context (`North`, `South`, or `Both` for global comparison).
 #'
 #' @details
-#' To ensure global consistency, the function identifies the hemisphere for each record based on latitude.
-#' Longitude values are transformed to a 0-360 range to ensure statistical consistency near the antimeridian.
-#' This overall analysis serves as the baseline for subsequent species-specific comparisons in `spp_trend`.
+#' Longitude (`lon`) values are transformed to a 0-360 range to ensure statistical consistency near the antimeridian.
+#' A key feature of this function is its specialized handling of latitude. Because the Equator is set at 0, latitude values in the Southern Hemisphere are negative.
+#' To ensure that a direction shift is interpreted consistently across the globe (where a negative increase in the South corresponds to a positive increase in the North), the function employs two complementary approaches:
+#' Hemispheric split: It divides the records based on their location (`lat < 0` for `South` and `lat > 0` for `North`) and performs separate analyses for each.
+#' Global analysis: It performs an analysis using the complete dataset (`Global`) by transforming all latitudes into absolute values (`abs(lat)`). This allows for a unified global trend estimation.
+#' Note that this hemispheric division and absolute transformation logic is applied exclusively to the latitude (`lat`) variable.
+#'
 #'
 #' @importFrom stats as.formula confint formula lm coef
 #'

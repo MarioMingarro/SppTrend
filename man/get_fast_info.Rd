@@ -2,22 +2,23 @@
 % Please edit documentation in R/get_fast_info.R
 \name{get_fast_info}
 \alias{get_fast_info}
-\title{Quick summary of climate trends and species occurrences}
+\title{Quick visual diagnostic of the input data}
 \usage{
 get_fast_info(data, nc_file)
 }
 \arguments{
-\item{data}{A data frame containing at least \code{lon}, \code{lat}, and \code{year} columns.}
+\item{data}{A data frame containing species records. Must include \code{lon}, \code{lat}, \code{year}, and \code{month} columns.}
 
-\item{nc_file}{Character. Path to the .nc (NetCDF) file containing climate data.}
+\item{nc_file}{Full \code{character} path to the downloaded ERA5-Land raster (\code{.nc}) file.}
 }
 \value{
-Invisibly returns a data frame with annual temperature values per point.
+Invisibly returns a composite plot.
 Displays a composite plot showing the geographic distribution and the thermal trend with its corresponding global slope and p-value.
 }
 \description{
-This function performs a rapid diagnostic of the environmental
-context by linking species occurrence coordinates with climate NetCDF data.
-It extracts the complete climate time-series for all occupied locations,
-generating a spatial distribution map and a temporal trend analysis.
+function provides a quick visual diagnostic of the input data.
+It generates a map showing the spatial distribution of occurrence records together with a time-series plot derived from a NetCDF environmental dataste, including a linear trend analysis.
+Using the geographic coordinates of the occurrence records, the function extracts the complete climate time-series (from the earliest to the latest year represented in the data) for the corresponding occupied cells.
+All temperature values from occupied cells are then added annually to estimate and visualise the overall temperature trend (including slope and associated p-value).
+This diagnostic step allows users to quickly assess the climate trajectory of the regions where the species have been recorded and to evaluate whether sufficient temporal and environmental variation is present for subsequent analyses.
 }

@@ -33,16 +33,17 @@ A data frame with trend statistics, including:
 }
 }
 \description{
-Calculates species-specific temporal trends for geographic and environmental variables.
-It compares individual species' trajectories against the regional baseline (calculated via an interaction term).
+Estimates the species-specific temporal trends for each selected response variable and statistically compares them with the overall temporal trend derived from the complete dataset.
+It compares individual species' trajectories against the OT using the interaction term of the \code{lm()}.
 }
 \details{
-The function fits linear models for each species and compares them to the general trend of the
-corresponding hemisphere (or global data) using an interaction model (\code{response ~ predictor * group}).
-Separate analyses are performed for Northern and Southern Hemispheres to account for divergent
-ecological responses. For species spanning both hemispheres, a "Both" category provides a global
-comparison. Longitude values are transformed to a 0-360 range to ensure statistical consistency
-near the antimeridian.
+The function fits linear models for each species and compares them to the general trend using an interaction model (\code{response ~ predictor * group}).
+Longitude (\code{lon}) values are transformed to a 0-360 range to ensure statistical consistency near the antimeridian.
+A key feature of this function is its specialized handling of latitude. Because the Equator is set at 0, latitude values in the Southern Hemisphere are negative.
+To ensure that a direction shift is interpreted consistently across the globe (where a negative increase in the South corresponds to a positive increase in the North), the function employs two complementary approaches:
+Hemispheric split: It divides the records based on their location (\code{lat < 0} for \code{South} and \code{lat > 0} for \code{North}) and performs separate analyses for each.
+Global analysis: It performs an analysis using the complete dataset (\code{Global}) by transforming all latitudes into absolute values (\code{abs(lat)}). This allows for a unified global trend estimation.
+Note that this hemispheric division and absolute transformation logic is applied exclusively to the latitude (\code{lat}) variable.
 }
 \examples{
 

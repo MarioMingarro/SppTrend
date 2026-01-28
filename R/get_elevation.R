@@ -1,8 +1,8 @@
 #' @title Extract elevation from DEM
 #'
-#' @description This function extracts elevation values from a Digital Elevation Model (DEM) based on location (`lon/lat`).
+#' @description This function retrieves elevation values from a Digital Elevation Model (DEM) based on their geographic coordinates (`lon/lat`).
 #'
-#' @param data A `data frame` containing location coordinates. Must include columns specified by `lat` and `lon`.
+#' @param data A `data frame` containing species records. Must include `lon`, `lat`, `year`, and `month` columns.
 #' @param dem_file Full `character` path to the downloaded DEM raster file.
 #'
 #' @return The input data frame `data` with a new column  (`ele`) containing the extracted elevation values.
