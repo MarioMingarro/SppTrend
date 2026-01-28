@@ -169,7 +169,7 @@ print(head(ranidae)
 Missing elevation data (NA) for 54 points. Removing records
 
 <div align="left">
-  <img src="man/figures/E4.png" width="100%">
+  <img src="man/figures/E4.png" width="80%">
 </div>
 
 Se 13,182 datos que concuerdan con la extension espacial de ERA5 kkkkk
@@ -186,7 +186,7 @@ overall_trend_result <- overall_trend(data, predictor, responses)
 print(head(overall_trend_result))
 ```
 <div align="left">
-  <img src="man/figures/E5.png" width="100%">
+  <img src="man/figures/E5.png" width="80%">
 </div>
 
 ### Phase 4: Estimation of species-specific response trends
