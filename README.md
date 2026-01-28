@@ -225,6 +225,7 @@ print(head(overall_trend_result))
 The `spp_trend()` function estimates the species-specific temporal trends for each selected response variable and statistically compares them with the overall temporal trend derived from the complete dataset. 
 
 *Technical notes:*
+
 It compares individual species' trajectories against the OT using the interaction term of the `lm()`.
 
 Longitude (`lon`) values are transformed to a 0-360 range to ensure statistical consistency near the antimeridian.
@@ -236,10 +237,6 @@ To ensure that a direction shift is interpreted consistently across the globe (w
 - Global analysis: It performs an analysis using the complete dataset (`Global`) by transforming all latitudes into absolute values (`abs(lat)`). This allows for a unified global trend estimation.
 
 Note that this hemispheric division and absolute transformation logic is applied exclusively to the latitude (`lat`) variable.
-
-*Technical notes:*
-
-Detailed in `overall_trend()`.
 
 
 ```{r}
