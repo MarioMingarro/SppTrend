@@ -2,10 +2,21 @@
 # SppTrend: Analyzing linear trends in species occurrence data
 
 [![CRAN Status](https://www.r-pkg.org/badges/version/SppTrend)](https://cran.r-project.org/package=SppTrend)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 <div align="center">
   <img src="man/figures/img_1.png" width="40%">
 </div>
+
+* [Installation](#installation)
+* [Pre-requisites Checklist](#pre-requisites-checklist)
+* [Workflow](#workflow)
+  * [Phase 1: Fast Diagnostic](#phase-1-fast-diagnostic-and-visual-summary)
+  * [Phase 2: Environmental Data](#phase-2-environmental-data-generation)
+  * [Phase 3: Overall Trends](#phase-3-estimation-of-overall-response-trends)
+  * [Phase 4: Species Trends](#phase-4-estimation-of-species-specific-response-trends)
+  * [Phase 5: Ecological Strategies](#phase-5-analysis-of-specific-species-responses)
+* [Contact](#contact)
 
 The R package `SppTrend` provides a methodological framework to analyse temporal changes in species occurrence patterns in relation to spatial variables (longitude, latitude, and elevation) and temperature.
 It is designed to support the development of explanatory hypotheses on the effects of environmental change on species assemblages by analysing opportunistically collected occurrence data that include temporal and geographic information.
@@ -97,13 +108,23 @@ print(head(ranidae))
 
 ### Detailed steps
 
+#### Pre-requisites Checklist
+
+Before starting the analysis, ensure you have the following components ready:
+
+- [ ] **Occurrence Data**: A CSV file with columns: `species`, `year`, `month`, `lat`, and `lon`.
+- [ ] **Coordinates**: Ensure your data is in **WGS84 (EPSG:4326)**.
+- [ ] **Climate Data (Optional)**: A `.nc` (NetCDF) file from ERA5-Land if you plan to analyze temperature trends.
+- [ ] **Elevation Data (Optional)**: A `.tif` (GeoTIFF) file for elevation analysis.
+- [ ] **R Packages**: Install `readr`, `dplyr`, and `SppTrend`.
+
 ### Phase 1: Fast diagnostic and visual summary
 
 The `get_fast_info()` function provides a quick visual diagnostic of the input data. 
 It generates a map showing the spatial distribution of occurrence records together with a time-series plot derived from a NetCDF environmental dataste, including a linear trend analysis (slope and associated p-value). 
 Using the geographic coordinates of the occurrence records, the function extracts the complete climate time-series (from the earliest to the latest year represented in the data) for the corresponding grid cells. 
 All temperature values from occupied cells are then aggregated to estimate and visualise the overall environmental trend across the sampled area (including slope and associated p-value). 
-This diagnostic step allows users to quickly asses the climate trajectory of the regions where the species have been recorded and to evaluate whether sufficient temporal and environmental variation is present for subsequent analyses.
+This diagnostic step allows users to quickly assess the climate trajectory of the regions where the species have been recorded and to evaluate whether sufficient temporal and environmental variation is present for subsequent analyses.
 
 *Technical notes:*
 
@@ -143,7 +164,7 @@ This function retrieves mean monthly air temperature values associated with spec
 ```{r}
 nc_file <- "path/to/your/era5_data.nc"
 ranidae <- get_era5_tme(ranidae, nc_file)
-print(head(ranidae)
+print(head(ranidae))
 ```
 Missing temperature data (NA) for 572 points. Removing records.
 
@@ -199,19 +220,19 @@ The function also manages longitude transformations and accounts for hemisphere-
 predictor <- "year"
 responses <- c("lat", "lon", "ele", "tme")
 spp <- unique(data$species)
-spp_trend_result <- spp_trend(data, spp, predictor, responses, n_min = 50)
+spp_trend_result <- spp_trend(data, spp, predictor, responses, n_min = 10)
 print(head(spp_trend_result))
 ```
 
-> *WARNING: Specie Amnirana occidentalis has insufficient data (n = 4 and < n_min = 10) in North hemisphere.*
+> *WARNING: Species Amnirana occidentalis has insufficient data (n = 4 and < n_min = 10) in North hemisphere.*
 
-> *WARNING: Specie Lithobates clamitans has insufficient data (n = 1 and < n_min = 10) in North hemisphere.*
+> *WARNING: Species Lithobates clamitans has insufficient data (n = 1 and < n_min = 10) in North hemisphere.*
 
-> *WARNING: Specie Rana draytonii has insufficient data (n = 9 and < n_min = 10) in North hemisphere.*
+> *WARNING: Species Rana draytonii has insufficient data (n = 9 and < n_min = 10) in North hemisphere.*
 
-> *WARNING: Specie Rana temporaria has insufficient data (n = 1 and < n_min = 10) in North hemisphere.*
+> *WARNING: Species Rana temporaria has insufficient data (n = 1 and < n_min = 10) in North hemisphere.*
 
-> *WARNING: Specie Amnirana fonensis has insufficient data (n = 2 and < n_min = 10) in North hemisphere.*
+> *WARNING: Species Amnirana fonensis has insufficient data (n = 2 and < n_min = 10) in North hemisphere.*
 
 
 
@@ -224,7 +245,18 @@ print(head(spp_trend_result))
 The `spp_strategy()` function analyses the outputs of `spp_trend()` to classify species into distinct spatial or thermal response categories based on the direction and statistical significance of their species-specific trends relative to the overall trend. 
 The function incorporates hemisphere-specific logic to correctly interpret poleward shifts in latitude and can also be applied to classify elevational trends.
 
-BONFERRONI 0.05/length(spp)
+<div style="text-align: justify;">
+
+The `spp_strategy()` function analyses the outputs of `spp_trend()` to classify species into distinct spatial or thermal response categories. 
+
+**Statistical Rigor: The Bonferroni Correction**
+To avoid false positives (Type I errors) due to multiple comparisons when analyzing many species, the Bonferroni correction sould be applied. 
+The significance level is adjusted as:
+
+$$\alpha_{adj} = \frac{\alpha}{n}$$
+
+where $n$ is the number of species. 
+Only trends that exceed this conservative threshold are classified into specific ecological strategies, ensuring that the detected responses are robust.
 
 ```{r}
 spp_strategy_result <- spp_strategy(spp_trend_result, sig_level = 0.05/length(spp), responses = c("lat", "lon", "ele", "tme"))

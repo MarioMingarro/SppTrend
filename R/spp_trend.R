@@ -135,7 +135,7 @@ spp_trend <- function(data, spp, predictor, responses, n_min = 50) {
             {
               message(
                 paste0(
-                  "WARNING: Specie ",
+                  "WARNING: Species ",
                   spp[n],
                   " response (",
                   responses[i],
@@ -149,7 +149,7 @@ spp_trend <- function(data, spp, predictor, responses, n_min = 50) {
             }
           }, error = function(e) {
             message(paste(
-              "Error en",
+              "Error in",
               spp[n],
               "-",
               responses[i],
@@ -242,7 +242,7 @@ spp_trend <- function(data, spp, predictor, responses, n_min = 50) {
             {
               message(
                 paste0(
-                  "Caution: Specie ",
+                  "Caution: Species ",
                   spp[n],
                   " response (",
                   responses[i],
@@ -258,7 +258,7 @@ spp_trend <- function(data, spp, predictor, responses, n_min = 50) {
         }
       } else {
         message(paste0(
-          "caution: Specie ",
+          "caution: Species ",
           spp[n],
           " has insufficient data in some hemisphere"
         ))
