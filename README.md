@@ -1,4 +1,3 @@
-<div style="text-align: justify;">
 # SppTrend: Analyzing linear trends in species occurrence data
 
 [![CRAN Status](https://www.r-pkg.org/badges/version/SppTrend)](https://cran.r-project.org/package=SppTrend)
@@ -186,7 +185,7 @@ For instance, the [EU-DEM dataset](https://dataspace.copernicus.eu/explore-data/
 ```{r}
 dem_file <- "path/to/your/dem.tif"
 ranidae <- get_elevation(ranidae, dem_file)
-print(head(ranidae)
+print(head(ranidae))
 ```
 Missing elevation data (NA) for 54 points. Removing records
 
@@ -245,10 +244,6 @@ print(head(spp_trend_result))
 The `spp_strategy()` function analyses the outputs of `spp_trend()` to classify species into distinct spatial or thermal response categories based on the direction and statistical significance of their species-specific trends relative to the overall trend. 
 The function incorporates hemisphere-specific logic to correctly interpret poleward shifts in latitude and can also be applied to classify elevational trends.
 
-<div style="text-align: justify;">
-
-The `spp_strategy()` function analyses the outputs of `spp_trend()` to classify species into distinct spatial or thermal response categories. 
-
 **Statistical Rigor: The Bonferroni Correction**
 To avoid false positives (Type I errors) due to multiple comparisons when analyzing many species, the Bonferroni correction sould be applied. 
 The significance level is adjusted as:
@@ -260,6 +255,7 @@ Only trends that exceed this conservative threshold are classified into specific
 
 ```{r}
 spp_strategy_result <- spp_strategy(spp_trend_result, sig_level = 0.05/length(spp), responses = c("lat", "lon", "ele", "tme"))
+print(head(spp_strategy_result))
 ```
 <div align="left">
   <img src="man/figures/E7.png" width="100%">
@@ -348,4 +344,3 @@ jorge.lobo@mncn.csic.es
 Emilio García-Roselló 
 egrosello@esei.uvigo.es
 
-<div>
