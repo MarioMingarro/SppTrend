@@ -106,11 +106,11 @@ ranidae <- readr::read_csv2(system.file("extdata", "example_ranidae.csv", packag
                                      lat = col_double()))
 ```
 
-Generate a continuous temporal predictor combining year and month to use a detailed predictor KKKKKK
+To capture intra-annual variations and treat time as a continuous high-resolution variable, we combine `year` and `month` into a single decimal predictor (`year_month`). 
+This transformation allows the models to use a continuous variable representing the exact temporal position of each record, providing a more nuanced analysis of temporal trends.
 
 ```{r}
-ranidae$year_month <- ranidae$year + (ranidae$month * 0.075)
-
+ranidae$year_month <- ranidae$year + ((ranidae$month - 1) / 12)
 print(head(ranidae))
 ```
 <div align="left">
