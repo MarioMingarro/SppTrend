@@ -113,8 +113,8 @@ This transformation allows the models to use a continuous variable representing 
 ranidae$year_month <- ranidae$year + ((ranidae$month - 1) / 12)
 print(head(ranidae))
 ```
-<div align="left">
-  <img src="man/figures/E1.png" width="100%">
+<div align="center">
+  <img src="man/figures/E1.png" width="70%">
 </div>
 
 ### Phase 1: Fast diagnostic and visual summary
@@ -197,6 +197,12 @@ print(head(ranidae))
 
 The `overall_trend()` function calculates the overall temporal trend (OT) of selected response variables across the entire dataset. 
 This trend integrates both environmental change and the cumulative effects of sampling bias, and serves as a neutral reference against which species-specific temporal trends are evaluated.
+A key feature of this function is its specialized handling of latitude. Because the Equator is set at $0^\circ$, latitude values in the Southern Hemisphere are negative. 
+To ensure that a poleward shift is interpreted consistently across the globe (where a negative increase in the South corresponds to a positive increase in the North), the function employs two complementary approaches:
+- Hemispheric Split: It divides the records based on their location (`lat < 0` for `South` and `lat > 0` for `North`) and performs separate analyses for each.
+- Global Absolute Analysis: It performs an analysis using the complete dataset (`Global`) by transforming all latitudes into absolute values (`abs(lat)`). 
+This allows for a unified global trend estimation.
+Note that this hemispheric division and absolute transformation logic is applied exclusively to the latitude (`lat`) variable.
 
 ```{r}
 predictor <- "year_month" 
@@ -231,7 +237,12 @@ print(head(spp_trend_result))
 
 > *WARNING: Species Amnirana fonensis has insufficient data (n = 2 and < n_min = 10) in North hemisphere.*
 
-En este ejemplo se ha utilizado un n_min = a 10, lo que significa que solo considera las especies qu etengan mas de 10 registros. Este valor ha sido puesto en el ejemplo debido al pequeño tamaño muestral del ejemplo ranidae, pero este deberia ser mas elevado.
+
+*Note on Sample Size (`n_min`)*
+
+In this example, we have set `n_min = 10`, meaning the function only considers species with more than 10 records. 
+This low threshold is used here specifically to accommodate the small sample size of the example_ranidae dataset. 
+However, a higher value is strongly recommended.
 
 <div align="left">
   <img src="man/figures/E6.png" width="100%">
