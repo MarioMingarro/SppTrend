@@ -144,6 +144,7 @@ nc_file <- "path/to/your/era5_data.nc"
 ranidae <- get_era5_tme(ranidae, nc_file)
 print(head(ranidae)
 ```
+Missing temperature data (NA) for 572 points. Removing records.
 
 <div align="left">
   <img src="man/figures/E3.png" width="100%">
@@ -165,6 +166,8 @@ dem_file <- "path/to/your/dem.tif"
 ranidae <- get_elevation(ranidae, dem_file)
 print(head(ranidae)
 ```
+Missing elevation data (NA) for 54 points. Removing records
+
 <div align="left">
   <img src="man/figures/E4.png" width="100%">
 </div>
@@ -198,6 +201,12 @@ spp <- unique(data$species)
 spp_trend_result <- spp_trend(data, spp, predictor, responses, n_min = 50)
 print(head(spp_trend_result))
 ```
+WARNING: Specie Amnirana occidentalis has insufficient data (n = 4 and < n_min = 10) in North hemisphere.
+WARNING: Specie Lithobates clamitans has insufficient data (n = 1 and < n_min = 10) in North hemisphere.
+WARNING: Specie Rana draytonii has insufficient data (n = 9 and < n_min = 10) in North hemisphere.
+WARNING: Specie Rana temporaria has insufficient data (n = 1 and < n_min = 10) in North hemisphere.
+WARNING: Specie Amnirana fonensis has insufficient data (n = 2 and < n_min = 10) in North hemisphere.
+
 <div align="left">
   <img src="man/figures/E6.png" width="100%">
 </div>
@@ -207,10 +216,10 @@ print(head(spp_trend_result))
 The `spp_strategy()` function analyses the outputs of `spp_trend()` to classify species into distinct spatial or thermal response categories based on the direction and statistical significance of their species-specific trends relative to the overall trend. 
 The function incorporates hemisphere-specific logic to correctly interpret poleward shifts in latitude and can also be applied to classify elevational trends.
 
-BONFERRONI
+BONFERRONI 0.05/length(spp)
 
 ```{r}
-spp_strategy_result <- spp_strategy(spp_trend_result, sig_level = 0.05, responses = c("lat", "lon", "ele", "tme"))
+spp_strategy_result <- spp_strategy(spp_trend_result, sig_level = 0.05/length(spp), responses = c("lat", "lon", "ele", "tme"))
 ```
 <div align="left">
   <img src="man/figures/E7.png" width="100%">
