@@ -42,12 +42,12 @@ get_era5_tme <- function(data, nc_file) {
   {
     stop("Error: Era5 monthly averages expected, but daily values found")
   }
-  print(paste(
+  message((paste(
     "Raster coverage: From ",
     min(layer$dates),
     " to ",
     max(layer$dates)
-  ))
+  )))
   data_years <- unique(data$year)
   not_found_years <- setdiff(data_years, layer$years)
   if (!is.null(not_found_years) & length(not_found_years) > 0)

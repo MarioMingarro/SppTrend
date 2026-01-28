@@ -270,7 +270,6 @@ spp_trend <- function(data, spp, predictor, responses, n_min = 50) {
   {
     final_res <- do.call(rbind, results_list)
     rownames(final_res) <- NULL
-    print(utils::head(final_res, 5))
     return(final_res)
   }
   else
