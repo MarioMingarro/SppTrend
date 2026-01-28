@@ -96,7 +96,7 @@ Before starting the analysis, ensure you have the following components ready:
 
 The following is an example using ranidae example from GBIF and selected in the exted (lon:  -10 >= record <= 10 & lat: -40 >= record <= 40) and in dates (year >= 1950).
 
-A total of 13,808 records with 15 different species.
+A total of 13,808 records of 15 different species.
 
 ```{r}
 ranidae <- readr::read_csv2(system.file("extdata", "example_ranidae.csv", package = "SppTrend"), 
@@ -120,9 +120,9 @@ print(head(ranidae))
 ### Phase 1: Fast diagnostic and visual summary
 
 The `get_fast_info()` function provides a quick visual diagnostic of the input data. 
-It generates a map showing the spatial distribution of occurrence records together with a time-series plot derived from a NetCDF environmental dataste, including a linear trend analysis (slope and associated p-value). 
-Using the geographic coordinates of the occurrence records, the function extracts the complete climate time-series (from the earliest to the latest year represented in the data) for the corresponding grid cells. 
-All temperature values from occupied cells are then aggregated to estimate and visualise the overall environmental trend across the sampled area (including slope and associated p-value). 
+It generates a map showing the spatial distribution of occurrence records together with a time-series plot derived from a NetCDF environmental dataste, including a linear trend analysis.
+Using the geographic coordinates of the occurrence records, the function extracts the complete climate time-series (from the earliest to the latest year represented in the data) for the corresponding occupied cells. 
+All temperature values from occupied cells are then added annually to estimate and visualise the overall temperature trend (including slope and associated p-value). 
 This diagnostic step allows users to quickly assess the climate trajectory of the regions where the species have been recorded and to evaluate whether sufficient temporal and environmental variation is present for subsequent analyses.
 
 *Technical notes:*
@@ -165,7 +165,7 @@ nc_file <- "path/to/your/era5_data.nc"
 ranidae <- get_era5_tme(ranidae, nc_file)
 print(head(ranidae))
 ```
-Missing temperature data (NA) for 572 points. Removing records.
+>  Missing temperature data (NA) for 572 points. Removing records.
 
 <div align="center">
   <img src="man/figures/E3.png" width="70%">
@@ -187,13 +187,11 @@ dem_file <- "path/to/your/dem.tif"
 ranidae <- get_elevation(ranidae, dem_file)
 print(head(ranidae))
 ```
-Missing elevation data (NA) for 54 points. Removing records
+> Missing elevation data (NA) for 54 points. Removing records
 
 <div align="center">
   <img src="man/figures/E4.png" width="70%">
 </div>
-
-Se 13,182 datos que concuerdan con la extension espacial de ERA5 kkkkk
 
 ### Phase 3: Estimation of overall response trends
 
@@ -201,9 +199,9 @@ The `overall_trend()` function calculates the overall temporal trend (OT) of sel
 This trend integrates both environmental change and the cumulative effects of sampling bias, and serves as a neutral reference against which species-specific temporal trends are evaluated.
 
 ```{r}
-predictor <- "year"
+predictor <- "year_month" 
 responses <- c("lat", "lon", "ele", "tme")
-overall_trend_result <- overall_trend(data, predictor, responses)
+overall_trend_result <- overall_trend(ranidae, predictor, responses)
 print(head(overall_trend_result))
 ```
 <div align="center">
@@ -216,10 +214,10 @@ The `spp_trend()` function estimates the species-specific temporal trends for ea
 The function also manages longitude transformations and accounts for hemisphere-specific trends to ensure consistent estimation across geographic domains.
 
 ```{r}
-predictor <- "year"
+predictor <- "year_month"
 responses <- c("lat", "lon", "ele", "tme")
-spp <- unique(data$species)
-spp_trend_result <- spp_trend(data, spp, predictor, responses, n_min = 10)
+spp <- unique(ranidae$species)
+spp_trend_result <- spp_trend(ranidae, spp, predictor, responses, n_min = 10)
 print(head(spp_trend_result))
 ```
 
@@ -233,7 +231,7 @@ print(head(spp_trend_result))
 
 > *WARNING: Species Amnirana fonensis has insufficient data (n = 2 and < n_min = 10) in North hemisphere.*
 
-
+En este ejemplo se ha utilizado un n_min = a 10, lo que significa que solo considera las especies qu etengan mas de 10 registros. Este valor ha sido puesto en el ejemplo debido al pequeño tamaño muestral del ejemplo ranidae, pero este deberia ser mas elevado.
 
 <div align="left">
   <img src="man/figures/E6.png" width="100%">
@@ -244,14 +242,14 @@ print(head(spp_trend_result))
 The `spp_strategy()` function analyses the outputs of `spp_trend()` to classify species into distinct spatial or thermal response categories based on the direction and statistical significance of their species-specific trends relative to the overall trend. 
 The function incorporates hemisphere-specific logic to correctly interpret poleward shifts in latitude and can also be applied to classify elevational trends.
 
-**Statistical Rigor: The Bonferroni Correction**
+**The Bonferroni correction**
 To avoid false positives (Type I errors) due to multiple comparisons when analyzing many species, the Bonferroni correction sould be applied. 
 The significance level is adjusted as:
 
 $$\alpha_{adj} = \frac{\alpha}{n}$$
 
 where $n$ is the number of species. 
-Only trends that exceed this conservative threshold are classified into specific ecological strategies, ensuring that the detected responses are robust.
+Only trends that exceed this conservative threshold are classified into specific ecological strategies, ensuring that the detected responses are solid.
 
 ```{r}
 spp_strategy_result <- spp_strategy(spp_trend_result, sig_level = 0.05/length(spp), responses = c("lat", "lon", "ele", "tme"))
@@ -263,7 +261,7 @@ print(head(spp_strategy_result))
 
 ## Ecological strategies
 
-The `SppTrend` package identifies several Spatial and Thermal response strategies based on species-specific temporal trends relative to the overall background trend:
+The `SppTrend` package identifies several Spatial and Thermal response strategies based on species-specific temporal trends relative to the overall background trend.
 
 <div align="center">
   <img src="man/figures/strategies.png" width="50%">
@@ -308,13 +306,7 @@ For more detailed information and examples, please refer to the package document
 help(package = SppTrend)
 ```
 
-### Example with real data
-
-Detailed examples and case studies are available in the PDF guide included with the package (`inst/extdata/`).
-
-```{r}
-SppTrend_example()
-```
+### Example data
 
 The data used in the example are also available in: 
 
