@@ -220,5 +220,6 @@ spp_strategy <- function(spp_trend_result,
     ) %>%
     dplyr::ungroup() %>%
     dplyr::relocate(tidyselect::starts_with("Spatial_lat_"), .after = Spatial_lon)
-  return(utils::head(strategies, 5))
+  print(utils::head(strategies, 5))
+  return(strategies)
 }
