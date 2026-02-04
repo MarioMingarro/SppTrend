@@ -12,7 +12,7 @@
 #'
 #' - **Predictors**: Sampling date (e.g., year or year-month decimals).
 #'
-#' - **Responses**: Geographic location (latitude and longitude) and environmental factors (elevation and temperature).
+#' - **Responses**: Geographic location (latitude, longitude or elevation) and environmental factors (temperature).
 #'
 #' ## Workflow
 #' `SppTrend` provides a structured workflow for analyzing these trends:
@@ -31,7 +31,7 @@
 #' 4. **Individual trend analysis**: Estimate the species-specific temporal trends for each selected response variable
 #'    using \code{\link{spp_trend}}. This compares individual species' responses to the overall trend via interaction models.
 #'
-#' 5. **Ecological strategy classification**: Classify species into distinct spatial or thermal response categories based on the
+#' 5. **Ecological strategy classification**: Classify species into distinct Spatial or Thermal response strategies based on the
 #'    direction and statistical significance of their species-specific trends relative to the overall trend using \code{\link{spp_strategy}}.
 #'
 #' ## More details

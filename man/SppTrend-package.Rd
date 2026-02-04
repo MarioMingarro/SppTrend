@@ -16,7 +16,7 @@ Provides a methodology to analyze how species occurrences change over time, part
 The analysis uses:
 \itemize{
 \item \strong{Predictors}: Sampling date (e.g., year or year-month decimals).
-\item \strong{Responses}: Geographic location (latitude and longitude) and environmental factors (elevation and temperature).
+\item \strong{Responses}: Geographic location (latitude, longitude or elevation) and environmental factors (temperature).
 }
 }
 
@@ -34,7 +34,7 @@ selected response variables across the entire dataset using \code{\link{overall_
 This serves as a neutral reference against which species-specific temporal trends are evaluated
 \item \strong{Individual trend analysis}: Estimate the species-specific temporal trends for each selected response variable
 using \code{\link{spp_trend}}. This compares individual species' responses to the overall trend via interaction models.
-\item \strong{Ecological strategy classification}: Classify species into distinct spatial or thermal response categories based on the
+\item \strong{Ecological strategy classification}: Classify species into distinct Spatial or Thermal response strategies based on the
 direction and statistical significance of their species-specific trends relative to the overall trend using \code{\link{spp_strategy}}.
 }
 }
