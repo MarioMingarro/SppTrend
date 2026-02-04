@@ -9,12 +9,12 @@
 
 * [Installation](#installation)
 * [Workflow](#workflow)
-  * [Pre-requisites Checklist](#pre-requisites-checklist)
-  * [Phase 1: Fast Diagnostic](#phase-1-fast-diagnostic-and-visual-summary)
-  * [Phase 2: Environmental Data](#phase-2-environmental-data-generation)
-  * [Phase 3: Overall Trends](#phase-3-estimation-of-overall-response-trends)
-  * [Phase 4: Species Trends](#phase-4-estimation-of-species-specific-response-trends)
-  * [Phase 5: Ecological Strategies](#phase-5-analysis-of-specific-species-responses)
+  * [Pre-requisites checklist](#pre-requisites-checklist)
+  * [Phase 1: Fast diagnostic](#phase-1-fast-diagnostic-and-visual-summary)
+  * [Phase 2: Environmental data](#phase-2-environmental-data-generation)
+  * [Phase 3: Overall trends](#phase-3-estimation-of-overall-response-trends)
+  * [Phase 4: Species trends](#phase-4-estimation-of-species-specific-response-trends)
+  * [Phase 5: Ecological strategies](#phase-5-analysis-of-specific-species-responses)
 * [Contact](#contact)
 
 The R package `SppTrend` provides a methodological framework to analyse temporal changes in species occurrence patterns in relation to spatial variables (longitude, latitude, and elevation) and temperature.
@@ -51,21 +51,21 @@ The methodology assumes that observed species occurrences represent a temporal s
 
 `SppTrend` provides a structured workflow for analyzing these trends:
 
-1.  **Exploratory Diagnostic**: Quickly visualize the spatial distribution of occurrences and temporal temperature trends within the area of presence using `get_fast_info()`, based on NetCDF environmental data.
+1.  **Exploratory diagnostic**: Quickly visualize the spatial distribution of occurrences and temporal temperature trends within the area of presence using `get_fast_info()`, based on NetCDF environmental data.
 
-2.  **Environmental Data Integration (Optional)**:  Enhance the occurrence records with environmental information using functions like `get_era5_tme()` for temperature data or `get_elevation()` for elevation.
+2.  **Environmental data integration (optional)**:  Enhance the occurrence records with environmental information using functions like `get_era5_tme()` for temperature data or `get_elevation()` for elevation.
 
-3.  **Overall Trend Estimation**: Estimate the average temporal trend of selected response variables across all species using `overall_trend()`. This trend serves as a  baseline against which individual species' trends are compared.
+3.  **Overall trend estimation**: Estimate the average temporal trend of selected response variables across all species using `overall_trend()`. This trend serves as a  baseline against which individual species' trends are compared.
 
-4.  **Individual Trend Analysis**: Estimate specific-specific temporal trends for each response variable using `spp_trend()`, enabling direct comparison between individual species responses and the overall trend.
+4.  **Individual trend analysis**: Estimate specific-specific temporal trends for each response variable using `spp_trend()`, enabling direct comparison between individual species responses and the overall trend.
 
-5.  **Ecological Strategy Classification**: Classify species into distinct spatial or thermal response categories based on the direction and statistical significance of their species-specific trends relative to the overall trend using `spp_strategy()`.
+5.  **Ecological strategy classification**: Classify species into distinct spatial or thermal response categories based on the direction and statistical significance of their species-specific trends relative to the overall trend using `spp_strategy()`.
 
 ### Data requirements
 
 To utilize the package effectively, the input dataset must include the following information for each record:
 
-* Species identification (e.g., `species`).
+* Species name (e.g., `species`).
 * Geographic coordinates: Latitude (`lat`) and Longitude (`lon`). **Note: Coordinates must be in the EPSG:4326 (WGS84) geographic coordinate reference system, which is the standard for biodiversity occurrence data.**
 * Temporal information: Year of observation (`year`) is required. Including month (`month`) is strongly recommended to allow more detailed temporal analyses.
 
@@ -73,24 +73,24 @@ To utilize the package effectively, the input dataset must include the following
 
 **Ensure that the column names in your input dataset match the default names expected by the `SppTrend` functions. These default names are:**
 
-- **Species Name**: `species`
+- **Species name**: `species`
 - **Year**: `year`
 - **Month**: `month`
 - **Longitude**: `lon`
 - **Latitude**: `lat`
-- **Environmental Response Variables** (if applicable): 
-  - **Elevation**: `ele`
+- **Environmental response variables** (if applicable): 
   - **Temperature**: `tme`
+    - **Elevation**: `ele`
 
-#### Pre-requisites Checklist
+#### Pre-requisites checklist
 
 Before starting the analysis, ensure you have the following components ready:
 
-- [ ] **Occurrence Data**: A CSV file with columns: `species`, `year`, `month`, `lat`, and `lon`.
+- [ ] **Occurrence data**: A dataframe with columns: `species`, `year`, `month`, `lat`, and `lon`.
 - [ ] **Coordinates**: Ensure your data is in **WGS84 (EPSG:4326)**.
-- [ ] **Climate Data (Optional)**: A `.nc` (NetCDF) file to analyze temperature trends *See `get_era5_tme()`*.
-- [ ] **Elevation Data (Optional)**: A `.tif` (GeoTIFF) file for elevation analysis. *See `get_elevation()`*
-- [ ] **R Packages**: Install `readr`, and `SppTrend`.
+- [ ] **Climate data (optional)**: A `.nc` (NetCDF) file to analyze temperature trends. *See `get_era5_tme()`*.
+- [ ] **Elevation data (optional)**: A `.tif` (GeoTIFF) file for elevation analysis. *See `get_elevation()`*
+- [ ] **R packages**: Install `readr`, and `SppTrend`.
 
 ### Real data example
 
@@ -120,7 +120,7 @@ print(head(ranidae))
 ### Phase 1: Fast diagnostic and visual summary
 
 The `get_fast_info()` function provides a quick visual diagnostic of the input data. 
-It generates a map showing the spatial distribution of occurrence records together with a time-series plot derived from a NetCDF environmental dataste, including a linear trend analysis.
+It generates a map showing the spatial distribution of occurrence records together with a time-series plot derived from a NetCDF environmental dataste.
 Using the geographic coordinates of the occurrence records, the function extracts the complete climate time-series (from the earliest to the latest year represented in the data) for the corresponding occupied cells. 
 All temperature values from occupied cells are then added annually to estimate and visualise the overall temperature trend (including slope and associated p-value). 
 This diagnostic step allows users to quickly assess the climate trajectory of the regions where the species have been recorded and to evaluate whether sufficient temporal and environmental variation is present for subsequent analyses.
@@ -200,13 +200,13 @@ This trend integrates both environmental change and the cumulative effects of sa
 
 *Technical notes:*
 
-Longitude (`lon`) values are transformed to a 0-360 range to ensure statistical consistency near the antimeridian.
+*Longitude (`lon`) values are transformed to a 0-360 range to ensure statistical consistency near the antimeridian.*
 
-A key feature of this function is its specialized handling of latitude. Because the Equator is set at 0, latitude values in the Southern Hemisphere are negative.
+*A key feature of this function is its specialized handling of latitude. Because the Equator is set at 0, latitude values in the Southern Hemisphere are negative.*
 
-To ensure that a direction shift is interpreted consistently across the globe (where a negative increase in the South corresponds to a positive increase in the North), the function employs two complementary approaches:
-- Hemispheric split: It divides the records based on their location (`lat < 0` for `South` and `lat > 0` for `North`) and performs separate analyses for each.
-- Global analysis: It performs an analysis using the complete dataset (`Global`) by transforming all latitudes into absolute values (`abs(lat)`). This allows for a unified global trend estimation.
+*To ensure that a direction shift is interpreted consistently across the globe (where a negative increase in the South corresponds to a positive increase in the North), the function employs two complementary approaches:*
+*- Hemispheric split: It divides the records based on their location (`lat < 0` for `South` and `lat > 0` for `North`) and performs separate analyses for each.*
+*- Global analysis: It performs an analysis using the complete dataset (`Global`) by transforming all latitudes into absolute values (`abs(lat)`). This allows for a unified global trend estimation.*
 
 Note that this hemispheric division and absolute transformation logic is applied exclusively to the latitude (`lat`) variable.
 
@@ -226,15 +226,15 @@ The `spp_trend()` function estimates the species-specific temporal trends for ea
 
 *Technical notes:*
 
-It compares individual species' trajectories against the OT using the interaction term of the `lm()`.
+*It compares individual species' trajectories against the OT using the interaction term of the `lm()`.*
 
-Longitude (`lon`) values are transformed to a 0-360 range to ensure statistical consistency near the antimeridian.
+*Longitude (`lon`) values are transformed to a 0-360 range to ensure statistical consistency near the antimeridian.*
 
-A key feature of this function is its specialized handling of latitude. Because the Equator is set at 0, latitude values in the Southern Hemisphere are negative.
+*A key feature of this function is its specialized handling of latitude. Because the Equator is set at 0, latitude values in the Southern Hemisphere are negative.*
 
-To ensure that a direction shift is interpreted consistently across the globe (where a negative increase in the South corresponds to a positive increase in the North), the function employs two complementary approaches:
-- Hemispheric split: It divides the records based on their location (`lat < 0` for `South` and `lat > 0` for `North`) and performs separate analyses for each.
-- Global analysis: It performs an analysis using the complete dataset (`Global`) by transforming all latitudes into absolute values (`abs(lat)`). This allows for a unified global trend estimation.
+*To ensure that a direction shift is interpreted consistently across the globe (where a negative increase in the South corresponds to a positive increase in the North), the function employs two complementary approaches:*
+*- Hemispheric split: It divides the records based on their location (`lat < 0` for `South` and `lat > 0` for `North`) and performs separate analyses for each.*
+*- Global analysis: It performs an analysis using the complete dataset (`Global`) by transforming all latitudes into absolute values (`abs(lat)`). This allows for a unified global trend estimation.*
 
 Note that this hemispheric division and absolute transformation logic is applied exclusively to the latitude (`lat`) variable.
 
@@ -264,6 +264,22 @@ In this example, we have set `n_min = 10`, meaning the function only considers s
 This low threshold is used here specifically to accommodate the small sample size of the example_ranidae dataset. 
 However, a higher value is strongly recommended.
 
+### spp_trend() results definitions
+
+| Variable | Description |
+| :--- | :--- |
+| **species** | Species name |
+| **responses** | The response variable |
+| **trend** | Estimated slope ($\beta$) |
+| **t** | Student's *t*-statistic for the species-specific trend ($t = \hat{\beta} / SE$). |
+| **pvalue** | Statistical significance of the species-specific trend (null hypothesis $\beta = 0$). |
+| **ci_95_max** | Upper bound of the 95% confidence interval for the species trend. |
+| **ci_95_min** | Lower bound of the 95% confidence interval for the species trend. |
+| **dif_t** | The *t*-statistic of the **interaction term**, indicating the magnitude of the difference between the species trend and the Overall Trend (OT). |
+| **dif_pvalue** | P-value of the interaction; if $< 0.05$, the species trend differs significantly from the general baseline. |
+| **n** | Total number of occurrence records (sample size) for the specific species. |
+| **hemisphere** | Geographical subset (`North`, `South`, or `Global`) used to ensure latitudinal symmetry in the analysis. |
+
 <div align="left">
   <img src="man/figures/E6.png" width="100%">
 </div>
@@ -281,7 +297,8 @@ The significance level is adjusted as:
 $$\alpha_{adj} = \frac{\alpha}{n}$$
 
 where $n$ is the number of species. 
-Only trends that exceed this conservative threshold are classified into specific ecological strategies, ensuring that the detected responses are solid.
+
+Only those trends where the `pvalue` (or `dif_pvalue`) is lower than $\alpha_{adj}$ are classified into categories. Species that do not meet this threshold are categorized as having non-significant responses (SC or TC).
 
 ```{r}
 spp_strategy_result <- spp_strategy(spp_trend_result, sig_level = 0.05/length(spp), responses = c("lat", "lon", "ele", "tme"))
@@ -353,7 +370,7 @@ ranidae <- read_csv(path)
 
 This package is based on the methodology described in:
 
-Lobo, JM, Mingarro, M, Godefroid, M & García-Roselló, E 2023. Taking advantage of opportunistically collected historical occurrence data to detect responses to climate change: The case of temperature and Iberian dung beetles. *Ecology and evolution*, 13(12) e10674. https://doi.org/10.1002/ece3.10674 
+Lobo, Mingarro, Godefroid & García-Roselló (2023) Taking advantage of opportunistically collected historical occurrence data to detect responses to climate change: The case of temperature and Iberian dung beetles. *Ecology and evolution*, 13(12) e10674. https://doi.org/10.1002/ece3.10674 
 
 ## Contact
 

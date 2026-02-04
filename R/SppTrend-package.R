@@ -2,7 +2,7 @@
 #' @aliases SppTrend
 "_PACKAGE"
 
-#' @title SppTrend: Analyzing linear trends in species occurrence data
+#' @title SppTrend: Analyzing Linear Trends in Species Occurrence Data
 #' @description
 #' The `SppTrend` package provides a methodology to analyze how species occurrences
 #' change over time, particularly in relation to spatial and thermal factors.

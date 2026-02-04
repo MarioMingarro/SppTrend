@@ -4,9 +4,9 @@
 \name{SppTrend-package}
 \alias{SppTrend-package}
 \alias{SppTrend}
-\title{SppTrend: Analyzing linear trends in species occurrence data}
+\title{SppTrend: Analyzing Linear Trends in Species Occurrence Data}
 \description{
-Provides functions to analyze trends in time series of species occurrence data.
+Provides a methodology to analyze how species occurrences change over time, particularly in relation to spatial and thermal factors. It facilitates the development of explanatory hypotheses about the impact ofenvironmental shifts on species by analyzing historical presence data that includes temporal and geographic information. Approach described in Lobo et al., 2023 \doi{10.1002/ece3.10674}.
 
 The \code{SppTrend} package provides a methodology to analyze how species occurrences
 change over time, particularly in relation to spatial and thermal factors.
