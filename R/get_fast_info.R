@@ -1,6 +1,6 @@
 #' @title Quick visual diagnostic of the input data
 #'
-#' @description function provides a quick visual diagnostic of the input data.
+#' @description This function provides a quick visual diagnostic of the input data.
 #' It generates a map showing the spatial distribution of occurrence records together with a time-series plot derived from a NetCDF environmental dataste, including a linear trend analysis.
 #' Using the geographic coordinates of the occurrence records, the function extracts the complete climate time-series (from the earliest to the latest year represented in the data) for the corresponding occupied cells.
 #' All temperature values from occupied cells are then added annually to estimate and visualise the overall temperature trend (including slope and associated p-value).

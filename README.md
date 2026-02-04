@@ -273,7 +273,7 @@ However, a higher value is strongly recommended.
 | Variable | Description |
 | :--- | :--- |
 | **species** | Name of the analyzed species |
-| **responses** | Name of the variable analyzed |
+| **responses** | Name of the analyzed variable |
 | **trend** | Estimated slope of the linear model ($\beta$) |
 | **t** | t-statistic for the species-specific trend |
 | **pvalue** | Statistical significance of the species-specific trend (null hypothesis $\beta = 0$). |
