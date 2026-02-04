@@ -205,7 +205,9 @@ This trend integrates both environmental change and the cumulative effects of sa
 *A key feature of this function is its specialized handling of latitude. Because the Equator is set at 0, latitude values in the Southern Hemisphere are negative.*
 
 *To ensure that a direction shift is interpreted consistently across the globe (where a negative increase in the South corresponds to a positive increase in the North), the function employs two complementary approaches:*
+
 *- Hemispheric split: It divides the records based on their location (`lat < 0` for `South` and `lat > 0` for `North`) and performs separate analyses for each.*
+
 *- Global analysis: It performs an analysis using the complete dataset (`Global`) by transforming all latitudes into absolute values (`abs(lat)`). This allows for a unified global trend estimation.*
 
 Note that this hemispheric division and absolute transformation logic is applied exclusively to the latitude (`lat`) variable.
@@ -233,7 +235,9 @@ The `spp_trend()` function estimates the species-specific temporal trends for ea
 *A key feature of this function is its specialized handling of latitude. Because the Equator is set at 0, latitude values in the Southern Hemisphere are negative.*
 
 *To ensure that a direction shift is interpreted consistently across the globe (where a negative increase in the South corresponds to a positive increase in the North), the function employs two complementary approaches:*
+
 *- Hemispheric split: It divides the records based on their location (`lat < 0` for `South` and `lat > 0` for `North`) and performs separate analyses for each.*
+  
 *- Global analysis: It performs an analysis using the complete dataset (`Global`) by transforming all latitudes into absolute values (`abs(lat)`). This allows for a unified global trend estimation.*
 
 Note that this hemispheric division and absolute transformation logic is applied exclusively to the latitude (`lat`) variable.
@@ -268,17 +272,18 @@ However, a higher value is strongly recommended.
 
 | Variable | Description |
 | :--- | :--- |
-| **species** | Species name |
-| **responses** | The response variable |
-| **trend** | Estimated slope ($\beta$) |
-| **t** | Student's *t*-statistic for the species-specific trend ($t = \hat{\beta} / SE$). |
+| **species** | Name of the analyzed species |
+| **responses** | Name of the variable analyzed |
+| **trend** | Estimated slope of the linear model ($\beta$) |
+| **t** | t-statistic for the species-specific trend |
 | **pvalue** | Statistical significance of the species-specific trend (null hypothesis $\beta = 0$). |
-| **ci_95_max** | Upper bound of the 95% confidence interval for the species trend. |
-| **ci_95_min** | Lower bound of the 95% confidence interval for the species trend. |
-| **dif_t** | The *t*-statistic of the **interaction term**, indicating the magnitude of the difference between the species trend and the Overall Trend (OT). |
-| **dif_pvalue** | P-value of the interaction; if $< 0.05$, the species trend differs significantly from the general baseline. |
+| **ci_95_max** | Upper 95% confidence interval bound for the slope. |
+| **ci_95_min** | Lower 95% confidence interval bound for the slope. |
+| **dif_t** | t-statistic of the interaction term, indicating the magnitude of the difference between the species trend and the Overall Trend (OT). |
+| **dif_pvalue** | p-values of the interaction term. A low value indicates a significant deviation from the general trend. |
 | **n** | Total number of occurrence records (sample size) for the specific species. |
 | **hemisphere** | Geographical subset (`North`, `South`, or `Global`) used to ensure latitudinal symmetry in the analysis. |
+
 
 <div align="left">
   <img src="man/figures/E6.png" width="100%">
