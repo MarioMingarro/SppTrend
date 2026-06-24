@@ -12,7 +12,7 @@ get_elevation(data, dem_file)
 \item{dem_file}{Full \code{character} path to the downloaded DEM raster file.}
 }
 \value{
-The input data frame \code{data} with a new column  (\code{ele}) containing the extracted elevation values.
+The input data frame \code{data} with a new column (\code{ele}) containing the extracted elevation values.
 }
 \description{
 This function retrieves elevation values from a Digital Elevation Model (DEM) based on their geographic coordinates (\code{lon/lat}).

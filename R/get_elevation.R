@@ -5,7 +5,7 @@
 #' @param data A `data frame` containing species records. Must include `lon`, `lat`, `year`, and `month` columns.
 #' @param dem_file Full `character` path to the downloaded DEM raster file.
 #'
-#' @return The input data frame `data` with a new column  (`ele`) containing the extracted elevation values.
+#' @return The input data frame `data` with a new column (`ele`) containing the extracted elevation values.
 #'
 #' @importFrom terra rast extract
 #' @importFrom stringr str_extract
@@ -51,13 +51,11 @@ get_elevation <- function(data, dem_file) {
   data[["ele"]] <- elevations[, 1]
   if (any(is.na(data[["ele"]])))
   {
-    warning(
-      paste(
-        "Missing elevation data (NA) for",
-        sum(is.na(data[["ele"]])),
-        "points. Removing records"
-      )
-    )
+    warning(paste(
+      "Missing elevation data (NA) for",
+      sum(is.na(data[["ele"]])),
+      "points. Removing records"
+    ))
   }
   data$ele <- round(data$ele, 3)
   data <- na.omit(data)

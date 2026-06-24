@@ -1,16 +1,8 @@
 utils::globalVariables(
-  c("species",
-    "hemisphere",
-    "n",
-    "Spatial_lat_Poleward",
-    "Spatial_lon",
-    "Spatial_ele",
-    "Thermal_tmx",
-    "Thermal_tmn",
-    "Thermal_tme",
-    "responses",
-    "pvalue",
-    "dif_pvalue",
-    "trend"
+  c(
+    "lon", "lat", "year", "lon_adj", "idx_lyr", "val", "ID",
+    "temp_c", "temp_era", "n", "mean_temp",
+    "Species", "Year", "Month", "Temperature", "Elevation",
+    "time_cont_c", "Year_integer"
   )
 )

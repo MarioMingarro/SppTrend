@@ -6,36 +6,63 @@
 \alias{SppTrend}
 \title{SppTrend: Analyzing Linear Trends in Species Occurrence Data}
 \description{
-Provides a methodology to analyze how species occurrences change over time, particularly in relation to spatial and thermal factors. It facilitates the development of explanatory hypotheses about the impact of environmental shifts on species by analyzing historical presence data that includes temporal and geographic information. Approach described in Lobo et al., 2023 \doi{10.1002/ece3.10674}.
+Provides a comparative framework to detect species-specific spatial and thermal responses to climate change using opportunistic occurrence data. Species temporal trends in geographic position (via Earth-Centred Earth-Fixed vector analysis) and environmental variables (temperature and elevation) are contrasted against the overall trend of the complete dataset, allowing classification of species into ecologically interpretable response categories. Approach described in Lobo et al. (2023) \doi{10.1002/ece3.10674} and validated with virtual species in Mingarro, García-Roselló and Lobo (2026).
 }
 \details{
 \subsection{Methodology}{
 
-\code{SppTrend} assumes that observed species occurrences reflect a temporal sequence of changes in response to environmental drivers.
+\code{SppTrend} evaluates species-specific responses to climate change by
+contrasting individual temporal trends against the overall trend estimated
+from the complete dataset. This comparative approach explicitly accounts for
+sampling bias shared across species within a taxonomic group.
 
-The analysis uses:
+Species responses are decomposed into two complementary dimensions:
 \itemize{
-\item \strong{Predictors}: Sampling date (e.g., year or year-month decimals).
-\item \strong{Responses}: Geographic location (latitude, longitude or elevation) and environmental factors (temperature).
+\item \strong{Spatial}: Temporal shifts in geographic position (latitude and
+longitude), analysed jointly via Earth-Centred Earth-Fixed (ECEF) vector
+analysis.
+\item \strong{Environmental}: Temporal changes in temperature and elevation
+conditions associated with species occurrences.
+}
+}
+
+\subsection{Response categories}{
+
+\strong{Spatial} (from \code{\link{spp_trend_spatial_ecef}}):
+\itemize{
+\item \strong{SA} (Spatial Adaptation): movement faster than or directionally
+different from the global pool, in a poleward direction.
+\item \strong{SD} (Spatial Discordance): movement slower than the global pool,
+or in a non-poleward direction.
+\item \strong{SC} (Spatial Conformance): speed and direction indistinguishable
+from the global pattern.
+}
+
+\strong{Environmental} (from \code{\link{spp_trend_environmental}}):
+\itemize{
+\item \strong{TT} (Thermal Tolerance): significant positive trend in temperature.
+\item \strong{TA} (Thermal Adjustment): significant negative trend in temperature.
+\item \strong{TC} (Thermal Conformance): temperature trend not significantly
+different from the overall trend.
+\item \strong{SA/SD/SC}: equivalent classes applied to elevation trends.
 }
 }
 
 \subsection{Workflow}{
 
-\code{SppTrend} provides a structured workflow for analyzing these trends:
+\code{SppTrend} provides a structured workflow for analysing these trends:
 \enumerate{
-\item \strong{Rapid diagnostic and visual summary}: Perform a quick visual diagnostic of the input data
-using \code{\link{get_fast_info}}.
-\item \strong{Environmental data integration (optional)}: Enhance occurrence records
-with environmental context using functions like \code{\link{get_era5_tme}} (temperature)
-or \code{\link{get_elevation}} (elevation).
-\item \strong{Overall trend estimation}: Calculate the overall temporal trend (OT) of
-selected response variables across the entire dataset using \code{\link{overall_trend}}.
-This serves as a neutral reference against which species-specific temporal trends are evaluated
-\item \strong{Individual trend analysis}: Estimate the species-specific temporal trends for each selected response variable
-using \code{\link{spp_trend}}. This compares individual species' responses to the overall trend via interaction models.
-\item \strong{Ecological strategy classification}: Classify species into distinct Spatial or Thermal response strategies based on the
-direction and statistical significance of their species-specific trends relative to the overall trend using \code{\link{spp_strategy}}.
+\item \strong{Rapid diagnostic}: Quick visual check of spatial distribution and
+temperature trends using \code{\link{get_fast_info}}.
+\item \strong{Environmental data integration} (optional): Add ERA5 temperature
+values with \code{\link{get_era5_tme}} or elevation with
+\code{\link{get_elevation}}.
+\item \strong{Spatial trend analysis}: Estimate temporal changes in species
+geographic position using ECEF vector analysis with
+\code{\link{spp_trend_spatial_ecef}}.
+\item \strong{Environmental trend analysis}: Estimate temporal trends in
+temperature and elevation for each species using
+\code{\link{spp_trend_environmental}}.
 }
 }
 
