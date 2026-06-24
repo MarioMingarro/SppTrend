@@ -101,8 +101,8 @@
 #' \item{\code{Species}}{Character. Species name, or \code{"__GLOBAL_POOL__"}
 #' for the global reference row.}
 #' \item{\code{analysis}}{Character. Identifies the type of analysis:
-#' \code{"spatial_ecef_centroid_vector_global_pool"} for the global row
-#' or \code{"spatial_ecef_centroid_vector_species"} for individual
+#' \code{"spatial_centroid_vector_global_pool"} for the global row
+#' or \code{"spatial_centroid_vector_species"} for individual
 #' species.}
 #' \item{\code{n_records}}{Integer. Total number of valid occurrence
 #' records used. For the global pool this is the sum across all
@@ -119,12 +119,12 @@
 #' northward component of the displacement vector is positive in the
 #' Northern Hemisphere or negative in the Southern Hemisphere;
 #' \code{"non_poleward"} otherwise. \code{NA} for the global pool row.}
-#' \item{\code{slope_ecef_x_km_year}}{Numeric. Annual rate of change
+#' \item{\code{slope_x_km_year}}{Numeric. Annual rate of change
 #' (km yr\eqn{^{-1}}) of the ECEF X-coordinate centroid, estimated from
 #' the multivariate linear regression.}
-#' \item{\code{slope_ecef_y_km_year}}{Numeric. Annual rate of change
+#' \item{\code{slope_y_km_year}}{Numeric. Annual rate of change
 #' (km yr\eqn{^{-1}}) of the ECEF Y-coordinate centroid.}
-#' \item{\code{slope_ecef_z_km_year}}{Numeric. Annual rate of change
+#' \item{\code{slope_z_km_year}}{Numeric. Annual rate of change
 #' (km yr\eqn{^{-1}}) of the ECEF Z-coordinate centroid.}
 #' \item{\code{speed_chord_km_year}}{Numeric. Magnitude of the 3-D ECEF
 #' slope vector (km yr\eqn{^{-1}}), representing the straight-line chord
@@ -214,7 +214,7 @@
 #' and methodological details. Elements:
 #' \describe{
 #' \item{\code{analysis}}{Character. Fixed label
-#' \code{"spatial_ecef_wgs84_vector_only"}.}
+#' \code{"spatial_wgs84_vector_only"}.}
 #' \item{\code{time_variable}}{Character. Description of the continuous
 #' time variable: \code{"time_cont = Year + (Month - 1) / 12"}.}
 #' \item{\code{coordinate_system}}{Character. Coordinate system and units:
@@ -310,7 +310,7 @@
 #' Longitude = runif(n, -10, 30)
 #' )
 #'
-#' result <- spp_trend_spatial_ecef(
+#' result <- spp_trend_spatial(
 #' data= df,
 #' min_records = 20,
 #' min_years = 5,
@@ -341,7 +341,7 @@
 #' @importFrom stats lm coef model.matrix residuals df.residual rnorm
 #'
 #' @export
-spp_trend_spatial_ecef <- function(data,
+spp_trend_spatial <- function(data,
                                    spp = NULL,
                                    min_records = 20,
                                    min_years = 5,
@@ -396,7 +396,7 @@ spp_trend_spatial_ecef <- function(data,
     ) / 45) %% 8) + 1)]
   }
 
-  .lonlat_to_ecef_wgs84 <- function(longitude_deg,
+  .lonlat_to_wgs84 <- function(longitude_deg,
                                     latitude_deg,
                                     height_km = 0) {
     a <- 6378.137 # WGS84 semi-major axis, km
@@ -542,7 +542,7 @@ spp_trend_spatial_ecef <- function(data,
     acos(cosang) * 180 / pi
   }
 
-  .vector_summary_ecef <- function(slope_x,
+  .vector_summary <- function(slope_x,
                                    slope_y,
                                    slope_z,
                                    centroid_longitude,
@@ -578,7 +578,7 @@ spp_trend_spatial_ecef <- function(data,
       radial_km_year = tangent$up
     )
   }
-  .temporal_ecef_centroids <- function(df, min_records_local = 1) {
+  .temporal_centroids <- function(df, min_records_local = 1) {
     df <- df[is.finite(df$Latitude) & is.finite(df$Longitude) &
                df$Latitude >= -90 & df$Latitude <= 90 &
                df$Longitude >= -180 & df$Longitude <= 180 &
@@ -587,7 +587,7 @@ spp_trend_spatial_ecef <- function(data,
     if (nrow(df) == 0)
       return(data.frame())
 
-    xyz <- .lonlat_to_ecef_wgs84(df$Longitude, df$Latitude)
+    xyz <- .lonlat_to_wgs84(df$Longitude, df$Latitude)
     df$ecef_x_km <- xyz$ecef_x_km
     df$ecef_y_km <- xyz$ecef_y_km
     df$ecef_z_km <- xyz$ecef_z_km
@@ -620,7 +620,7 @@ spp_trend_spatial_ecef <- function(data,
 
     .safe_rbind(out)
   }
-  .fit_ecef_slope_model <- function(df) {
+  .fit_slope_model <- function(df) {
     empty <- list(slope = c(NA_real_, NA_real_, NA_real_),
                   vcov = matrix(NA_real_, 3, 3))
 
@@ -827,7 +827,7 @@ spp_trend_spatial_ecef <- function(data,
   if (!is.null(random_seed))
     set.seed(random_seed)
 
-  global_temporal <- .temporal_ecef_centroids(spatial_data, min_records_local = max(1, floor(min_records / max(1, min_years))))
+  global_temporal <- .temporal_centroids(spatial_data, min_records_local = max(1, floor(min_records / max(1, min_years))))
 
   if (nrow(global_temporal) < min_years) {
     warning("The retained global pool has too few temporal centroids for ECEF vector modelling.")
@@ -845,8 +845,8 @@ spp_trend_spatial_ecef <- function(data,
   )
 
   global_ll <- .ecef_to_geodetic_wgs84(global_centroid[1], global_centroid[2], global_centroid[3])
-  global_model <- .fit_ecef_slope_model(global_temporal)
-  global_vec <- .vector_summary_ecef(
+  global_model <- .fit_slope_model(global_temporal)
+  global_vec <- .vector_summary(
     global_model$slope[1],
     global_model$slope[2],
     global_model$slope[3],
@@ -856,16 +856,16 @@ spp_trend_spatial_ecef <- function(data,
 
   spatial_results <- data.frame(
     Species = "__GLOBAL_POOL__",
-    analysis = "spatial_ecef_centroid_vector_global_pool",
+    analysis = "spatial_centroid_vector_global_pool",
     n_records = sum(global_temporal$n_records),
     n_time_steps = nrow(global_temporal),
     centroid_Longitude = global_ll[["Longitude"]],
     centroid_Latitude = global_ll[["Latitude"]],
     hemisphere = ifelse(global_ll[["Latitude"]] >= 0, "Northern", "Southern"),
     poleward_status = NA_character_,
-    slope_ecef_x_km_year = global_model$slope[1],
-    slope_ecef_y_km_year = global_model$slope[2],
-    slope_ecef_z_km_year = global_model$slope[3],
+    slope_x_km_year = global_model$slope[1],
+    slope_y_km_year = global_model$slope[2],
+    slope_z_km_year = global_model$slope[3],
     speed_chord_km_year = global_vec$chord_speed,
     speed_surface_km_year = global_vec$surface_speed,
     direction_bearing_deg = global_vec$bearing_deg,
@@ -887,7 +887,7 @@ spp_trend_spatial_ecef <- function(data,
 
   for (sp in valid_species) {
     ind <- spatial_data[spatial_data$Species == sp, , drop = FALSE]
-    spp_temporal <- .temporal_ecef_centroids(ind, min_records_local = 1)
+    spp_temporal <- .temporal_centroids(ind, min_records_local = 1)
 
     if (nrow(spp_temporal) < min_years)
       next
@@ -900,9 +900,9 @@ spp_trend_spatial_ecef <- function(data,
 
     spp_ll <- .ecef_to_geodetic_wgs84(spp_centroid[1], spp_centroid[2], spp_centroid[3])
     spp_hemi <- ifelse(spp_ll[["Latitude"]] >= 0, "Northern", "Southern")
-    spp_model <- .fit_ecef_slope_model(spp_temporal)
+    spp_model <- .fit_slope_model(spp_temporal)
 
-    species_vec <- .vector_summary_ecef(spp_model$slope[1],
+    species_vec <- .vector_summary(spp_model$slope[1],
                                         spp_model$slope[2],
                                         spp_model$slope[3],
                                         spp_ll[["Longitude"]],
@@ -961,16 +961,16 @@ spp_trend_spatial_ecef <- function(data,
       spatial_results,
       data.frame(
         Species = sp,
-        analysis = "spatial_ecef_centroid_vector_species",
+        analysis = "spatial_centroid_vector_species",
         n_records = nrow(ind),
         n_time_steps = nrow(spp_temporal),
         centroid_Longitude = spp_ll[["Longitude"]],
         centroid_Latitude = spp_ll[["Latitude"]],
         hemisphere = spp_hemi,
         poleward_status = poleward_status,
-        slope_ecef_x_km_year = spp_model$slope[1],
-        slope_ecef_y_km_year = spp_model$slope[2],
-        slope_ecef_z_km_year = spp_model$slope[3],
+        slope_x_km_year = spp_model$slope[1],
+        slope_y_km_year = spp_model$slope[2],
+        slope_z_km_year = spp_model$slope[3],
         speed_chord_km_year = species_vec$chord_speed,
         speed_surface_km_year = species_vec$surface_speed,
         direction_bearing_deg = species_vec$bearing_deg,
@@ -993,7 +993,7 @@ spp_trend_spatial_ecef <- function(data,
   }
 
   metadata <- list(
-    analysis = "spatial_ecef_wgs84_vector_only",
+    analysis = "spatial_wgs84_vector_only",
     time_variable = "time_cont = Year + (Month - 1) / 12",
     coordinate_system = "WGS84 ECEF, kilometres",
     model = "cbind(ecef_x_km, ecef_y_km, ecef_z_km) ~ time_cont",

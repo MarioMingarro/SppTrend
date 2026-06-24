@@ -10,8 +10,8 @@ sim_data <- data.frame(
   Longitude = runif(n, -10, 30)
 )
 
-test_that("spp_trend_spatial_ecef returns a list with expected elements", {
-  result <- spp_trend_spatial_ecef(
+test_that("spp_trend_spatial returns a list with expected elements", {
+  result <- spp_trend_spatial(
     data = sim_data,
     min_records = 20,
     min_years = 5,
@@ -28,9 +28,9 @@ test_that("spp_trend_spatial_ecef returns a list with expected elements", {
   ))
 })
 
-test_that("spp_trend_spatial_ecef$spatial is a data.frame with required columns",
+test_that("spp_trend_spatial$spatial is a data.frame with required columns",
           {
-            result <- spp_trend_spatial_ecef(
+            result <- spp_trend_spatial(
               data = sim_data,
               min_records = 20,
               min_years = 5,
@@ -55,8 +55,8 @@ test_that("spp_trend_spatial_ecef$spatial is a data.frame with required columns"
             expect_true(all(required_cols %in% names(df)))
           })
 
-test_that("spp_trend_spatial_ecef$spatial first row is global pool", {
-  result <- spp_trend_spatial_ecef(
+test_that("spp_trend_spatial$spatial first row is global pool", {
+  result <- spp_trend_spatial(
     data = sim_data,
     min_records = 20,
     min_years = 5,
@@ -69,8 +69,8 @@ test_that("spp_trend_spatial_ecef$spatial first row is global pool", {
   expect_true(is.na(result$spatial$spatial_class_Latitudelon[1]))
 })
 
-test_that("spp_trend_spatial_ecef$spatial_class values are valid", {
-  result <- spp_trend_spatial_ecef(
+test_that("spp_trend_spatial$spatial_class values are valid", {
+  result <- spp_trend_spatial(
     data = sim_data,
     min_records = 20,
     min_years = 5,
@@ -84,9 +84,9 @@ test_that("spp_trend_spatial_ecef$spatial_class values are valid", {
   expect_true(all(species_classes %in% c("SA", "SD", "SC")))
 })
 
-test_that("spp_trend_spatial_ecef$species_filter has correct structure",
+test_that("spp_trend_spatial$species_filter has correct structure",
           {
-            result <- spp_trend_spatial_ecef(
+            result <- spp_trend_spatial(
               data = sim_data,
               min_records = 20,
               min_years = 5,
@@ -103,14 +103,14 @@ test_that("spp_trend_spatial_ecef$species_filter has correct structure",
             expect_type(sf$retained, "logical")
           })
 
-test_that("spp_trend_spatial_ecef errors on missing required columns", {
+test_that("spp_trend_spatial errors on missing required columns", {
   bad_data <- sim_data[, c("Species", "Year", "Month", "Latitude")]
-  expect_error(spp_trend_spatial_ecef(bad_data, verbose = FALSE),
+  expect_error(spp_trend_spatial(bad_data, verbose = FALSE),
                "Longitude")
 })
 
-test_that("spp_trend_spatial_ecef handles spp subsetting", {
-  result <- spp_trend_spatial_ecef(
+test_that("spp_trend_spatial handles spp subsetting", {
+  result <- spp_trend_spatial(
     data = sim_data,
     spp = c("Sp_A", "Sp_B"),
     min_records = 20,

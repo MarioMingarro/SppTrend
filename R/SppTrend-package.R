@@ -22,7 +22,7 @@
 #'
 #' ## Response categories
 #'
-#' **Spatial** (from \code{\link{spp_trend_spatial_ecef}}):
+#' **Spatial** (from \code{\link{spp_trend_spatial}}):
 #' - **SA** (Spatial Adaptation): movement faster than or directionally
 #'   different from the global pool, in a poleward direction.
 #' - **SD** (Spatial Discordance): movement slower than the global pool,
@@ -49,7 +49,7 @@
 #'
 #' 3. **Spatial trend analysis**: Estimate temporal changes in species
 #'    geographic position using ECEF vector analysis with
-#'    \code{\link{spp_trend_spatial_ecef}}.
+#'    \code{\link{spp_trend_spatial}}.
 #'
 #' 4. **Environmental trend analysis**: Estimate temporal trends in
 #'    temperature and elevation for each species using

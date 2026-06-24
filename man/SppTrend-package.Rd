@@ -6,7 +6,7 @@
 \alias{SppTrend}
 \title{SppTrend: Analyzing Linear Trends in Species Occurrence Data}
 \description{
-Provides a comparative framework to detect species-specific spatial and thermal responses to climate change using opportunistic occurrence data. Species temporal trends in geographic position (via Earth-Centred Earth-Fixed vector analysis) and environmental variables (temperature and elevation) are contrasted against the overall trend of the complete dataset, allowing classification of species into ecologically interpretable response categories. Approach described in Lobo et al. (2023) \doi{10.1002/ece3.10674} and validated with virtual species in Mingarro, García-Roselló and Lobo (2026).
+Provides a comparative framework to detect species-specific spatial and thermal responses to climate change using opportunistic occurrence data. Species temporal trends in geographic position (via Earth-Centred Earth-Fixed vector analysis) and environmental variables (temperature and elevation) are contrasted against the overall trend of the complete dataset, allowing classification of species into ecologically interpretable response categories. Approach described in Lobo et al. (2023) \doi{10.1002/ece3.10674}.
 }
 \details{
 \subsection{Methodology}{
@@ -28,7 +28,7 @@ conditions associated with species occurrences.
 
 \subsection{Response categories}{
 
-\strong{Spatial} (from \code{\link{spp_trend_spatial_ecef}}):
+\strong{Spatial} (from \code{\link{spp_trend_spatial}}):
 \itemize{
 \item \strong{SA} (Spatial Adaptation): movement faster than or directionally
 different from the global pool, in a poleward direction.
@@ -59,7 +59,7 @@ values with \code{\link{get_era5_tme}} or elevation with
 \code{\link{get_elevation}}.
 \item \strong{Spatial trend analysis}: Estimate temporal changes in species
 geographic position using ECEF vector analysis with
-\code{\link{spp_trend_spatial_ecef}}.
+\code{\link{spp_trend_spatial}}.
 \item \strong{Environmental trend analysis}: Estimate temporal trends in
 temperature and elevation for each species using
 \code{\link{spp_trend_environmental}}.

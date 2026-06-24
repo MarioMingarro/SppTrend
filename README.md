@@ -43,7 +43,7 @@ library(SppTrend)
 
 `SppTrend` evaluates species responses to environmental change along two complementary dimensions:
 
-- **Spatial**: Temporal shifts in geographic position (latitude and longitude), analysed jointly via Earth-Centred Earth-Fixed (ECEF) Cartesian vector analysis on the WGS84 ellipsoid (`spp_trend_spatial_ecef`).
+- **Spatial**: Temporal shifts in geographic position (latitude and longitude), analysed jointly via Earth-Centred Earth-Fixed (ECEF) Cartesian vector analysis on the WGS84 ellipsoid (`spp_trend_spatial`).
 - **Environmental**: Temporal changes in temperature and elevation conditions associated with occurrences (`spp_trend_environmental`).
 
 The key assumption is that dominant temporal sampling biases are shared across species within a taxonomic group.
@@ -64,7 +64,7 @@ Input occurrence records must include:
 | `Temperature` | numeric | Temperature at occurrence (°C) — required by `spp_trend_environmental` |
 | `Elevation` | numeric | Elevation (m a.s.l.) — required by `spp_trend_environmental` |
 
-> **Note**: Column names are case-sensitive. `spp_trend_spatial_ecef` and `spp_trend_environmental` require capitalised column names as shown above.
+> **Note**: Column names are case-sensitive. `spp_trend_spatial` and `spp_trend_environmental` require capitalised column names as shown above.
 
 Temperature and elevation values can be attached to occurrence records using `get_era5_tme()` and `get_elevation()`.
 
@@ -84,8 +84,10 @@ Temperature and elevation values can be attached to occurrence records using `ge
 > Input data for `get_fast_info()` uses lowercase column names (`lon`, `lat`, `year`, `month`).
 
 ```r
+path <- system.file("extdata", "example_ranidae.csv", package = "SppTrend")
+data <- read.csv2(path)
 nc_file <- "path/to/your/era5_data.nc"
-info <- get_fast_info(ranidae, nc_file)
+info <- get_fast_info(data, nc_file)
 ```
 
 ### Phase 2: Environmental data integration
@@ -104,12 +106,14 @@ Rename the resulting `tme` and `ele` columns to `Temperature` and `Elevation` (c
 
 ### Phase 3: Spatial trend analysis
 
-`spp_trend_spatial_ecef()` analyses temporal changes in species geographic position using ECEF (Earth-Centered, Earth-Fixed) vector analysis.
+`spp_trend_spatial()` analyses temporal changes in species geographic position using ECEF (Earth-Centered, Earth-Fixed) vector analysis.
 It estimates temporal slopes in 3D space, projects them onto the local tangent plane, and classifies each species against a global reference vector.
 
 ```r
-result_spatial <- spp_trend_spatial_ecef(
-data= occ_data,
+colnames(data) <- c("Species", "Year", "Month", "Latitude", "Longitude", "Temperature", "Elevation")
+
+result_spatial <- spp_trend_spatial(
+data= data,
 min_records = 20,
 min_years = 5,
 spatial_simulation_n= 1000,
@@ -181,7 +185,7 @@ result_env$species_filter[result_env$species_filter$retained, ]
 <img src="man/figures/strategies.png" width="50%">
 </div>
 
-### Spatial responses (`spp_trend_spatial_ecef`)
+### Spatial responses (`spp_trend_spatial`)
 
 | Class | Name | Description |
 |-------|------|-------------|
