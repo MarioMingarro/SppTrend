@@ -25,11 +25,11 @@ and \code{Longitude} (additional columns are permitted and ignored).
 occurrence record.}
 \item{\code{Year}}{Numeric. Four-digit calendar year of the record.
 Values that cannot be coerced to a finite number are dropped.}
-\item{\code{Month}}{Numeric. Calendar month (1–12) of the record.
+\item{\code{Month}}{Numeric. Calendar month (1-12) of the record.
 Values outside this range or non-numeric entries are dropped.}
-\item{\code{Latitude}}{Numeric. Decimal degrees latitude (−90 to +90).
+\item{\code{Latitude}}{Numeric. Decimal degrees latitude (-90 to +90).
 Records outside this range are dropped.}
-\item{\code{Longitude}}{Numeric. Decimal degrees longitude (−180 to +180).
+\item{\code{Longitude}}{Numeric. Decimal degrees longitude (-180 to +180).
 Records outside this range are dropped.}
 }}
 
@@ -121,7 +121,7 @@ slope vector onto the local tangent plane at the centroid and taking
 the magnitude of the east and north components. This is the
 ecologically preferred speed metric.}
 \item{\code{direction_bearing_deg}}{Numeric. Absolute geographical
-bearing (0–360°, clockwise from North) of the displacement vector
+bearing (0-360 deg, clockwise from North) of the displacement vector
 on the local tangent plane. \code{NA} when the surface speed is zero
 or not finite.}
 \item{\code{direction_cardinal}}{Character. Eight-point compass
@@ -151,18 +151,18 @@ surface speed to the global surface speed. A value greater than 1
 indicates faster movement than the global reference. \code{NA} when
 the global speed is zero or for the global pool row.}
 \item{\code{angle_to_global_3d_deg}}{Numeric. Three-dimensional angle
-(degrees, 0–180) between the species ECEF slope vector and the global
-ECEF slope vector. Values near 0° indicate nearly parallel movement;
-values near 90° indicate orthogonal movement; values near 180°
+(degrees, 0-180) between the species ECEF slope vector and the global
+ECEF slope vector. Values near 0 deg indicate nearly parallel movement;
+values near 90 deg indicate orthogonal movement; values near 180 deg
 indicate opposite movement. \code{NA} for the global pool row.}
-\item{\code{prob_speed_greater_than_global}}{Numeric (0–1). Estimated
+\item{\code{prob_speed_greater_than_global}}{Numeric (0-1). Estimated
 probability, derived from \code{spatial_simulation_n} Monte Carlo
 draws, that the species surface speed exceeds the global surface
 speed. \code{NA} for the global pool row.}
-\item{\code{prob_speed_lower_than_global}}{Numeric (0–1). Estimated
+\item{\code{prob_speed_lower_than_global}}{Numeric (0-1). Estimated
 probability that the species surface speed is lower than the global
 surface speed. \code{NA} for the global pool row.}
-\item{\code{prob_direction_different_from_global}}{Numeric (0–1).
+\item{\code{prob_direction_different_from_global}}{Numeric (0-1).
 Estimated probability that the three-dimensional angle between the
 species slope vector and the global slope vector is at least
 \code{direction_angle_threshold_deg} degrees, indicating directional
@@ -232,7 +232,7 @@ reference ellipsoid.
 For each species (and for a pooled global reference), the function computes
 monthly ECEF centroids from occurrence records, fits a multivariate linear
 regression of centroid position against a continuous time variable
-(\eqn{\text{time\_cont} = \text{Year} + (\text{Month} - 1) / 12}), and
+(\eqn{\mathrm{time\_cont} = \mathrm{Year} + (\mathrm{Month} - 1) / 12}), and
 projects the resulting three-dimensional slope vector onto the local tangent
 plane at the species centroid to obtain ecologically interpretable quantities:
 surface displacement speed (km yr\eqn{^{-1}}) and absolute geographical bearing.
@@ -253,7 +253,7 @@ significantly from the global spatial pattern.}
 }
 
 The ECEF coordinate system used here places the X-axis towards the intersection
-of the Equator and the Greenwich meridian, the Y-axis towards 90°E longitude,
+of the Equator and the Greenwich meridian, the Y-axis towards 90 deg E longitude,
 and the Z-axis towards the North Pole.
 }
 \details{
@@ -277,18 +277,18 @@ are discarded. Global-pool centroids use all retained species combined.
 
 \subsection{ECEF slope model}{
 A multivariate ordinary least-squares regression is fitted:
-\deqn{\mathbf{C}(t) = \boldsymbol{\alpha} + \boldsymbol{\beta}\, t + \boldsymbol{\varepsilon}}
+\deqn{\mathbf{C}(t) = \mathbf{\alpha} + \mathbf{\beta}\, t + \mathbf{\varepsilon}}
 where \eqn{\mathbf{C}(t)} is the \eqn{3 \times 1} vector of ECEF
-coordinates at time \eqn{t}, and \eqn{\boldsymbol{\beta}} is the slope
+coordinates at time \eqn{t}, and \eqn{\mathbf{\beta}} is the slope
 vector (km yr\eqn{^{-1}}) of interest. The residual covariance matrix
-\eqn{\hat{\boldsymbol{\Sigma}}} is used together with
+\eqn{\hat{\mathbf{\Sigma}}} is used together with
 \eqn{(X^\top X)^{-1}} to construct the \eqn{3 \times 3} covariance
-matrix of \eqn{\hat{\boldsymbol{\beta}}}, which propagates uncertainty
+matrix of \eqn{\hat{\mathbf{\beta}}}, which propagates uncertainty
 into the Monte Carlo simulations.
 }
 
 \subsection{Tangent-plane projection}{
-The ECEF slope vector is projected onto the local east–north–up frame at
+The ECEF slope vector is projected onto the local east-north-up frame at
 the species centroid. The east and north components are used to compute
 surface speed and bearing; the up component is reported as
 \code{radial_km_year}.
@@ -300,15 +300,15 @@ surface speed and bearing; the up component is reported as
 \code{prob_direction_different_from_global >= spatial_probability_threshold}
 \emph{and} \code{angle_to_global_3d_deg >= direction_angle_threshold_deg},
 the direction is considered significantly different. Under this
-condition, poleward movement → \strong{SA}; non-poleward movement →
+condition, poleward movement -> \strong{SA}; non-poleward movement ->
 \strong{SD}.
 \item \strong{Speed test (direction not significant).} If
 \code{prob_speed_greater_than_global >= spatial_probability_threshold},
-poleward movement → \strong{SA}; non-poleward → \strong{SD}. If
+poleward movement -> \strong{SA}; non-poleward -> \strong{SD}. If
 \code{prob_speed_lower_than_global >= spatial_probability_threshold}
-→ \strong{SD}.
+-> \strong{SD}.
 \item \strong{Default.} Neither speed nor direction differs significantly
-→ \strong{SC}.
+-> \strong{SC}.
 }
 Poleward movement is defined as a positive northward component in the
 Northern Hemisphere or a negative northward component in the Southern

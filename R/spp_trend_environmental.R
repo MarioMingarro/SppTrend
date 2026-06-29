@@ -2,7 +2,7 @@
 #'
 #' @description
 #' `spp_trend_environmental()` models temporal trends in environmental
-#' variables—Temperature and/or Elevation—for each species in a community
+#' variables - Temperature and/or Elevation - for each species in a community
 #' dataset and evaluates whether species-specific shifts differ from the
 #' pooled community trend.
 #'
@@ -17,9 +17,9 @@
 #' }
 #'
 #' Species-specific slopes are then compared against the global slope using
-#' **Welch–Satterthwaite t-tests**. Raw p-values from both the individual
+#' **Welch-Satterthwaite t-tests**. Raw p-values from both the individual
 #' species regressions and the slope-difference tests are corrected for
-#' multiple testing with the **Benjamini–Hochberg False Discovery Rate (FDR)**
+#' multiple testing with the **Benjamini-Hochberg False Discovery Rate (FDR)**
 #' procedure, applied separately for each response variable. An optional
 #' sample-size correction penalises the significance threshold for
 #' well-sampled species (N > 100).
@@ -30,24 +30,24 @@
 #' global trend, depending on `individual_lm_threshold_type`):
 #'
 #' \describe{
-#' \item{`"TT"` — Thermal Tolerance}{Temperature response.The species is
+#' \item{`"TT"` - Thermal Tolerance}{Temperature response.The species is
 #' moving toward warmer environments over time: its individual slope (or
 #' its deviation from the global slope, under `"slopediff"`) is
 #' positive, statistically significant, and exceeds the minimum
 #' ecological threshold.}
-#' \item{`"TA"` — Thermal Adjustment}{Temperature response.The species is
+#' \item{`"TA"` - Thermal Adjustment}{Temperature response.The species is
 #' shifting toward cooler environments: slope (or deviation) is
 #' negative, significant, and exceeds the threshold.}
-#' \item{`"TC"` — Thermal Conformance}{Temperature response.Default class
+#' \item{`"TC"` - Thermal Conformance}{Temperature response.Default class
 #' assigned when the individual trend is non-significant or not
 #' distinguishable from the global trend.}
-#' \item{`"SA"` — Spatial Adaptation}{Elevation response.The species is
+#' \item{`"SA"` - Spatial Adaptation}{Elevation response.The species is
 #' tracking higher elevations over time: slope (or deviation) is
 #' positive, significant, and exceeds the threshold.}
-#' \item{`"SD"` — Spatial Discordance}{Elevation response.The species is
+#' \item{`"SD"` - Spatial Discordance}{Elevation response.The species is
 #' shifting to lower elevations: slope (or deviation) is negative,
 #' significant, and exceeds the threshold.}
-#' \item{`"SC"` — Spatial Conformance}{Elevation response.Default class
+#' \item{`"SC"` - Spatial Conformance}{Elevation response.Default class
 #' when the elevation trend is non-significant or indistinguishable from
 #' the global trend.}
 #' }
@@ -56,7 +56,7 @@
 #' Internally the function constructs a continuous, mean-centred time
 #' predictor (`time_cont_c`) from `Year` and `Month` as
 #' `Year + (Month - 1) / 12 - mean(...)`. Slopes are therefore expressed in
-#' **environmental units per year** (°C yr⁻¹ for Temperature, m yr⁻¹ for
+#' **environmental units per year** (deg C yr\eqn{^{-1}} for Temperature, m yr\eqn{^{-1}} for
 #' Elevation).
 #'
 #' @param data A data frame or `data.table` containing the raw observational
@@ -65,10 +65,10 @@
 #' \item{`Species`}{Character or factor.Taxonomic name or identifier for
 #' each observation.}
 #' \item{`Year`}{Integer or numeric.Calendar year of the observation.}
-#' \item{`Month`}{Integer or numeric.Calendar month (1–12) of the
+#' \item{`Month`}{Integer or numeric.Calendar month (1-12) of the
 #' observation.}
 #' \item{`Temperature`}{Numeric.Environmental temperature associated with
-#' the observation (e.g. mean monthly temperature in °C at the
+#' the observation (e.g. mean monthly temperature in deg C at the
 #' sampling location).Required when `"Temperature"` is included in
 #' `responses`.}
 #' \item{`Elevation`}{Numeric.Elevation (m a.s.l.) associated with the
@@ -76,7 +76,7 @@
 #' `responses`.}
 #' }
 #' Rows with `NA` in `Species`, `Year`, or `Month`, and rows where `Month`
-#' is outside 1–12, are silently removed before analysis.
+#' is outside 1-12, are silently removed before analysis.
 #'
 #' @param spp Character vector or `NULL` (default `NULL`).Names of the
 #' species to include in the analysis.If `NULL`, all unique species present
@@ -108,7 +108,7 @@
 #' @param use_Ncorrected_alpha Logical (default `TRUE`).When `TRUE`, the
 #' effective significance threshold for any individual species with more
 #' than 100 records is reduced according to
-#' \deqn{\alpha_{\text{eff}} = \alpha_{\text{ref}} \times \sqrt{100 / N}}{
+#' \deqn{\alpha_{\mathrm{eff}} = \alpha_{\mathrm{ref}} \times \sqrt{100 / N}}{
 #' alpha_eff = alpha_ref * sqrt(100 / N)}
 #' where \eqn{N} is the number of records for that species and response
 #' variable.This penalises the inflated statistical power that comes with
@@ -125,7 +125,7 @@
 #' \describe{
 #' \item{`"speciesslope"`}{ (default) The absolute value of the species-specific
 #' temporal slope must exceed the threshold (e.g. |slope| > 0.01
-#' °C yr⁻¹ for Temperature). Evaluates how much the species is shifting
+#' deg C yr\eqn{^{-1}} for Temperature). Evaluates how much the species is shifting
 #' in absolute terms.}
 #' \item{`"slopediff"`}{The absolute value of the difference between the
 #' species slope and the global slope must exceed the threshold.
@@ -161,7 +161,7 @@
 #' (except `data` and `spp`) as supplied by the caller.Useful for
 #' reproducibility and logging.}
 #'
-#' \item{`species_filter`}{Data frame with one row per species × response
+#' \item{`species_filter`}{Data frame with one row per species x response
 #' combination, summarising the filtering step.Columns:
 #' \describe{
 #' \item{`Species`}{Character.Species name.}
@@ -184,10 +184,10 @@
 #' \item{`response`}{Character.Response variable.}
 #' \item{`model`}{Character.Always `"global_lm"`.}
 #' \item{`global_lm_slope`}{Numeric.Estimated temporal slope of the
-#' global model (units per year: °C yr⁻¹ or m yr⁻¹).}
+#' global model (units per year: deg C yr\eqn{^{-1}} or m yr\eqn{^{-1}}).}
 #' \item{`global_lm_se`}{Numeric.Standard error of the global slope.}
 #' \item{`global_lm_t`}{Numeric.t-statistic for the global slope
-#' (H₀: slope = 0).}
+#' (H0: slope = 0).}
 #' \item{`global_lm_p_value`}{Numeric.Two-tailed p-value for the
 #' global slope test.}
 #' \item{`global_lm_conf_low`}{Numeric.Lower bound of the 95 \%
@@ -202,7 +202,7 @@
 #' }
 #'
 #' \item{`environmental_individual_lm`}{Data frame with one row per species
-#' × response combination for all species that passed the filtering step.
+#' x response combination for all species that passed the filtering step.
 #' Contains species-level OLS statistics plus comparisons against the
 #' global model.Columns:
 #' \describe{
@@ -213,11 +213,11 @@
 #' \item{`n_years`}{Integer.Number of distinct years in the species
 #' data for this response.}
 #' \item{`individual_slope`}{Numeric.Estimated temporal slope for this
-#' species (°C yr⁻¹ or m yr⁻¹).}
+#' species (deg C yr\eqn{^{-1}} or m yr\eqn{^{-1}}).}
 #' \item{`individual_slope_se`}{Numeric.Standard error of the
 #' species-specific slope.}
 #' \item{`individual_t`}{Numeric.t-statistic for the species slope
-#' (H₀: slope = 0).}
+#' (H0: slope = 0).}
 #' \item{`individual_p_value`}{Numeric.Two-tailed p-value for the
 #' species slope test (raw, before FDR correction).}
 #' \item{`individual_conf_low`}{Numeric.Lower bound of the 95 \%
@@ -229,16 +229,16 @@
 #' convenience).}
 #' \item{`slope_diff_signed`}{Numeric.Signed difference between the
 #' species slope and the global slope
-#' (`individual_slope − global_lm_slope`).Positive values
+#' (`individual_slope - global_lm_slope`).Positive values
 #' indicate the species trend is steeper than the community
 #' average.}
 #' \item{`slope_diff_direction`}{Character.Direction of
 #' `slope_diff_signed`: `"positive"`, `"negative"`, or `"zero"`.}
 #' \item{`slope_diff`}{Numeric.Absolute value of `slope_diff_signed`.}
-#' \item{`slope_diff_t`}{Numeric.Welch–Satterthwaite t-statistic for
+#' \item{`slope_diff_t`}{Numeric.Welch-Satterthwaite t-statistic for
 #' the test of equality between the species slope and the global
 #' slope.}
-#' \item{`slope_diff_df`}{Numeric.Welch–Satterthwaite degrees of
+#' \item{`slope_diff_df`}{Numeric.Welch-Satterthwaite degrees of
 #' freedom for `slope_diff_t`.}
 #' \item{`slope_diff_p_value`}{Numeric.Two-tailed p-value for the
 #' slope-difference test (raw, before FDR correction).}
@@ -250,7 +250,7 @@
 #' \item{`slope_diff_p_adj_fdr`}{Numeric.FDR-adjusted (BH method)
 #' p-value for the slope-difference test.}
 #' \item{`alpha`}{Numeric.Effective significance threshold applied to
-#' this species.Equals `alpha_ref` for species with ≤ 100
+#' this species.Equals `alpha_ref` for species with <= 100
 #' records, or the sample-size-corrected value when
 #' `use_Ncorrected_alpha = TRUE` and N > 100.}
 #' \item{`individual_significant`}{Logical.`TRUE` if
@@ -479,7 +479,7 @@ spp_trend_environmental <- function(data,
                 x <- Filter(Negate(is.null), x)
                 if (length(x) == 0)
                         return(data.frame())
-                data.table::rbindlist(x, fill = TRUE) |> as.data.frame()
+                as.data.frame(data.table::rbindlist(x, fill = TRUE))
         }
 
         direction <- function(x) {
@@ -793,7 +793,6 @@ spp_trend_environmental <- function(data,
                                                 individual_lm_results$slope_diff_p_value[idx],
                                                 method = "BH"
                                         )
-                                #calculamos el alpha correspondiente a la especie en funciÃ³n de N y de las opciones del usuario
                                 individual_lm_results$alpha[idx] <- alpha_ref
                                 if (use_Ncorrected_alpha) {
                                         mask <- idx & individual_lm_results$n_records > 100
