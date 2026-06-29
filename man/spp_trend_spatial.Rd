@@ -86,8 +86,8 @@ correspond to individual species. Columns:
 \item{\code{Species}}{Character. Species name, or \code{"__GLOBAL_POOL__"}
 for the global reference row.}
 \item{\code{analysis}}{Character. Identifies the type of analysis:
-\code{"spatial_centroid_vector_global_pool"} for the global row
-or \code{"spatial_centroid_vector_species"} for individual
+\code{"spatial_ecef_centroid_vector_global_pool"} for the global row
+or \code{"spatial_ecef_centroid_vector_species"} for individual
 species.}
 \item{\code{n_records}}{Integer. Total number of valid occurrence
 records used. For the global pool this is the sum across all
@@ -104,12 +104,12 @@ the mean ECEF centroid, converted back to geodetic coordinates.}
 northward component of the displacement vector is positive in the
 Northern Hemisphere or negative in the Southern Hemisphere;
 \code{"non_poleward"} otherwise. \code{NA} for the global pool row.}
-\item{\code{slope_x_km_year}}{Numeric. Annual rate of change
+\item{\code{slope_ecef_x_km_year}}{Numeric. Annual rate of change
 (km yr\eqn{^{-1}}) of the ECEF X-coordinate centroid, estimated from
 the multivariate linear regression.}
-\item{\code{slope_y_km_year}}{Numeric. Annual rate of change
+\item{\code{slope_ecef_y_km_year}}{Numeric. Annual rate of change
 (km yr\eqn{^{-1}}) of the ECEF Y-coordinate centroid.}
-\item{\code{slope_z_km_year}}{Numeric. Annual rate of change
+\item{\code{slope_ecef_z_km_year}}{Numeric. Annual rate of change
 (km yr\eqn{^{-1}}) of the ECEF Z-coordinate centroid.}
 \item{\code{speed_chord_km_year}}{Numeric. Magnitude of the 3-D ECEF
 slope vector (km yr\eqn{^{-1}}), representing the straight-line chord
@@ -199,7 +199,7 @@ in the spatial analysis; \code{FALSE} otherwise.}
 and methodological details. Elements:
 \describe{
 \item{\code{analysis}}{Character. Fixed label
-\code{"spatial_wgs84_vector_only"}.}
+\code{"spatial_ecef_wgs84_vector_only"}.}
 \item{\code{time_variable}}{Character. Description of the continuous
 time variable: \code{"time_cont = Year + (Month - 1) / 12"}.}
 \item{\code{coordinate_system}}{Character. Coordinate system and units:
@@ -316,27 +316,25 @@ Hemisphere.
 }
 }
 \examples{
-\dontrun{
 # Minimal example with simulated data
 set.seed(42)
-n <- 500
-df <- data.frame(
-Species = sample(c("Sp_A", "Sp_B", "Sp_C"), n, replace = TRUE),
-Year= sample(2000:2020, n, replace = TRUE),
+n <- 600
+sim_data <- data.frame(Species = sample(c("Sp_A", "Sp_B", "Sp_C"), n, replace = TRUE),
+Year = sample(2000:2020, n, replace = TRUE),
 Month = sample(1:12, n, replace = TRUE),
-Latitude= runif(n, 30, 60),
+Latitude = runif(n, 30, 65),
 Longitude = runif(n, -10, 30)
 )
 
 result <- spp_trend_spatial(
-data= df,
+data= sim_data,
 min_records = 20,
 min_years = 5,
-spatial_simulation_n= 500,
+spatial_simulation_n = 100,
 spatial_probability_threshold = 0.90,
 direction_angle_threshold_deg = 68,
-random_seed = 123,
-verbose = TRUE
+random_seed = 1,
+verbose = FALSE
 )
 
 # Main results table
@@ -351,7 +349,6 @@ result$metadata
 # Extract classified species only (excluding global pool row)
 classified <- result$spatial[result$spatial$Species != "__GLOBAL_POOL__", ]
 table(classified$spatial_class_Latitudelon)
-}
 
 }
 \seealso{

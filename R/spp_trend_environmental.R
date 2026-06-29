@@ -138,7 +138,7 @@
 #' produce an error.
 #'
 #' @param individual_lm_threshold_type Character scalar (default
-#' `"slopediff"`).Determines which quantity is compared against
+#' `"speciesslope"`).Determines which quantity is compared against
 #' `individual_lm_min_thresholds`.Must be one of:
 #' \describe{
 #' \item{`"speciesslope"`}{Threshold is applied to the absolute
@@ -287,32 +287,30 @@
 #'
 #' }
 #'
-#' @importFrom data.table data.table setkey uniqueN rbindlist .N `:=`
+#' @importFrom data.table data.table setkey uniqueN rbindlist :=
 #' @importFrom stats lm.fit pt qt p.adjust
 #'
 #' @examples
-#' \dontrun{
 #' # Minimal example with simulated data
 #' set.seed(42)
-#' n <- 500
+#' n <- 600
 #' sim_data <- data.frame(
-#' Species = sample(paste0("Sp", 1:10), n, replace = TRUE),
-#' Year= sample(2000:2020, n, replace = TRUE),
+#' Species = sample(paste0("Sp", 1:5), n, replace = TRUE),
+#' Year = sample(2000:2020, n, replace = TRUE),
 #' Month = sample(1:12, n, replace = TRUE),
 #' Temperature = rnorm(n, mean = 15, sd = 3),
-#' Elevation = rnorm(n, mean = 500, sd = 100)
-#' )
+#' Elevation = rnorm(n, mean = 500, sd = 100))
 #'
 #' results <- spp_trend_environmental(
-#' data= sim_data,
+#' data = sim_data,
 #' responses = c("Temperature", "Elevation"),
-#' min_records = 10,
-#' min_years = 3,
+#' min_records = 20,
+#' min_years = 5,
 #' alpha_ref = 0.05,
-#' use_Ncorrected_alpha= TRUE,
-#' individual_lm_min_thresholds = c(Temperature = 0.01, Elevation = 10),
-#' individual_lm_threshold_type = "slopediff",
-#' verbose = TRUE
+#' use_Ncorrected_alpha = FALSE,
+#' individual_lm_min_thresholds = c(Temperature = 0.01, Elevation = 50),
+#' individual_lm_threshold_type = "speciesslope",
+#' verbose = FALSE
 #' )
 #'
 #' # Inspect the classification table
@@ -323,489 +321,522 @@
 #'
 #' # Global community trends
 #' results$environmental_global_lm
-#' }
 #'
 #' @export
 spp_trend_environmental <- function(data,
-spp = NULL,
-responses = c("Temperature", "Elevation"),
-min_records = 20,
-min_years = 5,
-alpha_ref = 0.05,
-use_Ncorrected_alpha = T,
-individual_lm_min_thresholds = c(Temperature = 0.01, Elevation = 50),
-individual_lm_threshold_type = "speciesslope",
-verbose = TRUE) {
+                                    spp = NULL,
+                                    responses = c("Temperature", "Elevation"),
+                                    min_records = 20,
+                                    min_years = 5,
+                                    alpha_ref = 0.05,
+                                    use_Ncorrected_alpha = TRUE,
+                                    individual_lm_min_thresholds = c(Temperature = 0.01, Elevation = 50),
+                                    individual_lm_threshold_type = "speciesslope",
+                                    verbose = TRUE) {
 
-param_names <- names(formals())
-params_to_store <- setdiff(param_names, c("data", "spp"))
-param_values <- mget(params_to_store, sys.frame(sys.nframe()))
+        param_names <- names(formals())
+        params_to_store <- setdiff(param_names, c("data", "spp"))
+        param_values <- mget(params_to_store, sys.frame(sys.nframe()))
 
-required_cols <- c("Species", "Year", "Month")
-missing_required <- setdiff(required_cols, names(data))
-if (length(missing_required) > 0) {
-stop("Required column(s) not found: ",
- paste(missing_required, collapse = ", "))
-}
+        required_cols <- c("Species", "Year", "Month")
+        missing_required <- setdiff(required_cols, names(data))
+        if (length(missing_required) > 0) {
+                stop(
+                        "Required column(s) not found: ",
+                        paste(missing_required, collapse = ", ")
+                )
+        }
 
-missing_responses <- setdiff(responses, names(data))
-if (length(missing_responses) > 0) {
-stop("Requested response column(s) not found in data: ",
- paste(missing_responses, collapse = ", "))
-}
+        allowed_thresholds <- c("Temperature", "Elevation")
 
-allowed_thresholds <- c("Temperature", "Elevation")
+        if (!is.null(individual_lm_min_thresholds) |
+            !is.null(individual_lm_threshold_type)) {
+                if (!is.null(individual_lm_min_thresholds) &
+                    is.null(individual_lm_threshold_type)) {
+                        stop(
+                                "If param 'individual_lm_min_thresholds' is not null, param 'individual_lm_threshold_type' cannot be NULL."
+                        )
+                }
+                if (is.null(individual_lm_min_thresholds) &
+                    !is.null(individual_lm_threshold_type)) {
+                        stop(
+                                "If param 'individual_lm_threshold_type' is not null, param 'individual_lm_min_thresholds' cannot be NULL."
+                        )
+                }
+                if (!is.null(individual_lm_min_thresholds) &
+                    is.null(individual_lm_threshold_type)) {
+                        stop(
+                                "If param 'individual_lm_min_thresholds' is not null, param 'individual_lm_threshold_type' cannot be NULL."
+                        )
+                }
+                if (!individual_lm_threshold_type %in% c("speciesslope", "slopediff")) {
+                        stop(
+                                "individual_lm_threshold_type should be 'speciesslope' or 'slopediff' "
+                        )
+                }
+                if (is.null(names(individual_lm_min_thresholds))) {
+                        stop(
+                                "The values in 'individual_lm_min_thresholds' must be named as 'Temperature' and/or 'Elevation'"
+                        )
+                } else{
+                        if (any(individual_lm_min_thresholds < 0)) {
+                                stop(
+                                        "The values in 'individual_lm_min_thresholds' must be positive"
+                                )
+                        }
+                }
+                not_allowed <- setdiff(names(individual_lm_min_thresholds),
+                                       allowed_thresholds)
+                if (length(not_allowed) > 0) {
+                        stop(
+                                "Not allowed parameter in'individual_lm_min_thresholds': ",
+                                paste(not_allowed, collapse = ", ")
+                        )
+                }
+        }
 
-if (!is.null(individual_lm_min_thresholds) |
-!is.null(individual_lm_threshold_type)){
-if (!is.null(individual_lm_min_thresholds) &
-is.null(individual_lm_threshold_type)) {
-stop(
-"If param 'individual_lm_min_thresholds' is not null, param 'individual_lm_threshold_type' cannot be NULL."
-)
-}
-if (is.null(individual_lm_min_thresholds) &
-!is.null(individual_lm_threshold_type)) {
-stop(
-"If param 'individual_lm_threshold_type' is not null, param 'individual_lm_min_thresholds' cannot be NULL."
-)
-}
-if (!is.null(individual_lm_min_thresholds) &
-is.null(individual_lm_threshold_type)) {
-stop(
-"If param 'individual_lm_min_thresholds' is not null, param 'individual_lm_threshold_type' cannot be NULL."
-)
-}
-if (!individual_lm_threshold_type %in% c("speciesslope", "slopediff")) {
-stop("individual_lm_threshold_type should be 'speciesslope' or 'slopediff' ")
-}
-if (is.null(names(individual_lm_min_thresholds))) {
-stop(
-"The values in 'individual_lm_min_thresholds' must be named as 'Temperature' and/or 'Elevation'"
-)
-} else{
-if (any(individual_lm_min_thresholds < 0)) {
-stop("The values in 'individual_lm_min_thresholds' must be positive")
-}
-}
-not_allowed <- setdiff(names(individual_lm_min_thresholds),
- allowed_thresholds)
-if (length(not_allowed) > 0) {
-stop(
-"Not allowed parameter in'individual_lm_min_thresholds': ",
-paste(not_allowed, collapse = ", ")
-)
-}
-}
+        Nref = 100
 
-Nref = 100
-allowed_responses <- c("Temperature", "Elevation")
-unknown_responses <- setdiff(responses, allowed_responses)
-if (is.null(responses) ||
-length(responses) == 0 || length(unknown_responses) > 0) {
-stop(
-"Unknown response(s): ",
-paste(unknown_responses, collapse = ", "),
-". Allowed responses are: ",
-paste(allowed_responses, collapse = ", ")
-)
-}
+        allowed_responses <- c("Temperature", "Elevation")
+        unknown_responses <- setdiff(responses, allowed_responses)
+        if (is.null(responses) ||
+            length(responses) == 0 || length(unknown_responses) > 0) {
+                stop(
+                        "Unknown response(s): ",
+                        paste(unknown_responses, collapse = ", "),
+                        ". Allowed responses are: ",
+                        paste(allowed_responses, collapse = ", ")
+                )
+        }
 
-responses <- intersect(allowed_responses, responses)
+        responses <- intersect(allowed_responses, responses)
 
-if (!requireNamespace("data.table", quietly = TRUE)) {
-stop("Package 'data.table' is required.")
-}
+        if (!requireNamespace("data.table", quietly = TRUE)) {
+                stop("Package 'data.table' is required.")
+        }
 
-dt <- data.table::data.table(
-Species = as.factor(as.character(data$Species)),
-Year= as.integer(data$Year),
-Month = as.integer(data$Month),
-Temperature = as.numeric(data$Temperature),
-Elevation = as.numeric(data$Elevation)
-)
+        dt <- data.table::data.table(
+                Species = as.factor(as.character(data$Species)),
+                Year = as.integer(data$Year),
+                Month = as.integer(data$Month),
+                Temperature = as.numeric(data$Temperature),
+                Elevation = as.numeric(data$Elevation)
+        )
 
-dt <- dt[!is.na(Species) & Species != "" &
- !is.na(Year) & !is.na(Month) &
- Month >= 1L & Month <= 12L]
-dt[, Species := droplevels(Species)]
+        dt <- dt[!is.na(Species) & Species != "" &
+                         !is.na(Year) & !is.na(Month) &
+                         Month >= 1L & Month <= 12L]
+        dt[, Species := droplevels(Species)]
 
-if (!is.null(spp)) {
-spp <- as.character(spp)
-found_spp <- intersect(spp, levels(dt$Species))
-if (length(found_spp) == 0)
-stop("None of the species specified in 'spp' was found in the data.")
-if (length(found_spp) < length(spp))
-warning("Some species specified in 'spp' were not found and will be ignored.")
-dt <- dt[Species %in% found_spp]
-dt[, Species := droplevels(Species)]
-}
+        if (!is.null(spp)) {
+                spp <- as.character(spp)
+                found_spp <- intersect(spp, levels(dt$Species))
+                if (length(found_spp) == 0)
+                        stop("None of the species specified in 'spp' was found in the data.")
+                if (length(found_spp) < length(spp))
+                        warning("Some species specified in 'spp' were not found and will be ignored.")
+                dt <- dt[Species %in% found_spp]
+                dt[, Species := droplevels(Species)]
+        }
 
-if (nrow(dt) == 0) {
-warning("No records remain after filtering Species, Year and Month.")
-return(
-list(
-species_filter= data.frame(),
-environmental_global_lm = data.frame(),
-environmental_individual_lm = data.frame(),
-environmental_comparison= data.frame()
-)
-)
-}
+        if (nrow(dt) == 0) {
+                warning("No records remain after filtering Species, Year and Month.")
+                return(
+                        list(
+                                species_filter = data.frame(),
+                                environmental_global_lm = data.frame(),
+                                environmental_individual_lm = data.frame(),
+                                environmental_comparison = data.frame()
+                        )
+                )
+        }
 
-time_cont_raw <- dt$Year + (dt$Month - 1L) / 12
-dt[, time_cont_c:= time_cont_raw - mean(time_cont_raw, na.rm = TRUE)]
-dt[, Year_integer := as.integer(floor(time_cont_raw))]
-rm(time_cont_raw)
+        time_cont_raw <- dt$Year + (dt$Month - 1L) / 12
+        dt[, time_cont_c := time_cont_raw - mean(time_cont_raw, na.rm = TRUE)]
+        dt[, Year_integer := as.integer(floor(time_cont_raw))]
+        rm(time_cont_raw)
 
-dt[, c("Year", "Month") := NULL]
+        dt[, c("Year", "Month") := NULL]
 
-data.table::setkey(dt, Species)
+        data.table::setkey(dt, Species)
+        finite_idx <- function(d, response) {
+                is.finite(d$time_cont_c) & is.finite(d[[response]])
+        }
 
-finite_idx <- function(d, response) {
-is.finite(d$time_cont_c) & is.finite(d[[response]])
-}
+        species_temporal_info <- function(d, response) {
+                ok <- finite_idx(d, response)
+                dd <- d[ok]
+                if (nrow(dd) == 0)
+                        return(data.frame())
+                dd[, .(
+                        response = response,
+                        n_records = .N,
+                        n_years = data.table::uniqueN(Year_integer)
+                ), by = Species]
+        }
 
-species_temporal_info <- function(d, response) {
-ok <- finite_idx(d, response)
-dd <- d[ok]
-if (nrow(dd) == 0)
-return(data.frame())
-dd[, .(
-response= response,
-n_records = .N,
-n_years = data.table::uniqueN(Year_integer)
-), by = Species]
-}
+        safe_rbind <- function(x) {
+                x <- Filter(Negate(is.null), x)
+                if (length(x) == 0)
+                        return(data.frame())
+                data.table::rbindlist(x, fill = TRUE) |> as.data.frame()
+        }
 
-safe_rbind <- function(x) {
-x <- Filter(Negate(is.null), x)
-if (length(x) == 0)
-return(data.frame())
-data.table::rbindlist(x, fill = TRUE) |> as.data.frame()
-}
+        direction <- function(x) {
+                ifelse(is.na(x),
+                       NA_character_,
+                       ifelse(
+                               x > 0,
+                               "positive",
+                               ifelse(x < 0, "negative", "zero")
+                       ))
+        }
 
-direction <- function(x) {
-ifelse(is.na(x), NA_character_, ifelse(x > 0, "positive", ifelse(x < 0, "negative", "zero")))
-}
+        fit_lm_stats_xy <- function(x, y) {
+                n <- length(x)
+                if (n < 3L || length(unique(x)) < 2L)
+                        return(NULL)
+                fit <- tryCatch(
+                        stats::lm.fit(cbind(1, x), y),
+                        error = function(e)
+                                NULL
+                )
+                if (is.null(fit))
+                        return(NULL)
+                df <- n - 2L
+                mse <- sum(fit$residuals^2) / df
+                xc <- x - mean(x)
+                se <- sqrt(mse / sum(xc^2))
+                slope <- unname(fit$coefficients[2L])
+                t_val <- slope / se
+                p_val <- 2 * stats::pt(-abs(t_val), df = df)
+                ci_hw <- stats::qt(0.975, df = df) * se
+                list(
+                        slope = slope,
+                        se = se,
+                        t = t_val,
+                        p = p_val,
+                        ci_low = slope - ci_hw,
+                        ci_high = slope + ci_hw,
+                        df = df,
+                        n = n
+                )
+        }
 
-fit_lm_stats_xy <- function(x, y) {
-n <- length(x)
-if (n < 3L || length(unique(x)) < 2L)
-return(NULL)
-fit <- tryCatch(
-stats::lm.fit(cbind(1, x), y),
-error = function(e)
-NULL
-)
-if (is.null(fit))
-return(NULL)
-df<- n - 2L
-mse <- sum(fit$residuals^2) / df
-xc<- x - mean(x)
-se<- sqrt(mse / sum(xc^2))
-slope <- unname(fit$coefficients[2L])
-t_val <- slope / se
-p_val <- 2 * stats::pt(-abs(t_val), df = df)
-ci_hw <- stats::qt(0.975, df = df) * se
-list(
-slope = slope,
-se = se,
-t = t_val,
-p = p_val,
-ci_low = slope - ci_hw,
-ci_high = slope + ci_hw,
-df = df,
-n = n
-)
-}
+        welch_slope_test <- function(slope_a,
+                                     se_a,
+                                     df_a,
+                                     slope_b,
+                                     se_b,
+                                     df_b) {
+                if (!all(is.finite(c(
+                        slope_a, se_a, df_a, slope_b, se_b, df_b
+                ))) ||
+                se_a <= 0 || se_b <= 0)
+                        return(list(
+                                t = NA_real_,
+                                df = NA_real_,
+                                p = NA_real_
+                        ))
+                var_a <- se_a^2
+                var_b <- se_b^2
+                se_diff <- sqrt(var_a + var_b)
+                if (!is.finite(se_diff) ||
+                    se_diff <= 0)
+                        return(list(
+                                t = NA_real_,
+                                df = NA_real_,
+                                p = NA_real_
+                        ))
+                df_welch <- (var_a + var_b)^2 / ((var_a^2 / df_a) + (var_b^2 / df_b))
+                t_val <- (slope_a - slope_b) / se_diff
+                list(
+                        t = t_val,
+                        df = df_welch,
+                        p = 2 * stats::pt(-abs(t_val), df = df_welch)
+                )
+        }
 
-welch_slope_test <- function(slope_a, se_a, df_a, slope_b, se_b, df_b) {
-if (!all(is.finite(c(
-slope_a, se_a, df_a, slope_b, se_b, df_b
-))) ||
-se_a <= 0 || se_b <= 0)
-return(list(t = NA_real_, df = NA_real_, p = NA_real_))
-var_a <- se_a^2
-var_b <- se_b^2
-se_diff <- sqrt(var_a + var_b)
-if (!is.finite(se_diff) ||
-se_diff <= 0)
-return(list(t = NA_real_, df = NA_real_, p = NA_real_))
-df_welch <- (var_a + var_b)^2 / ((var_a^2 / df_a) + (var_b^2 / df_b))
-t_val<- (slope_a - slope_b) / se_diff
-list(
-t = t_val,
-df = df_welch,
-p = 2 * stats::pt(-abs(t_val), df = df_welch)
-)
-}
+        classify_lm_individual_slope <- function(environmental_comparison,
+                                                 individual_lm_threshold_type,
+                                                 individual_lm_min_thresholds) {
+                environmental_comparison$individual_response_class <- NA_character_
 
-extract_random_slope_conditional_se <- function(ranef_df, slope_name = "time_cont_c") {
-n_groups <- nrow(ranef_df)
-out<- rep(NA_real_, n_groups)
-post_var <- attr(ranef_df, "postVar")
-if (is.null(post_var))
-return(out)
-if (is.array(post_var) && length(dim(post_var)) == 3) {
-slope_idx <- match(slope_name, colnames(ranef_df))
-if (is.na(slope_idx))
-return(out)
-return(as.numeric(sqrt(pmax(post_var[slope_idx, slope_idx, ], 0))))
-}
-if (is.list(post_var)) {
-for (pv in post_var) {
-if (!is.array(pv) || length(dim(pv)) != 3)
-next
-dn<- dimnames(pv)
-slope_idx <- NA_integer_
-if (!is.null(dn) && length(dn) >= 2 && !is.null(dn[[1]]))
-slope_idx <- match(slope_name, dn[[1]])
-if (is.na(slope_idx) && dim(pv)[1] == 1)
-slope_idx <- 1L
-if (!is.na(slope_idx) && dim(pv)[3] == n_groups)
-return(as.numeric(sqrt(pmax(pv[slope_idx, slope_idx, ], 0))))
-}
-}
-out
-}
-classify_lm_individual_slope <- function(environmental_comparison,
- individual_lm_threshold_type,
- individual_lm_min_thresholds) {
-environmental_comparison$individual_response_class <- NA_character_
-t_idx <- environmental_comparison$response == "Temperature"
-t_idx[is.na(t_idx)] <- FALSE
-e_idx <- environmental_comparison$response == "Elevation"
-e_idx[is.na(e_idx)] <- FALSE
-environmental_comparison$individual_response_class[t_idx] <- "TC"
-environmental_comparison$individual_response_class[e_idx] <- "SC"
+                t_idx <- environmental_comparison$response == "Temperature"
+                t_idx[is.na(t_idx)] <- FALSE
+                e_idx <- environmental_comparison$response == "Elevation"
+                e_idx[is.na(e_idx)] <- FALSE
 
-sig_ind<- !is.na(environmental_comparison$individual_significant) &
-environmental_comparison$individual_significant
-sig_diff <- !is.na(environmental_comparison$slope_diff_significant) &
-environmental_comparison$slope_diff_significant
-diff_above <- !is.na(environmental_comparison$slope_diff_signed) &
-environmental_comparison$slope_diff_signed > 0
-diff_below <- !is.na(environmental_comparison$slope_diff_signed) &
-environmental_comparison$slope_diff_signed < 0
+                environmental_comparison$individual_response_class[t_idx] <- "TC"
+                environmental_comparison$individual_response_class[e_idx] <- "SC"
 
-diff_above_threshold <- rep(TRUE, nrow(environmental_comparison))
+                sig_ind <- !is.na(environmental_comparison$individual_significant) &
+                        environmental_comparison$individual_significant
+                sig_diff <- !is.na(environmental_comparison$slope_diff_significant) &
+                        environmental_comparison$slope_diff_significant
+                diff_above <- !is.na(environmental_comparison$slope_diff_signed) &
+                        environmental_comparison$slope_diff_signed > 0
+                diff_below <- !is.na(environmental_comparison$slope_diff_signed) &
+                        environmental_comparison$slope_diff_signed < 0
+                diff_above_threshold <- rep(TRUE, nrow(environmental_comparison))
 
-if (!is.null(individual_lm_min_thresholds))
-{if (!is.na(individual_lm_min_thresholds["Temperature"])){
-if (individual_lm_threshold_type == "speciesslope") {
-diff_above_threshold[t_idx] <- !is.na(environmental_comparison$individual_slope[t_idx]) &
-abs(environmental_comparison$individual_slope[t_idx]) > individual_lm_min_thresholds["Temperature"]
-diff_above[t_idx] <- !is.na(environmental_comparison$individual_slope[t_idx]) &
-environmental_comparison$individual_slope[t_idx] > individual_lm_min_thresholds["Temperature"]
-diff_below[t_idx] <- !is.na(environmental_comparison$individual_slope[t_idx]) &
-environmental_comparison$individual_slope[t_idx] < -individual_lm_min_thresholds["Temperature"]
-}
-else if (individual_lm_threshold_type == "slopediff") {
-diff_above_threshold[t_idx] <- !is.na(environmental_comparison$slope_diff[t_idx]) &
-abs(environmental_comparison$slope_diff[t_idx]) > individual_lm_min_thresholds["Temperature"]
-diff_above[t_idx] <- !is.na(environmental_comparison$slope_diff_signed[t_idx]) &
-environmental_comparison$slope_diff_signed[t_idx] > 0
-diff_below[t_idx] <- !is.na(environmental_comparison$slope_diff_signed[t_idx]) &
-environmental_comparison$slope_diff_signed[t_idx] < 0
-}
-}
-if (!is.na(individual_lm_min_thresholds["Elevation"])){
-if (individual_lm_threshold_type == "speciesslope") {
-diff_above_threshold[e_idx] <- !is.na(environmental_comparison$individual_slope[e_idx]) &
-abs(environmental_comparison$individual_slope[e_idx]) > individual_lm_min_thresholds["Elevation"]
-diff_above[e_idx] <- !is.na(environmental_comparison$individual_slope[e_idx]) &
-environmental_comparison$individual_slope[e_idx] > individual_lm_min_thresholds["Elevation"]
-diff_below[e_idx] <- !is.na(environmental_comparison$individual_slope[e_idx]) &
-environmental_comparison$individual_slope[e_idx] < -individual_lm_min_thresholds["Elevation"]
-}
-else if (individual_lm_threshold_type == "slopediff") {
-diff_above_threshold[e_idx] <- !is.na(environmental_comparison$slope_diff[e_idx]) &
-abs(environmental_comparison$slope_diff[e_idx]) > individual_lm_min_thresholds["Elevation"]
-diff_above[e_idx] <- !is.na(environmental_comparison$slope_diff_signed[e_idx]) &
-environmental_comparison$slope_diff_signed[e_idx] > individual_lm_min_thresholds["Elevation"]
-diff_below[e_idx] <- !is.na(environmental_comparison$slope_diff_signed[e_idx]) &
-environmental_comparison$slope_diff_signed[e_idx] < -individual_lm_min_thresholds["Elevation"]
-}
-}
-}
-environmental_comparison$individual_slope_above_threshold = diff_above_threshold
-environmental_comparison$individual_response_class[t_idx &
- sig_ind & sig_diff & diff_above_threshold & diff_above] <- "TT"
-environmental_comparison$individual_response_class[t_idx &
- sig_ind & sig_diff & diff_above_threshold & diff_below] <- "TA"
-environmental_comparison$individual_response_class[e_idx &
- sig_ind & sig_diff & diff_above_threshold & diff_above] <- "SA"
-environmental_comparison$individual_response_class[e_idx &
- sig_ind & sig_diff & diff_above_threshold & diff_below] <- "SD"
-return (environmental_comparison)
-}
-species_filter <- safe_rbind(lapply(responses, function(resp)
-species_temporal_info(dt, resp)))
-if (nrow(species_filter) > 0) {
-species_filter$retained <- species_filter$n_records >= min_records &
-species_filter$n_years >= min_years
-species_filter$Species <- as.character(species_filter$Species)
-}
+                if (!is.null(individual_lm_min_thresholds))
+                {
+                        if (!is.na(individual_lm_min_thresholds["Temperature"])) {
+                                if (individual_lm_threshold_type == "speciesslope") {
+                                        diff_above_threshold[t_idx] <- !is.na(
+                                                environmental_comparison$individual_slope[t_idx]
+                                        ) &
+                                                abs(
+                                                        environmental_comparison$individual_slope[t_idx]
+                                                ) > individual_lm_min_thresholds["Temperature"]
+                                        diff_above[t_idx] <- !is.na(
+                                                environmental_comparison$individual_slope[t_idx]
+                                        ) &
+                                                environmental_comparison$individual_slope[t_idx] > individual_lm_min_thresholds["Temperature"]
+                                        diff_below[t_idx] <- !is.na(
+                                                environmental_comparison$individual_slope[t_idx]
+                                        ) &
+                                                environmental_comparison$individual_slope[t_idx] < -individual_lm_min_thresholds["Temperature"]
+                                }
+                                else if (individual_lm_threshold_type == "slopediff") {
+                                        diff_above_threshold[t_idx] <- !is.na(environmental_comparison$slope_diff[t_idx]) &
+                                                abs(environmental_comparison$slope_diff[t_idx]) > individual_lm_min_thresholds["Temperature"]
+                                        diff_above[t_idx] <- !is.na(
+                                                environmental_comparison$slope_diff_signed[t_idx]
+                                        ) &
+                                                environmental_comparison$slope_diff_signed[t_idx] > 0
+                                        diff_below[t_idx] <- !is.na(
+                                                environmental_comparison$slope_diff_signed[t_idx]
+                                        ) &
+                                                environmental_comparison$slope_diff_signed[t_idx] < 0
+                                }
+                        }
+                        if (!is.na(individual_lm_min_thresholds["Elevation"])) {
+                                if (individual_lm_threshold_type == "speciesslope") {
+                                        diff_above_threshold[e_idx] <- !is.na(
+                                                environmental_comparison$individual_slope[e_idx]
+                                        ) &
+                                                abs(
+                                                        environmental_comparison$individual_slope[e_idx]
+                                                ) > individual_lm_min_thresholds["Elevation"]
+                                        diff_above[e_idx] <- !is.na(
+                                                environmental_comparison$individual_slope[e_idx]
+                                        ) &
+                                                environmental_comparison$individual_slope[e_idx] > individual_lm_min_thresholds["Elevation"]
+                                        diff_below[e_idx] <- !is.na(
+                                                environmental_comparison$individual_slope[e_idx]
+                                        ) &
+                                                environmental_comparison$individual_slope[e_idx] < -individual_lm_min_thresholds["Elevation"]
+                                }
+                                else if (individual_lm_threshold_type == "slopediff") {
+                                        diff_above_threshold[e_idx] <- !is.na(environmental_comparison$slope_diff[e_idx]) &
+                                                abs(environmental_comparison$slope_diff[e_idx]) > individual_lm_min_thresholds["Elevation"]
+                                        diff_above[e_idx] <- !is.na(
+                                                environmental_comparison$slope_diff_signed[e_idx]
+                                        ) &
+                                                environmental_comparison$slope_diff_signed[e_idx] > 0
+                                        diff_below[e_idx] <- !is.na(
+                                                environmental_comparison$slope_diff_signed[e_idx]
+                                        ) &
+                                                environmental_comparison$slope_diff_signed[e_idx] < 0
+                                }
+                        }
+                }
 
-if (verbose && nrow(species_filter) > 0) {
-message("Environmental response filtering summary:")
-for (resp in unique(species_filter$response)) {
-x <- species_filter[species_filter$response == resp, , drop = FALSE]
-message(
-"- ",
-resp,
-": retained ",
-sum(x$retained),
-" of ",
-nrow(x),
-" species using min_records = ",
-min_records,
-" and min_years = ",
-min_years,
-"."
-)
-}
-}
+                environmental_comparison$individual_slope_above_threshold = diff_above_threshold
 
-calc_individual_lm <- function()
-{
-global_lm_list <- list()
-individual_lm_list <- list()
-for (resp in responses) {
-sf<- species_filter[species_filter$response == resp &
-species_filter$retained == TRUE, , drop = FALSE]
-valid_species <- sf$Species
-if (length(valid_species) == 0)
-next
-ok_all <- dt$Species %in% valid_species & finite_idx(dt, resp)
-x_all<- dt$time_cont_c[ok_all]
-y_all<- dt[[resp]][ok_all]
-yi_all <- dt$Year_integer[ok_all]
-if (length(x_all) == 0)
-next
+                environmental_comparison$individual_response_class[t_idx &
+                                                                           sig_ind & sig_diff & diff_above_threshold & diff_above] <- "TT"
+                environmental_comparison$individual_response_class[t_idx &
+                                                                           sig_ind & sig_diff & diff_above_threshold & diff_below] <- "TA"
+                environmental_comparison$individual_response_class[e_idx &
+                                                                           sig_ind & sig_diff & diff_above_threshold & diff_above] <- "SA"
+                environmental_comparison$individual_response_class[e_idx &
+                                                                           sig_ind & sig_diff & diff_above_threshold & diff_below] <- "SD"
+                return (environmental_comparison)
+        }
 
-g_stats <- fit_lm_stats_xy(x_all, y_all)
-rm(x_all, y_all, yi_all, ok_all)
-if (is.null(g_stats))
-next
 
-global_lm_list[[resp]] <- data.frame(
-response= resp,
-model = "global_lm",
-global_lm_slope = g_stats$slope,
-global_lm_se= g_stats$se,
-global_lm_t = g_stats$t,
-global_lm_p_value = g_stats$p,
-global_lm_conf_low= g_stats$ci_low,
-global_lm_conf_high = g_stats$ci_high,
-n_records = g_stats$n,
-n_years = {
-ok2 <- dt$Species %in% valid_species & finite_idx(dt, resp)
-data.table::uniqueN(dt$Year_integer[ok2])
-},
-stringsAsFactors= FALSE
-)
+        species_filter <- safe_rbind(lapply(responses, function(resp)
+                species_temporal_info(dt, resp)))
+        if (nrow(species_filter) > 0) {
+                species_filter$retained <- species_filter$n_records >= min_records &
+                        species_filter$n_years >= min_years
+                species_filter$Species <- as.character(species_filter$Species)
+        }
 
-sp_results <- lapply(valid_species, function(sp) {
-ok_sp <- dt$Species == sp & finite_idx(dt, resp)
-if (sum(ok_sp) < 3L)
-return(NULL)
-x_sp <- dt$time_cont_c[ok_sp]
-y_sp <- dt[[resp]][ok_sp]
+        if (verbose && nrow(species_filter) > 0) {
+                message("Environmental response filtering summary:")
+                for (resp in unique(species_filter$response)) {
+                        x <- species_filter[species_filter$response == resp, , drop = FALSE]
+                        message(
+                                "- ",
+                                resp,
+                                ": retained ",
+                                sum(x$retained),
+                                " of ",
+                                nrow(x),
+                                " species using min_records = ",
+                                min_records,
+                                " and min_years = ",
+                                min_years,
+                                "."
+                        )
+                }
+        }
 
-s_stats <- fit_lm_stats_xy(x_sp, y_sp)
-if (is.null(s_stats))
-return(NULL)
 
-diff <- welch_slope_test(
-s_stats$slope,
-s_stats$se,
-s_stats$df,
-g_stats$slope,
-g_stats$se,
-g_stats$df
-)
-data.frame(
-Species= sp,
-response = resp,
-n_records= s_stats$n,
-n_years= data.table::uniqueN(dt$Year_integer[ok_sp]),
-individual_slope = s_stats$slope,
-individual_slope_se= s_stats$se,
-individual_t = s_stats$t,
-individual_p_value = s_stats$p,
-individual_conf_low= s_stats$ci_low,
-individual_conf_high = s_stats$ci_high,
-global_lm_slope= g_stats$slope,
-slope_diff_signed= s_stats$slope - g_stats$slope,
-slope_diff_direction = direction(s_stats$slope - g_stats$slope),
-slope_diff = abs(s_stats$slope - g_stats$slope),
-slope_diff_t = diff$t,
-slope_diff_df= diff$df,
-slope_diff_p_value = diff$p,
-individual_direction = direction(s_stats$slope),
-stringsAsFactors = FALSE
-)
-})
-individual_lm_list[[resp]] <- sp_results
-}
+        calc_individual_lm <- function()
+        {
+                global_lm_list <- list()
+                individual_lm_list <- list()
+                for (resp in responses) {
+                        sf <- species_filter[species_filter$response == resp &
+                                                     species_filter$retained == TRUE, , drop = FALSE]
+                        valid_species <- sf$Species
+                        if (length(valid_species) == 0)
+                                next
+                        ok_all <- dt$Species %in% valid_species & finite_idx(dt, resp)
+                        x_all <- dt$time_cont_c[ok_all]
+                        y_all <- dt[[resp]][ok_all]
+                        yi_all <- dt$Year_integer[ok_all]
+                        if (length(x_all) == 0)
+                                next
 
-global_lm_results <- safe_rbind(global_lm_list)
-individual_lm_results <- safe_rbind(unlist(individual_lm_list, recursive = FALSE))
-rm(global_lm_list, individual_lm_list)
+                        g_stats <- fit_lm_stats_xy(x_all, y_all)
+                        rm(x_all, y_all, yi_all, ok_all)
+                        if (is.null(g_stats))
+                                next
 
-if (nrow(individual_lm_results) > 0) {
-individual_lm_results$individual_p_adj_fdr <- NA_real_
-individual_lm_results$slope_diff_p_adj_fdr <- NA_real_
-for (resp in unique(individual_lm_results$response)) {
-idx <- individual_lm_results$response == resp
-individual_lm_results$individual_p_adj_fdr[idx] <-
-stats::p.adjust(individual_lm_results$individual_p_value[idx], method = "BH")
-individual_lm_results$slope_diff_p_adj_fdr[idx] <-
-stats::p.adjust(individual_lm_results$slope_diff_p_value[idx], method = "BH")
-individual_lm_results$alpha[idx] <- alpha_ref
-if (use_Ncorrected_alpha) {
-mask <- idx & individual_lm_results$n_records > 100
-individual_lm_results$alpha[mask] <- alpha_ref * sqrt(Nref / individual_lm_results$n_records[mask])
-}
-}
-individual_lm_results$individual_significant <-
-!is.na(individual_lm_results$individual_p_adj_fdr) &
-individual_lm_results$individual_p_adj_fdr < individual_lm_results$alpha
-individual_lm_results$slope_diff_significant <-
-!is.na(individual_lm_results$slope_diff_p_adj_fdr) &
-individual_lm_results$slope_diff_p_adj_fdr < individual_lm_results$alpha
-}
-return (list(global_lm_results, individual_lm_results))
-}
+                        global_lm_list[[resp]] <- data.frame(
+                                response = resp,
+                                model = "global_lm",
+                                global_lm_slope = g_stats$slope,
+                                global_lm_se = g_stats$se,
+                                global_lm_t = g_stats$t,
+                                global_lm_p_value = g_stats$p,
+                                global_lm_conf_low = g_stats$ci_low,
+                                global_lm_conf_high = g_stats$ci_high,
+                                n_records = g_stats$n,
+                                n_years = {
+                                        ok2 <- dt$Species %in% valid_species & finite_idx(dt, resp)
+                                        data.table::uniqueN(dt$Year_integer[ok2])
+                                },
+                                stringsAsFactors = FALSE
+                        )
 
-r_ind_lm = calc_individual_lm()
-global_lm_results = r_ind_lm[[1]]
-individual_lm_results = r_ind_lm[[2]]
-rm(r_ind_lm)
+                        sp_results <- lapply(valid_species, function(sp) {
+                                ok_sp <- dt$Species == sp & finite_idx(dt, resp)
+                                if (sum(ok_sp) < 3L)
+                                        return(NULL)
+                                x_sp <- dt$time_cont_c[ok_sp]
+                                y_sp <- dt[[resp]][ok_sp]
 
-rm(dt)
+                                s_stats <- fit_lm_stats_xy(x_sp, y_sp)
+                                if (is.null(s_stats))
+                                        return(NULL)
 
-if (!is.null(individual_lm_results) &&
-nrow(individual_lm_results) > 0) {
-environmental_comparison <-individual_lm_results
-} else {
-environmental_comparison <- data.frame()
-}
-if (nrow(environmental_comparison) > 0) {
-environmental_comparison = classify_lm_individual_slope(
-environmental_comparison,
-individual_lm_threshold_type,
-individual_lm_min_thresholds
-)
-}
+                                diff <- welch_slope_test(
+                                        s_stats$slope,
+                                        s_stats$se,
+                                        s_stats$df,
+                                        g_stats$slope,
+                                        g_stats$se,
+                                        g_stats$df
+                                )
+                                data.frame(
+                                        Species = sp,
+                                        response = resp,
+                                        n_records = s_stats$n,
+                                        n_years = data.table::uniqueN(dt$Year_integer[ok_sp]),
+                                        individual_slope = s_stats$slope,
+                                        individual_slope_se = s_stats$se,
+                                        individual_t = s_stats$t,
+                                        individual_p_value = s_stats$p,
+                                        individual_conf_low = s_stats$ci_low,
+                                        individual_conf_high = s_stats$ci_high,
+                                        global_lm_slope = g_stats$slope,
+                                        slope_diff_signed = s_stats$slope - g_stats$slope,
+                                        slope_diff_direction = direction(
+                                                s_stats$slope - g_stats$slope
+                                        ),
+                                        slope_diff = abs(
+                                                s_stats$slope - g_stats$slope
+                                        ),
+                                        slope_diff_t = diff$t,
+                                        slope_diff_df = diff$df,
+                                        slope_diff_p_value = diff$p,
+                                        individual_direction = direction(s_stats$slope),
+                                        stringsAsFactors = FALSE
+                                )
+                        })
+                        individual_lm_list[[resp]] <- sp_results
+                }
 
-list(
-params= param_values,
-species_filter= species_filter,
-environmental_global_lm = global_lm_results,
-environmental_individual_lm = individual_lm_results,
-environmental_comparison= environmental_comparison
-)
+                global_lm_results <- safe_rbind(global_lm_list)
+                individual_lm_results <- safe_rbind(unlist(individual_lm_list, recursive = FALSE))
+                rm(global_lm_list, individual_lm_list)
+
+                if (nrow(individual_lm_results) > 0) {
+                        individual_lm_results$individual_p_adj_fdr <- NA_real_
+                        individual_lm_results$slope_diff_p_adj_fdr <- NA_real_
+                        for (resp in unique(individual_lm_results$response)) {
+                                idx <- individual_lm_results$response == resp
+                                individual_lm_results$individual_p_adj_fdr[idx] <-
+                                        stats::p.adjust(
+                                                individual_lm_results$individual_p_value[idx],
+                                                method = "BH"
+                                        )
+                                individual_lm_results$slope_diff_p_adj_fdr[idx] <-
+                                        stats::p.adjust(
+                                                individual_lm_results$slope_diff_p_value[idx],
+                                                method = "BH"
+                                        )
+                                #calculamos el alpha correspondiente a la especie en funciÃ³n de N y de las opciones del usuario
+                                individual_lm_results$alpha[idx] <- alpha_ref
+                                if (use_Ncorrected_alpha) {
+                                        mask <- idx & individual_lm_results$n_records > 100
+                                        individual_lm_results$alpha[mask] <- alpha_ref * sqrt(Nref / individual_lm_results$n_records[mask])
+                                }
+                        }
+                        individual_lm_results$individual_significant <-
+                                !is.na(individual_lm_results$individual_p_adj_fdr) &
+                                individual_lm_results$individual_p_adj_fdr < individual_lm_results$alpha
+                        individual_lm_results$slope_diff_significant <-
+                                !is.na(individual_lm_results$slope_diff_p_adj_fdr) &
+                                individual_lm_results$slope_diff_p_adj_fdr < individual_lm_results$alpha
+                }
+                return (list(global_lm_results, individual_lm_results))
+        }
+
+        r_ind_lm = calc_individual_lm()
+        global_lm_results = r_ind_lm[[1]]
+        individual_lm_results = r_ind_lm[[2]]
+        rm(r_ind_lm)
+
+        rm(dt)
+
+        if (!is.null(individual_lm_results) &&
+            nrow(individual_lm_results) > 0) {
+                environmental_comparison <- individual_lm_results
+        } else {
+                environmental_comparison <- data.frame()
+        }
+
+        if (nrow(environmental_comparison) > 0) {
+                environmental_comparison = classify_lm_individual_slope(
+                        environmental_comparison,
+                        individual_lm_threshold_type,
+                        individual_lm_min_thresholds
+                )
+        }
+
+        list(
+                params = param_values,
+                species_filter = species_filter,
+                environmental_global_lm = global_lm_results,
+                environmental_individual_lm = individual_lm_results,
+                environmental_comparison = environmental_comparison
+        )
 }

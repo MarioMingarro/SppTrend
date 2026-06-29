@@ -89,6 +89,9 @@ data <- read.csv2(path)
 nc_file <- "path/to/your/era5_data.nc"
 info <- get_fast_info(data, nc_file)
 ```
+<div align="center">
+<img src="man/figures/img_2.png" width="40%">
+</div>
 
 ### Phase 2: Environmental data integration
 

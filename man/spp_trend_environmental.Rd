@@ -11,7 +11,7 @@ spp_trend_environmental(
   min_records = 20,
   min_years = 5,
   alpha_ref = 0.05,
-  use_Ncorrected_alpha = T,
+  use_Ncorrected_alpha = TRUE,
   individual_lm_min_thresholds = c(Temperature = 0.01, Elevation = 50),
   individual_lm_threshold_type = "speciesslope",
   verbose = TRUE
@@ -97,7 +97,7 @@ entirely on statistical significance.Must be \code{NULL} jointly with
 produce an error.}
 
 \item{individual_lm_threshold_type}{Character scalar (default
-\code{"slopediff"}).Determines which quantity is compared against
+\code{"speciesslope"}).Determines which quantity is compared against
 \code{individual_lm_min_thresholds}.Must be one of:
 \describe{
 \item{\code{"speciesslope"}}{Threshold is applied to the absolute
@@ -311,28 +311,26 @@ Elevation).
 }
 
 \examples{
-\dontrun{
 # Minimal example with simulated data
 set.seed(42)
-n <- 500
+n <- 600
 sim_data <- data.frame(
-Species = sample(paste0("Sp", 1:10), n, replace = TRUE),
-Year= sample(2000:2020, n, replace = TRUE),
+Species = sample(paste0("Sp", 1:5), n, replace = TRUE),
+Year = sample(2000:2020, n, replace = TRUE),
 Month = sample(1:12, n, replace = TRUE),
 Temperature = rnorm(n, mean = 15, sd = 3),
-Elevation = rnorm(n, mean = 500, sd = 100)
-)
+Elevation = rnorm(n, mean = 500, sd = 100))
 
 results <- spp_trend_environmental(
-data= sim_data,
+data = sim_data,
 responses = c("Temperature", "Elevation"),
-min_records = 10,
-min_years = 3,
+min_records = 20,
+min_years = 5,
 alpha_ref = 0.05,
-use_Ncorrected_alpha= TRUE,
-individual_lm_min_thresholds = c(Temperature = 0.01, Elevation = 10),
-individual_lm_threshold_type = "slopediff",
-verbose = TRUE
+use_Ncorrected_alpha = FALSE,
+individual_lm_min_thresholds = c(Temperature = 0.01, Elevation = 50),
+individual_lm_threshold_type = "speciesslope",
+verbose = FALSE
 )
 
 # Inspect the classification table
@@ -343,6 +341,5 @@ results$species_filter[results$species_filter$retained, ]
 
 # Global community trends
 results$environmental_global_lm
-}
 
 }
